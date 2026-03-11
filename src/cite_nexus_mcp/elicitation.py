@@ -1,123 +1,19 @@
 """
 MCP Elicitation helpers for CitePaper - offload text processing to the client LLM.
-Provides OpenAI and Llama.cpp-compatible API fallbacks when MCP elicitation is unavailable.
+Provides dynamic LLM factory fallbacks when MCP elicitation is unavailable.
 """
 import os
 import json
-import asyncio
-import requests
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
+
+from .llm_factory import LLMFactory
 
 logger = logging.getLogger(__name__)
-
-async def _call_openai(messages: list, schema: dict) -> dict:
-    """Call an OpenAI-compatible API to act as a fallback for MCP elicitation."""
-    api_key = os.getenv("OPENAI_API_KEY")
-    api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
-    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-    
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    
-    # We append schema instruction to ensure the model returns what we expect
-    messages.append({
-        "role": "user",
-        "content": f"Please provide the output as a JSON object adhering exactly to this JSON schema:\n{json.dumps(schema, indent=2)}\n\nOnly output the JSON object."
-    })
-    
-    payload = {
-        "model": model,
-        "messages": messages,
-        "response_format": {"type": "json_object"}
-    }
-    
-    def _post():
-        response = requests.post(f"{api_base.rstrip('/')}/chat/completions", headers=headers, json=payload, timeout=30)
-        response.raise_for_status()
-        return response.json()
-        
-    data = await asyncio.to_thread(_post)
-    
-    content = data["choices"][0]["message"]["content"]
-    try:
-        return json.loads(content)
-    except json.JSONDecodeError:
-        logger.error(f"Failed to decode JSON from OpenAI fallback: {content}")
-        return {}
-
-async def _call_llama(messages: list, schema: dict) -> dict:
-    """Call a local AI server's OpenAI-compatible endpoint."""
-    api_base = os.getenv("LLAMA_API_BASE")
-    if not api_base:
-        raise ValueError("LLAMA_API_BASE environment variable is missing.")
-        
-    model_name = os.getenv("LLAMA_MODEL")
-    
-    headers = {
-        "Content-Type": "application/json"
-    }
-
-    if not model_name:
-        def _get_models():
-            try:
-                response = requests.get(f"{api_base.rstrip('/')}/models", timeout=5)
-                if response.ok:
-                    models = response.json().get("data", [])
-                    for m in models:
-                        status = m.get("status", {})
-                        if isinstance(status, dict) and status.get("value") == "loaded":
-                            return m["id"]
-                    if models:
-                        return models[0]["id"]
-            except Exception as e:
-                logger.warning(f"Could not fetch models from local AI: {e}")
-            return "default"
-        model_name = await asyncio.to_thread(_get_models)
-    
-    messages.append({
-        "role": "user",
-        "content": f"Please provide the output as a JSON object adhering exactly to this JSON schema:\n{json.dumps(schema, indent=2)}\n\nOnly output the JSON object."
-    })
-    
-    payload = {
-        "model": model_name,
-        "messages": messages,
-        "response_format": {"type": "json_object"}
-    }
-    
-    def _post():
-        response = requests.post(f"{api_base.rstrip('/')}/chat/completions", headers=headers, json=payload, timeout=60)
-        response.raise_for_status()
-        return response.json()
-        
-    data = await asyncio.to_thread(_post)
-    
-    content = data["choices"][0]["message"]["content"]
-    try:
-        content = content.strip()
-        if content.startswith("```json"):
-            content = content[7:]
-        if content.endswith("```"):
-            content = content[:-3]
-        return json.loads(content.strip())
-    except json.JSONDecodeError:
-        logger.error(f"Failed to decode JSON from Llama.cpp: {content}")
-        return {}
-
 
 async def elicit_title_extraction(text: str, client=None) -> str:
     """
     Extract paper title from any format using LLM.
-
-    Args:
-        text: Input text that might be a DOI, URL, ArXiv ID, citation, or title
-        client: MCP client with elicitation capability
-
-    Returns:
-        Extracted paper title
     """
     schema = {
         "type": "object",
@@ -137,32 +33,18 @@ async def elicit_title_extraction(text: str, client=None) -> str:
     }
 
     if not client:
-        if os.getenv("LLAMA_API_BASE"):
+        provider = LLMFactory.get_provider()
+        if provider:
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant that extracts academic paper titles."},
+                {"role": "user", "content": f"Extract the academic paper title from this text. It might be a DOI, URL, ArXiv ID, citation, or the title itself: {text}"}
+            ]
             try:
-                res = await _call_llama(
-                    [
-                        {"role": "system", "content": "You are a helpful assistant that extracts academic paper titles."},
-                        {"role": "user", "content": f"Extract the academic paper title from this text. It might be a DOI, URL, ArXiv ID, citation, or the title itself: {text}"}
-                    ],
-                    schema
-                )
-                if "title" in res:
+                res = await provider.generate_json(messages, schema)
+                if res and "title" in res:
                     return res["title"]
             except Exception as e:
-                logger.error(f"Llama.cpp fallback failed for title extraction: {e}")
-        elif os.getenv("OPENAI_API_KEY"):
-            try:
-                res = await _call_openai(
-                    [
-                        {"role": "system", "content": "You are a helpful assistant that extracts academic paper titles."},
-                        {"role": "user", "content": f"Extract the academic paper title from this text. It might be a DOI, URL, ArXiv ID, citation, or the title itself: {text}"}
-                    ],
-                    schema
-                )
-                if "title" in res:
-                    return res["title"]
-            except Exception as e:
-                logger.error(f"OpenAI fallback failed for title extraction: {e}")
+                logger.error(f"Fallback provider failed for title extraction: {e}")
         
         # Fallback for simple cases during development
         if text.startswith("10."):  # DOI
@@ -180,13 +62,6 @@ async def elicit_title_extraction(text: str, client=None) -> str:
 async def elicit_bibtex_generation(metadata: Dict[str, Any], client=None) -> str:
     """
     Generate BibTeX from paper metadata using LLM.
-
-    Args:
-        metadata: Paper metadata from Google Scholar
-        client: MCP client with elicitation capability
-
-    Returns:
-        Complete BibTeX entry
     """
     schema = {
         "type": "object",
@@ -205,34 +80,19 @@ async def elicit_bibtex_generation(metadata: Dict[str, Any], client=None) -> str
     }
 
     if not client:
-        if os.getenv("LLAMA_API_BASE"):
+        provider = LLMFactory.get_provider()
+        if provider:
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant that generates BibTeX citations."},
+                {"role": "user", "content": f"Generate a complete BibTeX entry from this Google Scholar metadata. Use author surname + year + first word of title for the citation key.\n\nMetadata:\n{json.dumps(metadata, indent=2)}"}
+            ]
             try:
-                res = await _call_llama(
-                    [
-                        {"role": "system", "content": "You are a helpful assistant that generates BibTeX citations."},
-                        {"role": "user", "content": f"Generate a complete BibTeX entry from this Google Scholar metadata. Use author surname + year + first word of title for the citation key.\n\nMetadata:\n{json.dumps(metadata, indent=2)}"}
-                    ],
-                    schema
-                )
-                if "bibtex" in res:
+                res = await provider.generate_json(messages, schema)
+                if res and "bibtex" in res:
                     return res["bibtex"]
             except Exception as e:
-                logger.error(f"Llama.cpp fallback failed for bibtex generation: {e}")
-        elif os.getenv("OPENAI_API_KEY"):
-            try:
-                res = await _call_openai(
-                    [
-                        {"role": "system", "content": "You are a helpful assistant that generates BibTeX citations."},
-                        {"role": "user", "content": f"Generate a complete BibTeX entry from this Google Scholar metadata. Use author surname + year + first word of title for the citation key.\n\nMetadata:\n{json.dumps(metadata, indent=2)}"}
-                    ],
-                    schema
-                )
-                if "bibtex" in res:
-                    return res["bibtex"]
-            except Exception as e:
-                logger.error(f"OpenAI fallback failed for bibtex generation: {e}")
+                logger.error(f"Fallback provider failed for bibtex generation: {e}")
                 
-        # Basic fallback for development
         return generate_basic_bibtex(metadata)
 
     response = await client.elicitation_create({
@@ -246,14 +106,6 @@ async def elicit_bibtex_generation(metadata: Dict[str, Any], client=None) -> str
 async def elicit_template_application(bibtex: str, template: str, client=None) -> str:
     """
     Apply a formatting template to a BibTeX entry using LLM.
-    
-    Args:
-        bibtex: Original BibTeX entry
-        template: Template instructions or name
-        client: MCP client with elicitation capability
-        
-    Returns:
-        Enhanced/Formatted BibTeX entry
     """
     schema = {
         "type": "object",
@@ -274,34 +126,19 @@ async def elicit_template_application(bibtex: str, template: str, client=None) -
     )
 
     if not client:
-        if os.getenv("LLAMA_API_BASE"):
+        provider = LLMFactory.get_provider()
+        if provider:
+            messages = [
+                {"role": "system", "content": "You are an expert academic librarian and BibTeX curator. You intuitively enhance and fix citations."},
+                {"role": "user", "content": f"{message}\n\nBibTeX:\n{bibtex}"}
+            ]
             try:
-                res = await _call_llama(
-                    [
-                        {"role": "system", "content": "You are an expert academic librarian and BibTeX curator. You intuitively enhance and fix citations."},
-                        {"role": "user", "content": f"{message}\n\nBibTeX:\n{bibtex}"}
-                    ],
-                    schema
-                )
-                if "enhanced_bibtex" in res:
+                res = await provider.generate_json(messages, schema)
+                if res and "enhanced_bibtex" in res:
                     return res["enhanced_bibtex"]
             except Exception as e:
-                logger.error(f"Llama.cpp fallback failed for template application: {e}")
-        elif os.getenv("OPENAI_API_KEY"):
-            try:
-                res = await _call_openai(
-                    [
-                        {"role": "system", "content": "You are an expert academic librarian and BibTeX curator. You intuitively enhance and fix citations."},
-                        {"role": "user", "content": f"{message}\n\nBibTeX:\n{bibtex}"}
-                    ],
-                    schema
-                )
-                if "enhanced_bibtex" in res:
-                    return res["enhanced_bibtex"]
-            except Exception as e:
-                logger.error(f"OpenAI fallback failed for template application: {e}")
+                logger.error(f"Fallback provider failed for template application: {e}")
         
-        # Basic fallback is to return original
         return bibtex
 
     response = await client.elicitation_create({
@@ -324,7 +161,6 @@ def generate_basic_bibtex(metadata: Dict[str, Any]) -> str:
 
     year = metadata.get("year", "")
     title = metadata.get("title", "Unknown Title")
-    # Clean first word for citation key
     import re
     first_word = re.sub(r'[^a-zA-Z0-9]', '', title.split()[0]) if title else "Unknown"
 

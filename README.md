@@ -72,13 +72,13 @@ We highly recommend the **Qwen2.5** family of models, as they excel at precise J
 * **[Ollama](https://ollama.com/) (Easiest)**
   1. Install Ollama and pull your desired model: `ollama run qwen2.5:7b`
   2. Ollama's API runs on port `11434` by default.
-  3. Set: `export LLAMA_API_BASE="http://localhost:11434/v1"`
+  3. Set: `export LOCAL_AI_API_BASE="http://localhost:11434/v1"`
 
 * **[LM Studio](https://lmstudio.ai/)**
   1. Download LM Studio and search for a GGUF of Qwen2.5 (e.g., `Qwen2.5-7B-Instruct-GGUF`).
   2. Start the Local Server from the left sidebar.
   3. Note the port (usually `1234`).
-  4. Set: `export LLAMA_API_BASE="http://localhost:1234/v1"`
+  4. Set: `export LOCAL_AI_API_BASE="http://localhost:1234/v1"`
 
 * **[llama.cpp](https://github.com/ggerganov/llama.cpp) (Linux / WSL2 Power Users)**
   1. Compile `llama.cpp` with CUDA support for maximum performance:
@@ -90,7 +90,7 @@ We highly recommend the **Qwen2.5** family of models, as they excel at precise J
      ```bash
      ./llama-server -m path/to/Qwen2.5-32B-Instruct-Q4_K_M.gguf --port 8080 --n-gpu-layers 999 --ctx-size 8192
      ```
-  4. Set: `export LLAMA_API_BASE="http://localhost:8080/v1"`
+  4. Set: `export LOCAL_AI_API_BASE="http://localhost:8080/v1"`
 
 **Option B: OpenAI-Compatible API**
 
@@ -121,7 +121,7 @@ Add CiteNexus to your `claude_desktop_config.json`:
       "args": ["cite-nexus-mcp"],
       "env": {
         "SERP_API_KEY": "your-serp-api-key",
-        "LLAMA_API_BASE": "http://127.0.0.1:8080/v1"
+        "LOCAL_AI_API_BASE": "http://127.0.0.1:8080/v1"
       }
     }
   }
@@ -150,7 +150,7 @@ To build on top of CiteNexus or run it locally:
 3. Copy the environment template and run the development server:
    ```bash
    cp .env.example .env
-   # Add your SERP_API_KEY and LLAMA_API_BASE to .env
+   # Add your SERP_API_KEY and LOCAL_AI_API_BASE to .env
    uv run cite-nexus-mcp
    ```
 
