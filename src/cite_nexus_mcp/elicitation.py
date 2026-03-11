@@ -49,8 +49,11 @@ async def _call_openai(messages: list, schema: dict) -> dict:
         return {}
 
 async def _call_llama(messages: list, schema: dict) -> dict:
-    """Call a local llama.cpp server's OpenAI-compatible endpoint."""
-    api_base = os.getenv("LLAMA_API_BASE", "http://localhost:8080/v1")
+    """Call a local AI server's OpenAI-compatible endpoint."""
+    api_base = os.getenv("LLAMA_API_BASE")
+    if not api_base:
+        raise ValueError("LLAMA_API_BASE environment variable is missing.")
+        
     model_name = os.getenv("LLAMA_MODEL")
     
     headers = {
@@ -70,8 +73,8 @@ async def _call_llama(messages: list, schema: dict) -> dict:
                     if models:
                         return models[0]["id"]
             except Exception as e:
-                logger.warning(f"Could not fetch models from Llama.cpp: {e}")
-            return "local-model"
+                logger.warning(f"Could not fetch models from local AI: {e}")
+            return "default"
         model_name = await asyncio.to_thread(_get_models)
     
     messages.append({
