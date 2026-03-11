@@ -1,6 +1,6 @@
 """
 MCP Elicitation helpers for CitePaper - offload text processing to the client LLM.
-Provides OpenAI-compatible API fallback when MCP elicitation is unavailable.
+Provides OpenAI and Llama.cpp-compatible API fallbacks when MCP elicitation is unavailable.
 """
 import os
 import json
@@ -48,6 +48,62 @@ async def _call_openai(messages: list, schema: dict) -> dict:
         logger.error(f"Failed to decode JSON from OpenAI fallback: {content}")
         return {}
 
+async def _call_llama(messages: list, schema: dict) -> dict:
+    """Call a local llama.cpp server's OpenAI-compatible endpoint."""
+    api_base = os.getenv("LLAMA_API_BASE", "http://localhost:8080/v1")
+    model_name = os.getenv("LLAMA_MODEL")
+    
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    if not model_name:
+        def _get_models():
+            try:
+                response = requests.get(f"{api_base.rstrip('/')}/models", timeout=5)
+                if response.ok:
+                    models = response.json().get("data", [])
+                    for m in models:
+                        status = m.get("status", {})
+                        if isinstance(status, dict) and status.get("value") == "loaded":
+                            return m["id"]
+                    if models:
+                        return models[0]["id"]
+            except Exception as e:
+                logger.warning(f"Could not fetch models from Llama.cpp: {e}")
+            return "local-model"
+        model_name = await asyncio.to_thread(_get_models)
+    
+    messages.append({
+        "role": "user",
+        "content": f"Please provide the output as a JSON object adhering exactly to this JSON schema:\n{json.dumps(schema, indent=2)}\n\nOnly output the JSON object."
+    })
+    
+    payload = {
+        "model": model_name,
+        "messages": messages,
+        "response_format": {"type": "json_object"}
+    }
+    
+    def _post():
+        response = requests.post(f"{api_base.rstrip('/')}/chat/completions", headers=headers, json=payload, timeout=60)
+        response.raise_for_status()
+        return response.json()
+        
+    data = await asyncio.to_thread(_post)
+    
+    content = data["choices"][0]["message"]["content"]
+    try:
+        content = content.strip()
+        if content.startswith("```json"):
+            content = content[7:]
+        if content.endswith("```"):
+            content = content[:-3]
+        return json.loads(content.strip())
+    except json.JSONDecodeError:
+        logger.error(f"Failed to decode JSON from Llama.cpp: {content}")
+        return {}
+
 
 async def elicit_title_extraction(text: str, client=None) -> str:
     """
@@ -78,7 +134,20 @@ async def elicit_title_extraction(text: str, client=None) -> str:
     }
 
     if not client:
-        if os.getenv("OPENAI_API_KEY"):
+        if os.getenv("LLAMA_API_BASE"):
+            try:
+                res = await _call_llama(
+                    [
+                        {"role": "system", "content": "You are a helpful assistant that extracts academic paper titles."},
+                        {"role": "user", "content": f"Extract the academic paper title from this text. It might be a DOI, URL, ArXiv ID, citation, or the title itself: {text}"}
+                    ],
+                    schema
+                )
+                if "title" in res:
+                    return res["title"]
+            except Exception as e:
+                logger.error(f"Llama.cpp fallback failed for title extraction: {e}")
+        elif os.getenv("OPENAI_API_KEY"):
             try:
                 res = await _call_openai(
                     [
@@ -133,7 +202,20 @@ async def elicit_bibtex_generation(metadata: Dict[str, Any], client=None) -> str
     }
 
     if not client:
-        if os.getenv("OPENAI_API_KEY"):
+        if os.getenv("LLAMA_API_BASE"):
+            try:
+                res = await _call_llama(
+                    [
+                        {"role": "system", "content": "You are a helpful assistant that generates BibTeX citations."},
+                        {"role": "user", "content": f"Generate a complete BibTeX entry from this Google Scholar metadata. Use author surname + year + first word of title for the citation key.\n\nMetadata:\n{json.dumps(metadata, indent=2)}"}
+                    ],
+                    schema
+                )
+                if "bibtex" in res:
+                    return res["bibtex"]
+            except Exception as e:
+                logger.error(f"Llama.cpp fallback failed for bibtex generation: {e}")
+        elif os.getenv("OPENAI_API_KEY"):
             try:
                 res = await _call_openai(
                     [
@@ -181,14 +263,32 @@ async def elicit_template_application(bibtex: str, template: str, client=None) -
         "required": ["enhanced_bibtex"]
     }
 
-    message = f"Apply this formatting template/rules '{template}' to the following BibTeX entry. Only modify the formatting according to the template, preserve the data."
+    message = (
+        f"Analyze the following BibTeX entry. Your task is to:\n"
+        f"1. Apply the following formatting rules or template: '{template}' (if 'default', apply standard academic best practices).\n"
+        f"2. Intelligently enhance the metadata: infer and add relevant 'keywords' based on the title/venue, ensure proper capitalization of titles (protecting acronyms with curly braces), standardize field names, and add any other implicit metadata that improves the citation.\n"
+        f"3. Return the fully enhanced, valid BibTeX entry."
+    )
 
     if not client:
-        if os.getenv("OPENAI_API_KEY"):
+        if os.getenv("LLAMA_API_BASE"):
+            try:
+                res = await _call_llama(
+                    [
+                        {"role": "system", "content": "You are an expert academic librarian and BibTeX curator. You intuitively enhance and fix citations."},
+                        {"role": "user", "content": f"{message}\n\nBibTeX:\n{bibtex}"}
+                    ],
+                    schema
+                )
+                if "enhanced_bibtex" in res:
+                    return res["enhanced_bibtex"]
+            except Exception as e:
+                logger.error(f"Llama.cpp fallback failed for template application: {e}")
+        elif os.getenv("OPENAI_API_KEY"):
             try:
                 res = await _call_openai(
                     [
-                        {"role": "system", "content": "You are an expert at manipulating academic citations and BibTeX formatting."},
+                        {"role": "system", "content": "You are an expert academic librarian and BibTeX curator. You intuitively enhance and fix citations."},
                         {"role": "user", "content": f"{message}\n\nBibTeX:\n{bibtex}"}
                     ],
                     schema

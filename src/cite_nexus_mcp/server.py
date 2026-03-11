@@ -10,9 +10,8 @@ from mcp.server import NotificationOptions, Server
 import mcp.server.stdio
 
 # Load environment variables from .env file
-from pathlib import Path
-env_path = Path(__file__).parent.parent.parent / '.env'
-load_dotenv(env_path)
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv(usecwd=True))
 
 # Import our simplified tools
 from .tools import find_scholar_id, get_citation, enhance_citation, paper_metrics
@@ -149,21 +148,10 @@ async def handle_call_tool(
 async def main():
     """Run the MCP server."""
     # Try to load .env explicitly
-    try:
-        if env_path.exists():
-            with open(env_path) as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith('#') and '=' in line:
-                        key, value = line.split('=', 1)
-                        key = key.strip()
-                        value = value.strip().strip('"\'')
-                        if key == 'SERP_API_KEY':
-                            os.environ['SERP_API_KEY'] = value
-                            logger.info(f"Loaded SERP_API_KEY from .env file")
-                            break
-    except Exception as e:
-        logger.warning(f"Could not load .env file: {e}")
+    load_dotenv(find_dotenv(usecwd=True))
+
+    if not os.getenv("SERP_API_KEY") and os.getenv("SERPAPI_KEY"):
+        os.environ["SERP_API_KEY"] = os.getenv("SERPAPI_KEY")
 
     # Check for API key but continue anyway
     if not os.getenv("SERP_API_KEY"):
