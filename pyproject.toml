@@ -1,5 +1,5 @@
 [project]
-name = "cite-paper-mcp"
+name = "pleiades-mcp"
 version = "0.1.0"
 description = "A Model Context Protocol (MCP) server for academic paper search, citation formatting, and impact metrics using Google Scholar and LLM elicitation."
 readme = "README.md"
@@ -26,4 +26,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.scripts]
-cite-paper-mcp = "cite_paper_mcp:main"
+pleiades-mcp = "pleiades_mcp:main"
