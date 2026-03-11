@@ -87,6 +87,9 @@ class LocalAIProvider(LLMProvider):
                 api_key="sk-no-key-required",
                 response_format={"type": "json_object"},
                 temperature=0.1, # Low temperature for precise formatting
+                max_tokens=800,  # CRITICAL: Clamp output tokens to prevent VRAM explosions
+                num_ctx=2048,    # CRITICAL: Force small context window for Ollama/Local backends
+                drop_params=True # Ignore unsupported params depending on the backend
             )
             content = response.choices[0].message.content
             return self._clean_json(content)
@@ -101,7 +104,7 @@ class LocalAIProvider(LLMProvider):
         elif self.provider_type in ["lmstudio", "llamacpp", "openai_compatible"]:
             model = self.model_name or self._fetch_openai_compatible_model()
             return f"openai/{model}"
-        return self.model_name or "default"
+        return self.model_name or "local-model"
 
     def _fetch_ollama_model(self) -> str:
         try:
@@ -122,7 +125,7 @@ class LocalAIProvider(LLMProvider):
             if response.ok:
                 models = response.json().get("data", [])
                 
-                # Check for llama.cpp "loaded" status
+                # FIRST PASS: Check if any model is currently loaded in VRAM
                 for m in models:
                     status = m.get("status")
                     if isinstance(status, dict) and status.get("value") == "loaded":
@@ -130,16 +133,15 @@ class LocalAIProvider(LLMProvider):
                     elif isinstance(status, str) and status == "loaded":
                         return m["id"]
 
-                # If no status found or not llama.cpp, just return the first model id (ignoring "DEFAULT")
-                for m in models:
-                    if m["id"] != "DEFAULT":
-                        return m["id"]
-                
-                if models:
-                    return models[0]["id"]
+                # CRITICAL VRAM FIX: If no model is explicitly loaded, DO NOT blindly
+                # grab models[0]. In LM Studio, that could be a 122B model, which will 
+                # cause a massive JIT-load and instantly crash the machine's VRAM.
+                # Instead, fallback to a generic string. LM Studio will route to whatever
+                # default is loaded in the GUI.
+                return "local-model"
         except Exception as e:
             logger.warning(f"Could not auto-detect model from {self.api_base}: {e}")
-        return "default"
+        return "local-model"
 
     def _clean_json(self, content: str) -> Dict[str, Any]:
         content = content.strip()
@@ -175,6 +177,7 @@ class OpenAIProvider(LLMProvider):
                 api_key=self.api_key,
                 response_format={"type": "json_object"},
                 temperature=0.1,
+                max_tokens=800,  # CRITICAL: Prevent runaway generation costs/VRAM
             )
             content = response.choices[0].message.content
             return self._clean_json(content)
