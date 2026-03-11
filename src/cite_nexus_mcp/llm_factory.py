@@ -121,11 +121,20 @@ class LocalAIProvider(LLMProvider):
             response = requests.get(f"{self.api_base}/models", timeout=5)
             if response.ok:
                 models = response.json().get("data", [])
-                # llama.cpp 'loaded' check
+                
+                # Check for llama.cpp "loaded" status
                 for m in models:
-                    status = m.get("status", {})
+                    status = m.get("status")
                     if isinstance(status, dict) and status.get("value") == "loaded":
                         return m["id"]
+                    elif isinstance(status, str) and status == "loaded":
+                        return m["id"]
+
+                # If no status found or not llama.cpp, just return the first model id (ignoring "DEFAULT")
+                for m in models:
+                    if m["id"] != "DEFAULT":
+                        return m["id"]
+                
                 if models:
                     return models[0]["id"]
         except Exception as e:
