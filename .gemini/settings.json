@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "cite-nexus-mcp": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/akougkas/projects/cite-paper-mcp",
+        "run",
+        "cite-nexus-mcp"
+      ],
+      "env": {
+        "SERP_API_KEY": "8ef2a97918e0cc5be41a8046490caae32947ad80c3b08030ffd82ea1a3fb9efb"
+      }
+    }
+  }
+}

@@ -221,16 +221,37 @@ def generate_basic_bibtex(metadata: Dict[str, Any]) -> str:
 
     year = metadata.get("year", "")
     title = metadata.get("title", "Unknown Title")
-    first_word = title.split()[0] if title else "Unknown"
+    # Clean first word for citation key
+    import re
+    first_word = re.sub(r'[^a-zA-Z0-9]', '', title.split()[0]) if title else "Unknown"
 
     citation_key = f"{first_author}{year}{first_word}".replace(" ", "")
 
-    bibtex = f"@misc{{{citation_key},\n"
+    venue = metadata.get("venue", "").lower()
+    entry_type = "misc"
+    if "conference" in venue or "proceedings" in venue or "ieee" in venue or "acm" in venue:
+        entry_type = "inproceedings"
+    elif "journal" in venue or "arxiv" in venue:
+        entry_type = "article"
+
+    bibtex = f"@{entry_type}{{{citation_key},\n"
     bibtex += f'  title = {{{title}}},\n'
     if authors:
         bibtex += f'  author = {{' + ' and '.join(authors) + '},\n'
     if year:
         bibtex += f'  year = {{{year}}},\n'
+    
+    if venue:
+        if entry_type == "inproceedings":
+            bibtex += f'  booktitle = {{{metadata.get("venue", "")}}},\n'
+        elif entry_type == "article":
+            bibtex += f'  journal = {{{metadata.get("venue", "")}}},\n'
+    
+    if metadata.get("doi"):
+        bibtex += f'  doi = {{{metadata["doi"]}}},\n'
+    if metadata.get("url"):
+        bibtex += f'  url = {{{metadata["url"]}}},\n'
+        
     bibtex += '}'
 
     return bibtex
