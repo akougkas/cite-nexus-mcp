@@ -55,12 +55,42 @@ export SERP_API_KEY="your-serpapi-key"
 
 CiteNexus heavily utilizes MCP Elicitation (having the AI format the data). If your primary MCP client does not yet support native MCP Elicitation, CiteNexus automatically falls back to either a local AI server or a cloud provider. 
 
-**Option A: Local AI (`llama.cpp`) (Recommended)**
-Point CiteNexus to your local model server for completely free, private extraction and enhancement. CiteNexus will automatically detect the loaded model.
+**Option A: Local AI Native Support (Recommended)**
+Point CiteNexus to your local model server for completely free, private extraction and enhancement. CiteNexus will automatically detect the loaded model and gracefully handle the formatting. 
 
-```bash
-export LLAMA_API_BASE="http://localhost:8080/v1"
-```
+We highly recommend the **Qwen2.5** family of models, as they excel at precise JSON generation, metadata extraction, and academic reasoning.
+
+**Hardware / Model Recommendations:**
+| VRAM | Recommended Model | Use Case |
+|---|---|---|
+| **8GB** | `qwen2.5:3b` or `qwen2.5:7b-q4` | Fast, lightweight extraction on entry-level GPUs or MacBooks. |
+| **12GB - 16GB** | `qwen2.5:14b` | Excellent balance of speed and complex academic reasoning. |
+| **24GB+** | `qwen2.5:32b` or `qwen2.5-coder:32b` | Near-GPT-4 level intelligence for advanced `enhance-citation` tasks. |
+
+**Setup Instructions:**
+
+* **[Ollama](https://ollama.com/) (Easiest)**
+  1. Install Ollama and pull your desired model: `ollama run qwen2.5:7b`
+  2. Ollama's API runs on port `11434` by default.
+  3. Set: `export LLAMA_API_BASE="http://localhost:11434/v1"`
+
+* **[LM Studio](https://lmstudio.ai/)**
+  1. Download LM Studio and search for a GGUF of Qwen2.5 (e.g., `Qwen2.5-7B-Instruct-GGUF`).
+  2. Start the Local Server from the left sidebar.
+  3. Note the port (usually `1234`).
+  4. Set: `export LLAMA_API_BASE="http://localhost:1234/v1"`
+
+* **[llama.cpp](https://github.com/ggerganov/llama.cpp) (Linux / WSL2 Power Users)**
+  1. Compile `llama.cpp` with CUDA support for maximum performance:
+     ```bash
+     make LLAMA_CUDA=1
+     ```
+  2. Download your preferred GGUF model from HuggingFace.
+  3. Start the server (example for 24GB VRAM):
+     ```bash
+     ./llama-server -m path/to/Qwen2.5-32B-Instruct-Q4_K_M.gguf --port 8080 --n-gpu-layers 999 --ctx-size 8192
+     ```
+  4. Set: `export LLAMA_API_BASE="http://localhost:8080/v1"`
 
 **Option B: OpenAI-Compatible API**
 
