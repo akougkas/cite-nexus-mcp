@@ -3,6 +3,7 @@
 **CiteNexus 0.2.0 was published on 2026-09-17 to PyPI, GitHub Releases and the official MCP
 Registry.** See the [publication record](publication-0.2.0.md) for URLs, source identity,
 artifact hashes and verification. The owner authorized this release on the same date.
+CiteNexus 0.2.2 followed on the same date; see its [publication record](publication-0.2.2.md).
 `release/product.json` records that decision. WTF-P 0.7.0 is being handled separately by its
 team. Marketplace submissions, advertisements and native client qualification remain
 separate launch work. The generation scripts only write local metadata; CI does not publish
