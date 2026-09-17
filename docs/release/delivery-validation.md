@@ -31,3 +31,25 @@ proved by static validation or a local installation; those happen during the app
 The [runbook](release-0.2.0.md) separates these remaining account and public-release actions
 from completed local preparation, and separates optional distribution channels from the core
 Python package release.
+
+## Release qualification — 2026-09-17
+
+The owner authorized publication after preparation. The release branch adds pinned public
+installation instructions and preserves the wheel/sdist artifacts from installed-package CI.
+
+- [Release PR #1](https://github.com/akougkas/cite-nexus-mcp/pull/1).
+- [Hosted CI for release source 9bad188](https://github.com/akougkas/cite-nexus-mcp/actions/runs/35218652403):
+  all seven jobs passed. The 130-test suite passed on Python 3.11, 3.12, 3.13 and 3.14.
+  Isolated wheel installation, actual MCP startup and companion diagnostics passed on Linux,
+  macOS and Windows (Python 3.13). These are package/transport checks, not native client or
+  full WTF-P workflow certification on each OS.
+- Final local suite: 130 passed on Python 3.14. Ruff, formatting, mypy, generated-file checks,
+  archive inspection and an isolated installed-wheel test passed.
+- Explicit live smoke: Crossref, DataCite and arXiv returned results. Europe PMC timed out;
+  anonymous Semantic Scholar returned HTTP 429. Those provider outcomes are not hidden.
+- This first package publication uses the existing authorized operator credential, with the
+  exact Linux CI artifacts checked again before upload. No credential is stored in the repo
+  or in GitHub secrets. The optional manual OIDC workflow still requires PyPI account setup.
+
+Publication and public-install verification are recorded with the GitHub release. Historical
+preparation results above remain dated records, not claims that publication was still blocked.

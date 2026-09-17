@@ -1,7 +1,8 @@
 # CiteNexus 0.2.0 release runbook
 
-Prepared 2026-09-17. The release has not been executed. These are ordered operator steps;
-commands in the publication section change public state and are for a later approved launch.
+Prepared 2026-09-17; publication authorized by the owner later that day. This is the operator
+runbook. See the [delivery validation](delivery-validation.md) and the versioned GitHub release
+for execution evidence. The original observed-state table below is a pre-release snapshot.
 
 ## Release order and scope
 
@@ -146,6 +147,19 @@ checks the annotated tag, finalized release state and ancestry from `origin/mast
 tests, builds both distributions, and tests a fresh wheel installation. A separate job
 downloads those same artifacts and publishes with OIDC and attestations. It does not publish
 on a normal push, tag push or GitHub release event.
+
+### Existing-credential publication route
+
+For the first release, an authorized operator may publish the exact artifacts from the
+successful `installed-package (ubuntu-latest)` CI job using an existing `UV_PUBLISH_TOKEN`.
+Download `distributions-ubuntu-latest` from the successful run for the release commit into
+an empty directory. Run `scripts/check_distribution.py --directory <directory> --install`,
+verify the annotated tag with `release_gate.py --tag v0.2.0`, and publish only that wheel and
+sdist to `https://upload.pypi.org/legacy/`. Do not rebuild after selecting the CI artifacts.
+Keep the credential in the environment; do not put it in command arguments, logs or the repo.
+Some uv versions echo environment defaults in `--help`; unset publishing credentials before
+requesting help. This route does not produce a Trusted Publisher attestation. Configure the
+pending publisher above for future OIDC releases.
 
 ## 5. Verify the public package and create the GitHub release
 

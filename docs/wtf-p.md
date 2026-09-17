@@ -71,7 +71,9 @@ set is truncated. Per-call startup means the metadata cache is not reused betwee
 WTF-P's bounded dispatcher is bound on Clio and Claude Code. Its other five host projections
 retain their existing unavailable-action behavior. Shipping the helper in every generated
 envelope does not certify shell execution or native MCP lifecycle on every host. Process and
-integration tests currently qualify Linux; Windows/macOS companion setup still needs testing.
+integration tests qualify the paired WTF-P workflow on Linux. Installed CiteNexus wheel and
+companion diagnostics also pass on Windows and macOS; these checks do not qualify a native
+client installation or the complete WTF-P workflow on those systems.
 
 For all 11 CiteNexus tools, configure CiteNexus directly in your MCP client using the README,
 or test the [prepared companion plugin](../packaging/cite-nexus/README.md) in a disposable
