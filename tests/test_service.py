@@ -395,3 +395,16 @@ async def test_datacite_record_with_a_different_doi_is_rejected_for_an_arxiv_ide
         with pytest.raises(ProviderError) as failed:
             await service.resolve("arXiv:1712.05889")
     assert "datacite [identifier_mismatch]" in failed.value.issue.message
+
+
+async def test_compact_search_omits_field_sources_and_full_keeps_them(records):
+    def handler(_):
+        return httpx.Response(200, json={"message": {"items": [records["crossref"]]}})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        service = ResearchService(Settings(), HTTP(Settings(), client))
+        compact = await service.search("research", ["crossref"])
+        full = await service.search("research", ["crossref"], detail="full")
+    assert compact.papers[0].field_sources == {}
+    assert compact.papers[0].sources[0].provider == "crossref"
+    assert full.papers[0].field_sources["title"] == ["crossref"]

@@ -225,6 +225,7 @@ class ResearchService:
         open_access_only: bool = False,
         include_abstract: bool = False,
         cursor: str | None = None,
+        detail: Literal["compact", "full"] = "compact",
     ) -> SearchResult:
         query = query.strip()
         if not query or len(query) > 2000:
@@ -281,6 +282,10 @@ class ResearchService:
             for paper in papers:
                 paper.abstract = None
                 paper.field_sources.pop("abstract", None)
+        if detail == "compact":
+            # Per-field provenance is a fifth of a search page; sources still name every provider.
+            for paper in papers:
+                paper.field_sources = {}
         result_warnings = [
             "Each provider contributes up to limit records. Results use provider-rank interleaving and conservative deduplication; this is not an exhaustive systematic review."
         ]

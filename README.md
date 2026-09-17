@@ -158,6 +158,8 @@ select only `europe_pmc`, keep the same query and limit, and leave `offset` at z
 Offsets must be multiples of the limit, up to 10,000. `year_from`, `year_to` and
 `open_access_only` filter the fetched page; unknown values are excluded. Abstracts are omitted
 from search results by default; set `include_abstract: true` or resolve a record to retrieve them.
+Search records are compact by default: `field_sources` is empty while `sources` still names every
+provider. Set `detail: "full"` or resolve a record for per-field provenance.
 Provider search languages differ: explicit advanced queries use that provider's syntax.
 
 Supported identifiers include `10.1038/nature14539`, `arxiv:1706.03762`, `PMID:26017442`,

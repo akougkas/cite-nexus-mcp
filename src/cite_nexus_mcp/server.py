@@ -16,8 +16,8 @@ from mcp.server.mcpserver import Context
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.mcpserver.tools import Tool
 from mcp.server.mcpserver.utilities.func_metadata import ArgModelBase
-from mcp.types import ToolAnnotations
-from pydantic import ConfigDict, Field, model_validator
+from mcp.types import CallToolResult, TextContent, ToolAnnotations
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from . import __version__
 from .citations import CitationFormat, enhance
@@ -102,12 +102,22 @@ def _identifier(identifier: str | None, scholar_id: str | None) -> str:
 
 
 def _reported(fn: Callable[..., Any], is_async: bool) -> Callable[..., Any]:
-    """Pass anticipated service failures to the model as readable tool errors.
+    """Pass anticipated service failures to the model as readable tool errors, and results as compact JSON.
 
     The SDK replaces any exception other than ToolError with "Error executing tool <name>", which
     hides the difference between a missing record, an unavailable source and invalid input.
     Service messages and provider issues are written for clients and never carry upstream bodies.
     """
+
+    def compact(result: Any) -> Any:
+        # The SDK renders structured results as indented JSON text, which adds about 40% to a
+        # search page. Send the same JSON without indentation; structured content is unchanged.
+        if not isinstance(result, BaseModel):
+            return result
+        return CallToolResult(
+            content=[TextContent(type="text", text=result.model_dump_json(by_alias=True))],
+            structured_content=result.model_dump(mode="json", by_alias=True),
+        )
 
     def translate(exc: Exception) -> ToolError:
         if isinstance(exc, ProviderError):
@@ -121,7 +131,7 @@ def _reported(fn: Callable[..., Any], is_async: bool) -> Callable[..., Any]:
         @functools.wraps(fn)
         async def call(**kwargs: Any) -> Any:
             try:
-                return await fn(**kwargs)
+                return compact(await fn(**kwargs))
             except (ProviderError, ValueError) as exc:
                 raise translate(exc) from exc
 
@@ -130,7 +140,7 @@ def _reported(fn: Callable[..., Any], is_async: bool) -> Callable[..., Any]:
     @functools.wraps(fn)
     def call_sync(**kwargs: Any) -> Any:
         try:
-            return fn(**kwargs)
+            return compact(fn(**kwargs))
         except (ProviderError, ValueError) as exc:
             raise translate(exc) from exc
 
@@ -289,8 +299,9 @@ def create_server(
         open_access_only: bool = False,
         include_abstract: bool = False,
         cursor: Annotated[str, Field(min_length=1, max_length=4000)] | None = None,
+        detail: Literal["compact", "full"] = "compact",
     ) -> SearchResult:
-        """Search scholarly sources concurrently (defaults: Crossref, DataCite, Europe PMC). Limit is per provider. Page one source at a time using next_offsets, or next_cursors as cursor for Europe PMC, with the same query and limit. Filters apply to fetched pages. Partial failures remain visible."""
+        """Search scholarly sources concurrently (defaults: Crossref, DataCite, Europe PMC). Limit is per provider. Page one source at a time using next_offsets, or next_cursors as cursor for Europe PMC, with the same query and limit. Filters apply to fetched pages. Partial failures remain visible. detail=compact omits per-field field_sources; use full or resolve-paper for them."""
         return await _service(ctx).search(
             query,
             providers,
@@ -301,6 +312,7 @@ def create_server(
             open_access_only,
             include_abstract,
             cursor,
+            detail,
         )
 
     @app.tool(name="verify-citation", annotations=READ)

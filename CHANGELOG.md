@@ -12,6 +12,12 @@
   default. The HTTP client now enables post-handshake authentication, as Python's `http.client` does.
 - Resolve arXiv identifiers through their DataCite DOI (`10.48550/arXiv.<id>`) when arXiv does not
   answer. The record keeps both identifiers and the arXiv issue stays visible as a warning.
+- **Default change:** `search-papers` accepts `detail` (`compact` or `full`, default `compact`).
+  Compact records return an empty `field_sources`; `sources` still names each provider. Set
+  `detail: "full"` for the 0.2.0 record. A default page for three providers drops from 45.4 KB to
+  36.7 KB of structured content. The WTF-P companion requests `full`.
+- Send tool results as unindented JSON text. The text block previously repeated structured content
+  with two-space indentation, 75.0 KB for the same default page; it is now 36.7 KB.
 
 ## 0.2.0 — 2026-09-17
 
