@@ -1,6 +1,6 @@
 {
   "name": "cite-nexus",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "CiteNexus connects research assistants to free scholarly metadata and optional academic APIs. Discover papers, resolve identifiers, check references, and export BibTeX, RIS or CSL-JSON with source provenance. No model or API key is required for default searches.",
   "author": {
     "name": "Anthony Kougkas",

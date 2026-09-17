@@ -1,6 +1,9 @@
 # Changelog
 
-## 0.2.1 — 2026-09-17
+## 0.2.2 — 2026-09-17
+
+0.2.1 was merged but never tagged or published; its changes are folded into 0.2.2, the first
+release after 0.2.0.
 
 - Report invalid input, unknown providers and provider outcomes as readable tool errors. MCP SDK 2.2
   previously reduced them to "Error executing tool <name>".

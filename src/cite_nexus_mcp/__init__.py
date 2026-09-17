@@ -1,6 +1,6 @@
 """CiteNexus: scholarly evidence for research assistants."""
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 
 def main() -> None:

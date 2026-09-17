@@ -1,6 +1,6 @@
 [project]
 name = "cite-nexus-mcp"
-version = "0.2.1"
+version = "0.2.2"
 description = "Evidence-backed scholarly discovery and citation tools for MCP, from open metadata to institutional databases."
 readme = "README.md"
 requires-python = ">=3.11"

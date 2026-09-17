@@ -8,7 +8,7 @@ it is not a search shell. Use `--list-providers` for a local configuration check
 
 ## The client starts an old release
 
-The prepared code is 0.2.1. Run `uv run cite-nexus-mcp --version` inside this checkout.
+The prepared code is 0.2.2. Run `uv run cite-nexus-mcp --version` inside this checkout.
 Use the README's absolute `uv --directory ... run --locked` configuration until release.
 Avoid unpinned `uvx cite-nexus-mcp` when trying unreleased features. Restart the client's
 server connection after changing its command or upgrading the installed package.

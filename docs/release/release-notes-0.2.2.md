@@ -1,9 +1,9 @@
-# CiteNexus 0.2.1
+# CiteNexus 0.2.2
 
-Release date: 2026-09-17. Source: annotated tag `v0.2.1`.
+Release date: 2026-09-17. Source: annotated tag `v0.2.2`.
 
-This patch fixes three defects found in a live MCP client session. Tool names,
-search defaults and record shapes are unchanged from 0.2.0.
+This patch fixes defects found in a live MCP client session. 0.2.1 was merged but never tagged or
+published; its fixes are included here, so 0.2.2 is the first release after 0.2.0.
 
 ## Fixes
 
@@ -23,16 +23,24 @@ search defaults and record shapes are unchanged from 0.2.0.
   now enables post-handshake authentication, as Python's `http.client` does. As a safety net,
   arXiv identifier lookups fall back to the paper's DataCite DOI `10.48550/arXiv.<id>` when arXiv
   does not answer.
+- **Smaller search pages.** A default three-provider page of 30 records carried 45.4 KB of
+  structured content and a 75.0 KB indented text copy. Both blocks are now 36.7 KB.
 
-Clients that sent extra, ignored arguments will now receive an error and must remove them.
+## Behavior changes
+
+- `search-papers` accepts `detail` with `compact` (default) or `full`. Compact records return an
+  empty `field_sources`; `sources` still names every provider. Set `detail: "full"` for the 0.2.0
+  record shape, or resolve a record.
+- Tool text content is unindented JSON. Structured content is unchanged.
+- Clients that sent extra, ignored arguments will now receive an error and must remove them.
 
 ## Install
 
 ```bash
-uvx --from cite-nexus-mcp==0.2.1 cite-nexus-mcp --no-env-file
-uvx --from cite-nexus-mcp==0.2.1 cite-nexus-wtfp --check
+uvx --from cite-nexus-mcp==0.2.2 cite-nexus-mcp --no-env-file
+uvx --from cite-nexus-mcp==0.2.2 cite-nexus-wtfp --check
 ```
 
-See the [changelog](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.1/CHANGELOG.md) and the
-[0.2.0 release notes](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.1/docs/release/release-notes-0.2.0.md)
+See the [changelog](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/CHANGELOG.md) and the
+[0.2.0 release notes](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/release/release-notes-0.2.0.md)
 for the full feature set.
