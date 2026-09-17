@@ -382,10 +382,17 @@ class ResearchService:
                 break
         if result is None:
             codes = {i.code for i in issues}
-            code = "not_found" if codes and codes <= {"not_found"} else "unavailable"
+            if codes and codes <= {"not_found"}:
+                raise ProviderError(
+                    "resolve",
+                    "not_found",
+                    f"{identifier.canonical} was not found by providers: "
+                    + ", ".join(i.provider for i in issues)
+                    + ". Check the identifier, or use search-papers with the title to find candidates.",
+                )
             raise ProviderError(
                 "resolve",
-                code,
+                "unavailable",
                 "; ".join(f"{i.provider} [{i.code}]: {i.message}" for i in issues)
                 or "No provider can resolve this identifier.",
             )

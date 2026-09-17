@@ -1,14 +1,14 @@
-# Installing CiteNexus 0.2.0
+# Installing CiteNexus 0.2.1
 
 This is installation guidance, not permission to change a user's client configuration.
 Use the user's chosen scope and the client's supported configuration mechanism.
-Use the pinned `cite-nexus-mcp==0.2.0` package from PyPI.
+Use the pinned `cite-nexus-mcp==0.2.1` package from PyPI.
 
 1. Check Python 3.11+ and uv are available.
-2. Run `uvx --from cite-nexus-mcp==0.2.0 cite-nexus-mcp --version`.
-3. Run `uvx --from cite-nexus-mcp==0.2.0 cite-nexus-mcp --no-env-file --list-providers`.
+2. Run `uvx --from cite-nexus-mcp==0.2.1 cite-nexus-mcp --version`.
+3. Run `uvx --from cite-nexus-mcp==0.2.1 cite-nexus-mcp --no-env-file --list-providers`.
 4. Configure an MCP stdio connection with executable `uvx` and separate arguments
-   `--from`, `cite-nexus-mcp==0.2.0`, `cite-nexus-mcp`, `--no-env-file`.
+   `--from`, `cite-nexus-mcp==0.2.1`, `cite-nexus-mcp`, `--no-env-file`.
    Use an absolute uvx executable path if the client has a restricted PATH.
 5. Restart that connection, list tools, and call `list-providers`. Expect 11 tools and nine
    provider entries. No API key is required and no provider call is needed for this check.

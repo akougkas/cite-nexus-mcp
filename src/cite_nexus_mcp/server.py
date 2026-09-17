@@ -1,24 +1,28 @@
 """MCP 2026-07-28 server, with SDK-managed compatibility for earlier clients."""
 
 import argparse
+import functools
 import json
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Annotated, Literal, cast
+from typing import Annotated, Any, Literal, cast
 
 from dotenv import load_dotenv
 from mcp.server import MCPServer
 from mcp.server.caching import CacheHint
 from mcp.server.mcpserver import Context
+from mcp.server.mcpserver.exceptions import ToolError
+from mcp.server.mcpserver.tools import Tool
+from mcp.server.mcpserver.utilities.func_metadata import ArgModelBase
 from mcp.types import ToolAnnotations
-from pydantic import Field
+from pydantic import ConfigDict, Field, model_validator
 
 from . import __version__
 from .citations import CitationFormat, enhance
 from .config import Settings
-from .http import HTTP
+from .http import HTTP, ProviderError
 from .models import (
     AccessResult,
     BatchResult,
@@ -95,6 +99,72 @@ def _identifier(identifier: str | None, scholar_id: str | None) -> str:
     if bool(identifier) == bool(scholar_id):
         raise ValueError("Provide exactly one of identifier or the legacy scholar_id argument.")
     return identifier or f"scholar:{scholar_id}"
+
+
+def _reported(fn: Callable[..., Any], is_async: bool) -> Callable[..., Any]:
+    """Pass anticipated service failures to the model as readable tool errors.
+
+    The SDK replaces any exception other than ToolError with "Error executing tool <name>", which
+    hides the difference between a missing record, an unavailable source and invalid input.
+    Service messages and provider issues are written for clients and never carry upstream bodies.
+    """
+
+    def translate(exc: Exception) -> ToolError:
+        if isinstance(exc, ProviderError):
+            issue = exc.issue
+            retry = f" Retry after {issue.retry_after:g} seconds." if issue.retry_after else ""
+            return ToolError(f"{issue.code}: {issue.message}{retry}")
+        return ToolError(str(exc))
+
+    if is_async:
+
+        @functools.wraps(fn)
+        async def call(**kwargs: Any) -> Any:
+            try:
+                return await fn(**kwargs)
+            except (ProviderError, ValueError) as exc:
+                raise translate(exc) from exc
+
+        return call
+
+    @functools.wraps(fn)
+    def call_sync(**kwargs: Any) -> Any:
+        try:
+            return fn(**kwargs)
+        except (ProviderError, ValueError) as exc:
+            raise translate(exc) from exc
+
+    return call_sync
+
+
+def _strict(tool: Tool) -> None:
+    """Reject arguments the tool does not declare, in its published schema and on the server.
+
+    Silently ignoring a misnamed argument such as max_results returns a default-sized page that
+    the caller did not ask for. The SDK offers no option for this, so the generated argument
+    model is replaced by a subclass that forbids extra keys and names the accepted ones.
+    """
+    base = tool.fn_metadata.arg_model
+    accepted = [field.alias or name for name, field in base.model_fields.items()]
+
+    class Strict(base):  # type: ignore[misc,valid-type]
+        model_config = ConfigDict(extra="forbid", title=base.__name__)
+
+        @model_validator(mode="before")
+        @classmethod
+        def reject_unknown(cls, data: Any) -> Any:
+            if isinstance(data, dict):
+                unknown = sorted(set(data) - set(accepted))
+                if unknown:
+                    raise ValueError(
+                        f"Unknown argument(s): {', '.join(unknown)}. "
+                        f"{tool.name} accepts: {', '.join(accepted)}."
+                    )
+            return data
+
+    strict: type[ArgModelBase] = Strict
+    tool.fn_metadata.arg_model = strict
+    tool.parameters = strict.model_json_schema(by_alias=True)
 
 
 def create_server(
@@ -263,6 +333,10 @@ def create_server(
     def workflows_resource() -> str:
         """Discovery, bibliography auditing, evidence tables and open-access workflows."""
         return WORKFLOWS
+
+    for tool in app._tool_manager.list_tools():
+        _strict(tool)
+        tool.fn = _reported(tool.fn, tool.is_async)
 
     @app.prompt(name="literature-review")
     def literature_review(topic: str, scope: str = "exploratory") -> str:

@@ -3,7 +3,7 @@
 This MCP-only plugin exposes CiteNexus alongside a writing plugin such as WTF-P.
 It contains an Agent Plugins 1.0 manifest and Codex/Claude compatibility manifests.
 The running host must already be able to find `cite-nexus-mcp` on its PATH. Install
-`cite-nexus-mcp==0.2.0` with `uv tool install cite-nexus-mcp==0.2.0` first; no package
+`cite-nexus-mcp==0.2.1` with `uv tool install cite-nexus-mcp==0.2.1` first; no package
 installation occurs during plugin loading. This plugin directory remains a local integration
 for client qualification, independently of the Python package release.
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 — 2026-09-17
+
+- Report invalid input, unknown providers and provider outcomes as readable tool errors. MCP SDK 2.2
+  previously reduced them to "Error executing tool <name>".
+- Name the providers that could not find an identifier and suggest search-papers for titles.
+- Reject undeclared tool arguments in the input schema (`additionalProperties: false`) and on the
+  server, listing the accepted names, so a misnamed `max_results` no longer returns a default page.
+
 ## 0.2.0 — 2026-09-17
 
 CiteNexus becomes a provider-independent scholarly metadata service with public API defaults.

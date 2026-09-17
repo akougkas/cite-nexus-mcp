@@ -141,3 +141,49 @@ def test_cli_provider_listing_never_prints_secret(tmp_path):
     assert "do-not-print-this-secret" not in result.stdout + result.stderr
     data = json.loads(result.stdout)
     assert next(p for p in data if p["id"] == "serpapi")["available"]
+
+
+async def test_unknown_identifier_and_invalid_input_are_readable_tool_errors():
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(lambda _: httpx.Response(404))
+    ) as http_client:
+        settings = Settings(retries=0)
+        service = ResearchService(settings, HTTP(settings, http_client))
+        async with Client(create_server(service=service), read_timeout_seconds=5) as client:
+            for name, arguments in [
+                ("get-citation", {"identifier": "10.1109/HPDC.2019.00023", "format": "bibtex"}),
+                ("resolve-paper", {"identifier": "10.1109/HPDC.2019.00023"}),
+            ]:
+                failed = await client.call_tool(name, arguments)
+                assert failed.is_error, name
+                text = failed.content[0].text
+                assert "not_found" in text, text
+                assert "crossref, datacite, europe_pmc" in text, text
+                assert "search-papers" in text, text
+            for name, arguments, expected in [
+                ("resolve-paper", {"identifier": "not an id"}, "Use a DOI"),
+                ("search-papers", {"query": "q", "providers": ["typo"]}, "Unknown provider"),
+                ("enhance-citation", {"bibtex": "invalid"}, "BibTeX"),
+            ]:
+                failed = await client.call_tool(name, arguments)
+                assert failed.is_error, name
+                assert expected in failed.content[0].text, failed.content[0].text
+
+
+async def test_unknown_arguments_are_rejected_before_any_request():
+    def handler(_):
+        raise AssertionError("No request should be sent")
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+        service = ResearchService(Settings(), HTTP(Settings(), http_client))
+        async with Client(create_server(service=service), read_timeout_seconds=5) as client:
+            tools = (await client.list_tools()).tools
+            for tool in tools:
+                assert tool.input_schema.get("additionalProperties") is False, tool.name
+            search = next(t for t in tools if t.name == "search-papers")
+            with pytest.raises(jsonschema.ValidationError):
+                jsonschema.validate({"query": "q", "max_results": 3}, search.input_schema)
+            failed = await client.call_tool("search-papers", {"query": "q", "max_results": 3})
+            assert failed.is_error
+            text = failed.content[0].text
+            assert "max_results" in text and "limit" in text, text
