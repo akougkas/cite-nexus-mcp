@@ -1,0 +1,71 @@
+{
+  "crossref": {
+    "DOI": "10.1234/EXAMPLE", "title": ["Reliable Research & Data"],
+    "author": [{"given": "Ada", "family": "Lovelace", "ORCID": "https://orcid.org/0000-0001-2345-6789"}],
+    "published": {"date-parts": [[2024, 3, 12]]}, "type": "journal-article",
+    "container-title": ["Research Journal"], "publisher": "Example Press",
+    "volume": "12", "issue": "3", "page": "10-19",
+    "abstract": "<jats:p>Measured <i>evidence</i>.</jats:p>",
+    "is-referenced-by-count": 1250, "URL": "https://doi.org/10.1234/example"
+  },
+  "datacite": {
+    "id": "10.1234/example", "type": "dois",
+    "attributes": {
+      "doi": "10.1234/example", "titles": [{"title": "Reliable Research & Data"}],
+      "creators": [{"name": "Lovelace, Ada", "givenName": "Ada", "familyName": "Lovelace"}],
+      "publicationYear": 2024, "types": {"resourceTypeGeneral": "Dataset"},
+      "publisher": {"name": "Example Repository"},
+      "descriptions": [{"descriptionType": "Abstract", "description": "Evidence dataset."}],
+      "url": "https://example.org/dataset"
+    }
+  },
+  "europe_pmc": {
+    "id": "12345678", "source": "MED", "pmid": "12345678", "pmcid": "PMC12345",
+    "doi": "10.1234/example", "title": "Reliable Research & Data", "pubYear": "2024",
+    "firstPublicationDate": "2024-03-12", "citedByCount": 842, "isOpenAccess": "Y",
+    "authorList": {"author": [{"fullName": "Lovelace A", "firstName": "Ada", "lastName": "Lovelace"}]},
+    "journalInfo": {"journal": {"title": "Research Journal"}, "volume": "12", "issue": "3"},
+    "pageInfo": "10-19", "abstractText": "<p>Measured evidence.</p>"
+  },
+  "semantic_scholar": {
+    "paperId": "0123456789abcdef0123456789abcdef01234567",
+    "externalIds": {"DOI": "10.1234/example", "PubMed": "12345678"},
+    "title": "Reliable Research & Data", "authors": [{"name": "Ada Lovelace"}], "year": 2024,
+    "publicationDate": "2024-03-12", "publicationTypes": ["JournalArticle"],
+    "journal": {"name": "Research Journal", "volume": "12", "pages": "10-19"},
+    "abstract": "Measured evidence.", "citationCount": 910,
+    "url": "https://www.semanticscholar.org/paper/0123456789abcdef0123456789abcdef01234567",
+    "isOpenAccess": true, "openAccessPdf": {"url": "https://example.org/paper.pdf", "license": "CC-BY"}
+  },
+  "openalex": {
+    "id": "https://openalex.org/W12345678", "doi": "https://doi.org/10.1234/example",
+    "ids": {"pmid": "https://pubmed.ncbi.nlm.nih.gov/12345678"},
+    "display_name": "Reliable Research & Data", "publication_year": 2024, "publication_date": "2024-03-12",
+    "type": "article", "authorships": [{"author": {"display_name": "Ada Lovelace"}}],
+    "primary_location": {"landing_page_url": "https://doi.org/10.1234/example", "source": {"display_name": "Research Journal"}},
+    "biblio": {"volume": "12", "issue": "3", "first_page": "10", "last_page": "19"},
+    "cited_by_count": 1020, "is_retracted": false,
+    "abstract_inverted_index": {"Measured": [0], "evidence.": [1]},
+    "locations": [{"is_oa": true, "pdf_url": "https://example.org/paper.pdf", "version": "publishedVersion", "license": "cc-by"}]
+  },
+  "serpapi": {
+    "result_id": "abc123", "title": "Reliable Research & Data", "link": "https://example.org/paper",
+    "publication_info": {"summary": "A Lovelace - Research Journal, 2024 - example.org", "authors": [{"name": "Ada Lovelace"}]},
+    "snippet": "Truncated search summary; not an abstract.",
+    "inline_links": {"cited_by": {"total": 2300, "cites_id": "123456789"}, "versions": {"cluster_id": "123456789"}}
+  },
+  "scopus": {
+    "dc:identifier": "SCOPUS_ID:987654321", "dc:title": "Reliable Research & Data",
+    "dc:creator": "Lovelace, A.", "prism:doi": "10.1234/example", "prism:coverDate": "2024-03-12",
+    "prism:publicationName": "Research Journal", "prism:volume": "12", "prism:issueIdentifier": "3",
+    "prism:aggregationType": "Journal", "prism:pageRange": "10-19", "citedby-count": "1200",
+    "link": [{"@ref": "scopus", "@href": "https://www.scopus.com/record/display.uri?eid=2-s2.0-987654321"}]
+  },
+  "wos": {
+    "uid": "WOS:000123456789", "title": "Reliable Research & Data",
+    "source": {"sourceTitle": "Research Journal", "publishYear": 2024, "volume": "12", "issue": "3", "pages": {"range": "10-19"}},
+    "names": {"authors": [{"displayName": "Lovelace, Ada"}]},
+    "identifiers": {"doi": "10.1234/example", "pmid": "12345678"},
+    "citations": [{"db": "WOS", "count": 1180}], "links": {"record": "https://www.webofscience.com/wos/woscc/full-record/WOS:000123456789"}
+  }
+}

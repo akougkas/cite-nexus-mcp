@@ -1,0 +1,1109 @@
+{
+  "schema_version": "cite-nexus.marketplaces/v1",
+  "researched_at": "2026-09-16",
+  "release_authorized": false,
+  "scope": "Broad discovery inventory; not an exhaustive or permanent list of every MCP marketplace. Entries distinguish verified routes, related distribution surfaces, redirects and unresolved leads. HTTP 200 alone is not submission eligibility.",
+  "entries": [
+    {
+      "id": "official-registry",
+      "name": "Official MCP Registry",
+      "kind": "registry",
+      "priority": "P0",
+      "discovery_url": "https://modelcontextprotocol.io/registry/quickstart",
+      "submission_url": "https://modelcontextprotocol.io/registry/quickstart",
+      "route": "mcp-publisher metadata registration after PyPI publication and GitHub namespace authentication",
+      "next_step": "Local server.json and README marker prepared; package publication and namespace ownership verification intentionally pending.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://modelcontextprotocol.io/registry/quickstart"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://modelcontextprotocol.io/registry/quickstart"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "official-registry",
+        "url": "https://modelcontextprotocol.io/registry/quickstart",
+        "status": 200,
+        "final_url": "https://modelcontextprotocol.io/registry/quickstart",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "github-mcp",
+      "name": "GitHub MCP Registry",
+      "kind": "client-directory",
+      "priority": "P1",
+      "discovery_url": "https://github.com/mcp",
+      "submission_url": null,
+      "route": "Curated discovery directory; confirm current ingestion or submission route with GitHub documentation",
+      "next_step": "Do not promise automatic inclusion after official-registry publication; verify listing criteria at launch.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://github.com/mcp"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://github.com/mcp"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "github-mcp",
+        "url": "https://github.com/mcp",
+        "status": 200,
+        "final_url": "https://github.com/mcp",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "vscode-gallery",
+      "name": "VS Code MCP gallery",
+      "kind": "syndicated-directory",
+      "priority": "P2",
+      "discovery_url": "https://code.visualstudio.com/mcp",
+      "submission_url": null,
+      "route": "The former VS Code gallery URL redirects to GitHub MCP Registry",
+      "next_step": "Track the GitHub listing once; no duplicate submission.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://code.visualstudio.com/mcp"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://github.com/mcp?utm_source=vscode-website&utm_campaign=mcp-registry-server-launch-2025"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "vscode-gallery",
+        "url": "https://code.visualstudio.com/mcp",
+        "status": 200,
+        "final_url": "https://github.com/mcp?utm_source=vscode-website&utm_campaign=mcp-registry-server-launch-2025",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "smithery",
+      "name": "Smithery",
+      "kind": "registry-and-distribution",
+      "priority": "P1",
+      "discovery_url": "https://smithery.ai/docs/build/publish",
+      "submission_url": "https://smithery.ai/docs/build/publish",
+      "route": "Publish a remote MCP URL or a local MCPB artifact through Smithery's current publisher",
+      "next_step": "Local server needs an MCPB build and install qualification; hosted route needs authentication and deployment work. Neither artifact is claimed ready.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://smithery.ai/docs/build/publish"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://smithery.ai/docs/build/publish"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "smithery",
+        "url": "https://smithery.ai/docs/build/publish",
+        "status": 200,
+        "final_url": "https://smithery.ai/docs/build/publish",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "glama",
+      "name": "Glama",
+      "kind": "directory",
+      "priority": "P1",
+      "discovery_url": "https://glama.ai/mcp/servers",
+      "submission_url": null,
+      "route": "Inspect repository discovery and authenticated listing/claim controls",
+      "next_step": "Directory verified; exact self-service submission route still needs browser/account confirmation. Guessed /add and /config URLs are author-filter redirects.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://glama.ai/mcp/servers"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://glama.ai/mcp/servers"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "glama",
+        "url": "https://glama.ai/mcp/servers",
+        "status": 200,
+        "final_url": "https://glama.ai/mcp/servers",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "pulsemcp",
+      "name": "PulseMCP",
+      "kind": "directory",
+      "priority": "P1",
+      "discovery_url": "https://www.pulsemcp.com/submit",
+      "submission_url": "https://www.pulsemcp.com/submit",
+      "route": "Submit server metadata through the public form",
+      "next_step": "Use launch-kit copy and repository URL after release; review form and disclosure fields.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://www.pulsemcp.com/submit"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://www.pulsemcp.com/submit"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "pulsemcp",
+        "url": "https://www.pulsemcp.com/submit",
+        "status": 200,
+        "final_url": "https://www.pulsemcp.com/submit",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "cline",
+      "name": "Cline MCP Marketplace",
+      "kind": "client-marketplace",
+      "priority": "P1",
+      "discovery_url": "https://raw.githubusercontent.com/cline/mcp-marketplace/main/README.md",
+      "submission_url": "https://github.com/cline/mcp-marketplace/issues/new?template=mcp-server-submission.yml",
+      "route": "Open the repository's MCP server submission issue",
+      "next_step": "400x400 PNG and llms-install.md prepared; the required real Cline README-guided installation check remains pending.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/cline/mcp-marketplace/main/README.md"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/cline/mcp-marketplace/main/README.md"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "cline",
+        "url": "https://github.com/cline/mcp-marketplace/issues/new?template=mcp-server-submission.yml",
+        "status": 200,
+        "final_url": "https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2Fcline%2Fmcp-marketplace%2Fissues%2Fnew%3Ftemplate%3Dmcp-server-submission.yml",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "docker",
+      "name": "Docker MCP Catalog and Toolkit",
+      "kind": "registry-and-distribution",
+      "priority": "P1",
+      "discovery_url": "https://raw.githubusercontent.com/docker/mcp-registry/main/CONTRIBUTING.md",
+      "submission_url": "https://github.com/docker/mcp-registry/blob/main/CONTRIBUTING.md",
+      "route": "Generate a servers/cite-nexus/server.yaml entry and submit a reviewed PR",
+      "next_step": "Dockerfile exists; build and toolkit integration test, exact source commit and generated catalog metadata remain pending. Docker daemon was unavailable.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/docker/mcp-registry/main/CONTRIBUTING.md"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/docker/mcp-registry/main/CONTRIBUTING.md"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "docker",
+        "url": "https://github.com/docker/mcp-registry/blob/main/CONTRIBUTING.md",
+        "status": 200,
+        "final_url": "https://github.com/docker/mcp-registry/blob/main/CONTRIBUTING.md",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-so",
+      "name": "MCP.so",
+      "kind": "directory",
+      "priority": "P1",
+      "discovery_url": "https://mcp.so",
+      "submission_url": "https://mcp.so/submit",
+      "route": "Public Submit form linked from the marketplace",
+      "next_step": "Prepare standard short/long copy and icon; check account and current form requirements at launch.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcp.so"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://mcp.so"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "mcp-so",
+        "url": "https://mcp.so/submit",
+        "status": 200,
+        "final_url": "https://mcp.so/submit?type=server",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcpservers-org",
+      "name": "MCPServers.org",
+      "kind": "directory",
+      "priority": "P1",
+      "discovery_url": "https://mcpservers.org",
+      "submission_url": "https://mcpservers.org/submit",
+      "route": "Public submission form",
+      "next_step": "This is also the submission path recommended by wong2's curated repository; submit once.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcpservers.org"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://mcpservers.org"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "mcpservers-org",
+        "url": "https://mcpservers.org/submit",
+        "status": 200,
+        "final_url": "https://mcpservers.org/submit",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcpmarket",
+      "name": "MCP Market",
+      "kind": "directory",
+      "priority": "P2",
+      "discovery_url": "https://mcpmarket.com",
+      "submission_url": "https://mcpmarket.com/submit",
+      "route": "Public Submit form linked from the marketplace",
+      "next_step": "Check whether a free listing is offered separately from paid promotion; no spend authorized or performed.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcpmarket.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://mcpmarket.com"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "mcpmarket",
+        "url": "https://mcpmarket.com/submit",
+        "status": 200,
+        "final_url": "https://mcpmarket.com/submit",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcpserverfinder",
+      "name": "MCP Server Finder",
+      "kind": "directory",
+      "priority": "P2",
+      "discovery_url": "https://www.mcpserverfinder.com",
+      "submission_url": "https://www.mcpserverfinder.com/categories/submit-mcp-server",
+      "route": "Submission page linked by the directory",
+      "next_step": "Review account, required metadata and any fee before deciding launch priority.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://www.mcpserverfinder.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://www.mcpserverfinder.com"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcpserverfinder",
+        "url": "https://www.mcpserverfinder.com/categories/submit-mcp-server",
+        "status": 200,
+        "final_url": "https://www.mcpserverfinder.com/categories/submit-mcp-server",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "lobehub",
+      "name": "LobeHub MCP Marketplace",
+      "kind": "client-marketplace",
+      "priority": "P1",
+      "discovery_url": "https://lobehub.com/publish-mcp/skill.md",
+      "submission_url": "https://market.lobehub.com/s/publish-mcp",
+      "route": "Official market CLI with browser OIDC, GitHub ownership and a versioned listing manifest",
+      "next_step": "Prepare the local listing with current manifest reference; do not log in, claim, install publisher skills or publish during preparation.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://lobehub.com/publish-mcp/skill.md"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://market.lobehub.com/s/publish-mcp"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "lobehub",
+        "url": "https://market.lobehub.com/s/publish-mcp",
+        "status": 200,
+        "final_url": "https://market.lobehub.com/s/publish-mcp",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "awesome-punkpeye",
+      "name": "punkpeye/awesome-mcp-servers",
+      "kind": "curated-list",
+      "priority": "P1",
+      "discovery_url": "https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/CONTRIBUTING.md",
+      "submission_url": "https://github.com/punkpeye/awesome-mcp-servers/blob/main/CONTRIBUTING.md",
+      "route": "One alphabetical README entry through a reviewed contribution",
+      "next_step": "Public installable repo fits scope; category and platform symbols must match actual support. PR text is drafted locally.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/CONTRIBUTING.md"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/CONTRIBUTING.md"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "awesome-punkpeye",
+        "url": "https://github.com/punkpeye/awesome-mcp-servers/blob/main/CONTRIBUTING.md",
+        "status": 200,
+        "final_url": "https://github.com/punkpeye/awesome-mcp-servers/blob/main/CONTRIBUTING.md",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "awesome-wong2",
+      "name": "wong2/awesome-mcp-servers",
+      "kind": "curated-list",
+      "priority": "P2",
+      "discovery_url": "https://raw.githubusercontent.com/wong2/awesome-mcp-servers/main/README.md",
+      "submission_url": "https://mcpservers.org/submit",
+      "route": "Repository directs new server submissions to MCPServers.org",
+      "next_step": "Share submission tracking with mcpservers-org; no duplicate promotion.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://raw.githubusercontent.com/wong2/awesome-mcp-servers/main/README.md"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://raw.githubusercontent.com/wong2/awesome-mcp-servers/main/README.md"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "awesome-wong2",
+        "url": "https://mcpservers.org/submit",
+        "status": 200,
+        "final_url": "https://mcpservers.org/submit",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "awesome-appcypher",
+      "name": "appcypher/awesome-mcp-servers",
+      "kind": "curated-list",
+      "priority": "P2",
+      "discovery_url": "https://github.com/appcypher/awesome-mcp-servers",
+      "submission_url": "https://github.com/appcypher/awesome-mcp-servers/blob/main/CONTRIBUTING.md",
+      "route": "Repository contribution process",
+      "next_step": "Check current category and entry style immediately before preparing the final patch.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://github.com/appcypher/awesome-mcp-servers"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://github.com/appcypher/awesome-mcp-servers"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "awesome-appcypher",
+        "url": "https://github.com/appcypher/awesome-mcp-servers/blob/main/CONTRIBUTING.md",
+        "status": 200,
+        "final_url": "https://github.com/appcypher/awesome-mcp-servers/blob/main/CONTRIBUTING.md",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "claude-plugins",
+      "name": "Claude Code plugin directory",
+      "kind": "client-plugin-marketplace",
+      "priority": "P2",
+      "discovery_url": "https://code.claude.com/docs/en/plugins",
+      "submission_url": "https://platform.claude.com/plugins/submit",
+      "route": "Submit a plugin through Claude's documented plugin form",
+      "next_step": "Local MCP-only compatibility manifest prepared; native plugin install/uninstall qualification and published artifact still pending.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://code.claude.com/docs/en/plugins"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://code.claude.com/docs/en/plugins"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "claude-plugins",
+        "url": "https://platform.claude.com/plugins/submit",
+        "status": 200,
+        "final_url": "https://platform.claude.com/plugins/submit",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "claude-connectors",
+      "name": "Claude Connectors Directory",
+      "kind": "client-marketplace",
+      "priority": "P2",
+      "discovery_url": "https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq",
+      "submission_url": "https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq",
+      "route": "Follow the linked directory submission flow for the relevant connector type",
+      "next_step": "Choose desktop MCPB or a reviewed remote integration; current source checkout is not a directory-ready connector.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "claude-connectors",
+        "url": "https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq",
+        "status": 200,
+        "final_url": "https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "openai-plugins",
+      "name": "ChatGPT and Codex Plugins Directory",
+      "kind": "client-plugin-marketplace",
+      "priority": "P2",
+      "discovery_url": "https://developers.openai.com/plugins/build/plugins",
+      "submission_url": "https://developers.openai.com/plugins/build/plugins",
+      "route": "Universal public plugin directory; standard public MCP submission uses a remote HTTPS integration",
+      "next_step": "Local portable/Codex manifests are prepared for local testing only. Hosted authentication, review and registered connection are not implemented.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://developers.openai.com/plugins/build/plugins"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://developers.openai.com/plugins/build/plugins"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "openai-plugins",
+        "url": "https://developers.openai.com/plugins/build/plugins",
+        "status": 200,
+        "final_url": "https://developers.openai.com/plugins/build/plugins",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "gemini-gallery",
+      "name": "Gemini CLI Extension Gallery",
+      "kind": "client-plugin-directory",
+      "priority": "P2",
+      "discovery_url": "https://geminicli.com/docs/extensions/releasing/",
+      "submission_url": "https://geminicli.com/docs/extensions/releasing/",
+      "route": "Public GitHub repository with gemini-cli-extension topic is automatically discovered under documented eligibility rules",
+      "next_step": "CiteNexus has no standalone Gemini extension artifact yet; WTF-P's separate Gemini projection does not certify CiteNexus native integration.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://geminicli.com/docs/extensions/releasing/"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://geminicli.com/docs/extensions/releasing/"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "gemini-gallery",
+        "url": "https://geminicli.com/docs/extensions/releasing/",
+        "status": 200,
+        "final_url": "https://geminicli.com/docs/extensions/releasing/",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "agentplugins",
+      "name": "Agent Plugins ecosystem",
+      "kind": "packaging-standard",
+      "priority": "P2",
+      "discovery_url": "https://agent-plugins.org",
+      "submission_url": null,
+      "route": "Portable packaging standard, not a public server marketplace",
+      "next_step": "Portable plugin.json and mcp.json prepared and schema checked; native client lifecycle qualification is separate.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://agent-plugins.org"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://agent-plugins.org"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "agentplugins",
+        "url": "https://agent-plugins.org",
+        "status": 200,
+        "final_url": "https://agent-plugins.org",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "cursor-directory",
+      "name": "Cursor Directory MCP listings",
+      "kind": "directory",
+      "priority": "P2",
+      "discovery_url": "https://cursor.directory/mcp",
+      "submission_url": null,
+      "route": "Browser verification needed; automated probe received HTTP 429",
+      "next_step": "Do not assume the submission form or list status from a rate-limited response.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://cursor.directory/mcp"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 429,
+        "final_url": null
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "cursor-directory",
+        "url": "https://cursor.directory/mcp",
+        "status": 429,
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcpservers-com",
+      "name": "MCPServers.com",
+      "kind": "directory",
+      "priority": "P2",
+      "discovery_url": "https://mcpservers.com",
+      "submission_url": null,
+      "route": "Browse listing/account controls to confirm a current submission route",
+      "next_step": "Live directory confirmed; self-service route and listing policy not verified.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcpservers.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://mcpservers.com"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcpservers-com",
+        "url": "https://mcpservers.com",
+        "status": 200,
+        "final_url": "https://mcpservers.com",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-get",
+      "name": "MCP Get",
+      "kind": "package-directory",
+      "priority": "P2",
+      "discovery_url": "https://mcp-get.com",
+      "submission_url": null,
+      "route": "Confirm package registry onboarding and current package format",
+      "next_step": "Homepage responds; no verified submission or maintenance evidence beyond that page.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcp-get.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://mcp-get.com"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcp-get",
+        "url": "https://mcp-get.com",
+        "status": 200,
+        "final_url": "https://mcp-get.com",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-awesome",
+      "name": "MCP Awesome",
+      "kind": "directory",
+      "priority": "P2",
+      "discovery_url": "https://mcpawesome.com",
+      "submission_url": null,
+      "route": "Confirm submission route in a browser",
+      "next_step": "Homepage responds; no verified contribution process yet.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcpawesome.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://mcpawesome.com"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcp-awesome",
+        "url": "https://mcpawesome.com",
+        "status": 200,
+        "final_url": "https://mcpawesome.com",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-list",
+      "name": "MCPList.ai",
+      "kind": "directory",
+      "priority": "P2",
+      "discovery_url": "https://mcplist.ai",
+      "submission_url": null,
+      "route": "Site FAQ describes form or repository contributions; exact destination requires browser verification",
+      "next_step": "Use standard metadata only after verifying a working submission route.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcplist.ai"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://www.mcplist.ai/"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcp-list",
+        "url": "https://mcplist.ai",
+        "status": 200,
+        "final_url": "https://www.mcplist.ai/",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "azure-api-center",
+      "name": "Azure API Center MCP catalog",
+      "kind": "enterprise-catalog",
+      "priority": "P3",
+      "discovery_url": "https://learn.microsoft.com/en-us/azure/api-center/register-discover-mcp-server",
+      "submission_url": "https://learn.microsoft.com/en-us/azure/api-center/register-discover-mcp-server",
+      "route": "Register and discover MCP servers inside an organization's API Center",
+      "next_step": "Enterprise distribution option, not an open public promotional marketplace; requires a customer integration.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://learn.microsoft.com/en-us/azure/api-center/register-discover-mcp-server"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://learn.microsoft.com/en-us/azure/api-center/register-discover-mcp-server"
+      },
+      "submission_route_verified": true,
+      "submission_http_check": {
+        "id": "azure-api-center",
+        "url": "https://learn.microsoft.com/en-us/azure/api-center/register-discover-mcp-server",
+        "status": 200,
+        "final_url": "https://learn.microsoft.com/en-us/azure/api-center/register-discover-mcp-server",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "composio",
+      "name": "Composio toolkits",
+      "kind": "integration-platform",
+      "priority": "P3",
+      "discovery_url": "https://composio.dev/toolkits",
+      "submission_url": null,
+      "route": "Managed integration catalog; no general third-party listing route verified",
+      "next_step": "Potential partnership only; do not count as an available self-service MCP marketplace.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://composio.dev/toolkits"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://composio.dev/toolkits"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "composio",
+        "url": "https://composio.dev/toolkits",
+        "status": 200,
+        "final_url": "https://composio.dev/toolkits",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "pipedream",
+      "name": "Pipedream Connect MCP",
+      "kind": "integration-platform",
+      "priority": "P3",
+      "discovery_url": "https://pipedream.com/docs/connect/mcp",
+      "submission_url": null,
+      "route": "Managed MCP integration platform",
+      "next_step": "Not verified as a public submission destination for an independent Python server.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://pipedream.com/docs/connect/mcp"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://pipedream.com/docs/connect/mcp"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "pipedream",
+        "url": "https://pipedream.com/docs/connect/mcp",
+        "status": 200,
+        "final_url": "https://pipedream.com/docs/connect/mcp",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "railway",
+      "name": "Railway templates",
+      "kind": "deployment-marketplace",
+      "priority": "P3",
+      "discovery_url": "https://railway.com/templates",
+      "submission_url": null,
+      "route": "Deployment-template marketplace with separate template contribution rules",
+      "next_step": "Needs authenticated remote deployment design; current loopback server is not a public template ready for use.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://railway.com/templates"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://railway.com/deploy"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "railway",
+        "url": "https://railway.com/templates",
+        "status": 200,
+        "final_url": "https://railway.com/deploy",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "aws-marketplace",
+      "name": "AWS Marketplace",
+      "kind": "cloud-marketplace",
+      "priority": "P3",
+      "discovery_url": "https://docs.aws.amazon.com/marketplace/latest/userguide/mcp-server-products.html",
+      "submission_url": null,
+      "route": "Research current AI/MCP seller product eligibility",
+      "next_step": "Attempted MCP product URL redirected to generic user guide; no concrete MCP self-service route verified. Commercial seller onboarding is separate.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://docs.aws.amazon.com/marketplace/latest/userguide/mcp-server-products.html"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://docs.aws.amazon.com/marketplace/latest/userguide/"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "aws-marketplace",
+        "url": "https://docs.aws.amazon.com/marketplace/latest/userguide/mcp-server-products.html",
+        "status": 200,
+        "final_url": "https://docs.aws.amazon.com/marketplace/latest/userguide/",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "google-cloud-marketplace",
+      "name": "Google Cloud Marketplace",
+      "kind": "cloud-marketplace",
+      "priority": "P3",
+      "discovery_url": "https://cloud.google.com/marketplace/docs/partners/mcp-server-overview",
+      "submission_url": null,
+      "route": "Research current AI/MCP partner eligibility",
+      "next_step": "Attempted MCP-specific overview returned 404; do not advertise eligibility or prepare a paid listing without a verified product route.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://cloud.google.com/marketplace/docs/partners/mcp-server-overview"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 404,
+        "final_url": null
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "google-cloud-marketplace",
+        "url": "https://cloud.google.com/marketplace/docs/partners/mcp-server-overview",
+        "status": 404,
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-directory",
+      "name": "MCP-Directory.com",
+      "kind": "retired-or-unverified",
+      "priority": "HOLD",
+      "discovery_url": "https://www.mcp-directory.com",
+      "submission_url": null,
+      "route": "Domain redirected away from the original directory",
+      "next_step": "Exclude from submission queue until current ownership and directory operation are verified.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://www.mcp-directory.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://mcp-directory-com.l.ink/"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcp-directory",
+        "url": "https://www.mcp-directory.com",
+        "status": 200,
+        "final_url": "https://mcp-directory-com.l.ink/",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcpserver-directory",
+      "name": "MCPServer.directory",
+      "kind": "retired-or-unverified",
+      "priority": "HOLD",
+      "discovery_url": "https://mcpserver.directory",
+      "submission_url": null,
+      "route": "Automated probe returned HTTP 402",
+      "next_step": "Could be infrastructure or access policy; do not infer a submission fee or working marketplace.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcpserver.directory"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 402,
+        "final_url": null
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcpserver-directory",
+        "url": "https://mcpserver.directory",
+        "status": 402,
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-hub",
+      "name": "MCPHub.io",
+      "kind": "retired-or-unverified",
+      "priority": "HOLD",
+      "discovery_url": "https://mcphub.io",
+      "submission_url": null,
+      "route": "Automated probe returned HTTP 402",
+      "next_step": "No verified current listing workflow.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcphub.io"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 402,
+        "final_url": null
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcp-hub",
+        "url": "https://mcphub.io",
+        "status": 402,
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-run",
+      "name": "mcp.run",
+      "kind": "changed-product",
+      "priority": "HOLD",
+      "discovery_url": "https://www.mcp.run",
+      "submission_url": null,
+      "route": "Redirected to TurboMCP",
+      "next_step": "Re-evaluate the current product before treating historical marketplace references as active.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://www.mcp.run"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://turbomcp.ai/"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcp-run",
+        "url": "https://www.mcp.run",
+        "status": 200,
+        "final_url": "https://turbomcp.ai/",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-cat",
+      "name": "MCPCat",
+      "kind": "changed-product",
+      "priority": "HOLD",
+      "discovery_url": "https://mcpcat.io",
+      "submission_url": null,
+      "route": "Redirected to AgentCat analytics and observability",
+      "next_step": "Useful tooling prospect, not a verified server listing marketplace.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcpcat.io"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://agentcat.com/"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcp-cat",
+        "url": "https://mcpcat.io",
+        "status": 200,
+        "final_url": "https://agentcat.com/",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "bolt-directory",
+      "name": "BoltAI MCP directory",
+      "kind": "changed-product",
+      "priority": "HOLD",
+      "discovery_url": "https://mcp.boltai.com",
+      "submission_url": null,
+      "route": "Redirected to the BoltAI product homepage",
+      "next_step": "Historical directory is not a verified current submission channel.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcp.boltai.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "https://boltai.com/?ref=dotcom"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "bolt-directory",
+        "url": "https://mcp.boltai.com",
+        "status": 200,
+        "final_url": "https://boltai.com/?ref=dotcom",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcpserverslist",
+      "name": "MCPServersList.com",
+      "kind": "retired-or-unverified",
+      "priority": "HOLD",
+      "discovery_url": "https://mcpserverslist.com",
+      "submission_url": null,
+      "route": "Redirected to a ww38 parked-domain address",
+      "next_step": "Exclude from submission queue.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcpserverslist.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": 200,
+        "final_url": "http://ww38.mcpserverslist.com/"
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcpserverslist",
+        "url": "https://mcpserverslist.com",
+        "status": 200,
+        "final_url": "http://ww38.mcpserverslist.com/",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "findmcp",
+      "name": "FindMCPServer.com",
+      "kind": "retired-or-unverified",
+      "priority": "HOLD",
+      "discovery_url": "https://findmcpserver.com",
+      "submission_url": null,
+      "route": "Host could not be reached during the research pass",
+      "next_step": "Retry manually if independent evidence suggests it is active.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://findmcpserver.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": "unreachable",
+        "final_url": null
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "findmcp",
+        "url": "https://findmcpserver.com",
+        "status": "unreachable",
+        "checked_at": "2026-09-16"
+      }
+    },
+    {
+      "id": "mcp-next",
+      "name": "MCPNext",
+      "kind": "retired-or-unverified",
+      "priority": "HOLD",
+      "discovery_url": "https://mcpnext.com",
+      "submission_url": null,
+      "route": "Host could not be reached during the research pass",
+      "next_step": "Exclude until a working directory and contribution route are verified.",
+      "status": "not_submitted",
+      "evidence_urls": [
+        "https://mcpnext.com"
+      ],
+      "checked_at": "2026-09-16",
+      "http_check": {
+        "status": "unreachable",
+        "final_url": null
+      },
+      "submission_route_verified": false,
+      "submission_http_check": {
+        "id": "mcp-next",
+        "url": "https://mcpnext.com",
+        "status": "unreachable",
+        "checked_at": "2026-09-16"
+      }
+    }
+  ]
+}

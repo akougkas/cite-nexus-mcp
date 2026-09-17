@@ -1,0 +1,37 @@
+{
+  "name": "cite-nexus",
+  "version": "0.2.0",
+  "description": "CiteNexus connects research assistants to free scholarly metadata and optional academic APIs. Discover papers, resolve identifiers, check references, and export BibTeX, RIS or CSL-JSON with source provenance. No model or API key is required for default searches.",
+  "author": {
+    "name": "Anthony Kougkas",
+    "url": "https://github.com/akougkas"
+  },
+  "homepage": "https://github.com/akougkas/cite-nexus-mcp",
+  "repository": "https://github.com/akougkas/cite-nexus-mcp",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "research",
+    "citations",
+    "bibliography",
+    "academic",
+    "bibtex",
+    "crossref",
+    "wtf-p"
+  ],
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "CiteNexus",
+    "shortDescription": "Search scholarly sources, verify references, and export citations with traceable evidence.",
+    "longDescription": "CiteNexus connects research assistants to free scholarly metadata and optional academic APIs. Discover papers, resolve identifiers, check references, and export BibTeX, RIS or CSL-JSON with source provenance. No model or API key is required for default searches.",
+    "developerName": "Anthony Kougkas",
+    "category": "Productivity",
+    "capabilities": [
+      "Read"
+    ],
+    "websiteURL": "https://github.com/akougkas/cite-nexus-mcp",
+    "brandColor": "#145C53",
+    "logo": "./assets/logo.svg",
+    "defaultPrompt": "Search free scholarly sources for my topic, retain source evidence, and verify identifiers before exporting citations."
+  }
+}

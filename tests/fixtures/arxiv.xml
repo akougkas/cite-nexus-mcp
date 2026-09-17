@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+  <entry>
+    <id>http://arxiv.org/abs/2403.12345v2</id><title>Reliable Research &amp; Data</title>
+    <published>2024-03-12T00:00:00Z</published><updated>2024-04-01T00:00:00Z</updated>
+    <author><name>Ada Lovelace</name></author><summary>Measured evidence.</summary>
+    <arxiv:doi>10.1234/example</arxiv:doi>
+  </entry>
+</feed>

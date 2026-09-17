@@ -1,15 +1,18 @@
 [project]
 name = "cite-nexus-mcp"
-version = "0.1.0"
-description = "A Model Context Protocol (MCP) server for academic paper search, citation formatting, and impact metrics using Google Scholar and LLM elicitation."
+version = "0.2.0"
+description = "Evidence-backed scholarly discovery and citation tools for MCP, from open metadata to institutional databases."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [
- "mcp>=1.1.2",
- "google-search-results>=2.4.0",
- "python-dotenv>=1.0.0",
- "requests>=2.25.0",
+ "anyio>=4.9,<5",
+ "mcp>=2.2,<3",
+ "httpx2>=2.5,<3",
+ "pydantic>=2.12,<3",
+ "python-dotenv>=1.1,<2",
+ "defusedxml>=0.7.1,<1",
+ "bibtexparser>=1.4.3,<2",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -27,3 +30,46 @@ build-backend = "hatchling.build"
 
 [project.scripts]
 cite-nexus-mcp = "cite_nexus_mcp:main"
+cite-nexus-wtfp = "cite_nexus_mcp.wtfp:run"
+
+[project.optional-dependencies]
+legacy-ai = ["litellm>=1.82.1,<2", "requests>=2.32,<3"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4,<10",
+    "pytest-asyncio>=1.0,<2",
+    "ruff>=0.12,<1",
+    "mypy>=1.17,<2",
+    "types-requests>=2.32,<3",
+    "jsonschema>=4.25,<5",
+]
+
+[project.urls]
+Homepage = "https://github.com/akougkas/cite-nexus-mcp"
+Issues = "https://github.com/akougkas/cite-nexus-mcp/issues"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+include = ["src/**/*.py", "tests/**/*.py", "scripts/**/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+packages = ["cite_nexus_mcp"]
+check_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cite_nexus_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "scripts", "docs", "assets", "release", "packaging", "server.json", "llms-install.md", "README.md", "LICENSE", "pyproject.toml", "uv.lock", ".env.example", "CHANGELOG.md", "CONTRIBUTING.md"]

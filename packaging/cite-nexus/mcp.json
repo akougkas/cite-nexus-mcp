@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "cite-nexus": {
+      "type": "stdio",
+      "command": "cite-nexus-mcp",
+      "args": [
+        "--no-env-file"
+      ]
+    }
+  }
+}
