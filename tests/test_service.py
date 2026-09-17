@@ -4,7 +4,7 @@ import httpx2 as httpx
 import pytest
 
 from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.http import HTTP
+from cite_nexus_mcp.http import HTTP, ProviderError
 from cite_nexus_mcp.models import Author, Paper, ProviderIssue
 from cite_nexus_mcp.service import ResearchService, deduplicate, merge, same_work
 
@@ -296,3 +296,18 @@ async def test_generated_bibtex_can_be_verified_without_escape_mismatches(record
         paper = service.providers["crossref"].parse(record)
         result = await service.verify(format_citation(paper).citation)
     assert result.status == "verified"
+
+
+async def test_unknown_identifier_names_providers_and_suggests_search():
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(lambda _: httpx.Response(404))
+    ) as client:
+        settings = Settings(retries=0)
+        service = ResearchService(settings, HTTP(settings, client))
+        with pytest.raises(ProviderError) as not_found:
+            await service.citation("10.1109/HPDC.2019.00023")
+    assert not_found.value.issue.code == "not_found"
+    message = not_found.value.issue.message
+    assert "doi:10.1109/hpdc.2019.00023" in message
+    assert "crossref, datacite, europe_pmc" in message
+    assert "search-papers" in message
