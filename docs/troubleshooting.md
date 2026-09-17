@@ -29,7 +29,8 @@ configuration only; an available adapter can still lack quota or institutional a
 
 ## Search returns some results and errors
 
-Inspect `issues` in native CiteNexus or `metadata.errors` in WTF-P. Partial failures
+Inspect `issues` in native CiteNexus or `metadata.errors` in WTF-P. One provider can fail
+while others return results, and `metadata.errors` records it. Partial failures
 are expected when one source throttles or is unavailable. Anonymous Semantic Scholar
 may return HTTP 429; select another suitable public source or use your own key.
 An outage is not evidence that a reference does not exist. Retry after the indicated

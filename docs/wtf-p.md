@@ -3,8 +3,7 @@
 **CiteNexus finds and checks research sources. WTF-P turns research into a writing workflow.**
 The companion links WTF-P's existing citation-search command to CiteNexus through real MCP
 stdio, preserving provenance and candidate status. CiteNexus 0.2.1 includes the companion.
-The WTF-P team is preparing its matching **0.7.0** release; `wtf-p@0.6.0` does not include
-the backend. Use their integration branch until that separate release is available.
+The integration shipped in wtf-p 0.7.0 as an optional backend.
 
 ## Install the companion
 
@@ -16,7 +15,11 @@ cite-nexus-wtfp --check
 Keep `cite-nexus-wtfp` on the PATH used by WTF-P, or set `WTFP_CITE_NEXUS_COMMAND` to its
 absolute installed path. On Windows, use the installed `cite-nexus-wtfp.exe` path. The
 companion is a separate Python installation; adding the WTF-P backend does not install it.
-Wait for WTF-P 0.7.0 or use the team's integration branch to select `--backend=cite-nexus`.
+Install the host plugin from npm:
+
+```bash
+npx --yes --package=wtf-p@0.7.2 -- wtf-p install clio
+```
 
 ## Develop and verify the paired checkouts
 
@@ -49,11 +52,16 @@ the launching environment. Only selected providers' credentials pass through WTF
 
 ## Use it in a writing workflow
 
-Ask WTF-P to use its approved citation-search operation with `--backend=cite-nexus` and
-record the selected providers and query scope in the network approval. Preserve each result's
-`citeNexus` source record alongside its candidate BibTeX in the research evidence table.
-Review warnings and partial provider errors. Independently verify identifiers and claim
-support before adopting a reference in the manuscript.
+Since wtf-p 0.7.2, two WTF-P actions reach CiteNexus. `/wtfp:research-gap <section-id>` is the
+literature discovery route, and `/wtfp:check-refs` is the citation audit route. Both run
+`citation-search --backend=cite-nexus` with an explicit `--providers` list, such as
+`--providers=crossref,datacite,europe_pmc`, and the author names that provider list when
+approving network access at the workflow's approval gate. Discovery returns candidate records.
+The audit also returns suggested repairs through the bundled dispatcher and leaves the original
+manuscript and bibliography files unmodified. Preserve each result's `citeNexus` source record
+alongside its candidate BibTeX in the research evidence table. Review warnings and partial
+provider errors. Independently verify identifiers and claim support before adopting a reference
+in the manuscript.
 
 WTF-P owns bibliography files, project state and user approval. CiteNexus returns records
 without writing to the project. A title search remains a set of candidates, even when a

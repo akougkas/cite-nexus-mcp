@@ -13,7 +13,8 @@ This is a citation and metadata service for the assistant you already use. It wo
 reference managers such as Zotero and writing environments that support MCP.
 
 **CiteNexus 0.2.1** includes the MCP service and the `cite-nexus-wtfp` companion.
-The WTF-P integration targets its separate 0.7.0 release. Marketplace listings and native
+The WTF-P integration shipped in wtf-p 0.7.0. Install the host plugin using
+`npx --yes --package=wtf-p@0.7.2 -- wtf-p install clio`. Marketplace listings and native
 client plugin qualification are tracked independently.
 
 [Quick start](#quick-start) · [WTF-P integration](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.1/docs/wtf-p.md) ·
