@@ -1,6 +1,8 @@
 # CiteNexus 0.2.0 release and distribution
 
-The owner authorized the CiteNexus 0.2.0 package release on 2026-09-17.
+**CiteNexus 0.2.0 was published on 2026-09-17 to PyPI, GitHub Releases and the official MCP
+Registry.** See the [publication record](publication-0.2.0.md) for URLs, source identity,
+artifact hashes and verification. The owner authorized this release on the same date.
 `release/product.json` records that decision. WTF-P 0.7.0 is being handled separately by its
 team. Marketplace submissions, advertisements and native client qualification remain
 separate launch work. The generation scripts only write local metadata; CI does not publish
@@ -71,14 +73,14 @@ The paired integration remains unreleased even if local source commits exist.
 It does not change the curated tracker. Public-API smoke checks are also separate from the
 offline suite. Paid provider entitlement checks require configured accounts and selected scope.
 
-## Gates before a release decision
+## Release checks and separate distribution tracks
 
 - [x] Select CiteNexus 0.2.0 and target WTF-P 0.7.0 as separate releases.
   The CiteNexus source is identified by the annotated `v0.2.0` tag at publication.
-- [ ] Review the final diff, package manifests, lockfile, wheel and sdist contents. Keep private
+- [x] Review the final diff, package manifests, lockfile, wheel and sdist contents. Keep private
   environment files and client settings out of artifacts. Verify the README marker survives
   wheel metadata generation. Recheck dependencies for disclosed vulnerabilities.
-- [ ] Confirm a clean installed wheel starts MCP, exposes 11 tools, and runs the companion
+- [x] Confirm a clean installed wheel starts MCP, exposes 11 tools, and runs the companion
   diagnostic. Run the paired generated-plugin fixture check and WTF-P's required evaluation.
 - [ ] Qualify actual disposable client installations for every advertised host/OS. Current
   transport tests and schema checks do not certify native plugin lifecycle. In particular,
@@ -88,7 +90,7 @@ offline suite. Paid provider entitlement checks require configured accounts and 
   is not yet qualified merely because a Dockerfile exists.
 - [ ] If choosing Smithery local distribution or Claude desktop extensions, build and test an
   MCPB artifact using the channel's current format. No MCPB artifact is prepared in this pass.
-- [ ] Review live public-provider smoke outcomes. Treat throttling/outages as such. Qualify
+- [x] Review live public-provider smoke outcomes. Treat throttling/outages as such. Qualify
   paid/institutional adapters with real entitlements before making live-access claims.
 - [ ] Recheck marketplace routes and account/ownership requirements. Keep hosted ChatGPT/Codex
   public-directory submissions and remote connector routes deferred until authentication,

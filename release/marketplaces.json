@@ -1,7 +1,7 @@
 {
   "schema_version": "cite-nexus.marketplaces/v1",
   "researched_at": "2026-09-16",
-  "release_authorized": false,
+  "release_authorized": true,
   "scope": "Broad discovery inventory; not an exhaustive or permanent list of every MCP marketplace. Entries distinguish verified routes, related distribution surfaces, redirects and unresolved leads. HTTP 200 alone is not submission eligibility.",
   "entries": [
     {
@@ -12,12 +12,13 @@
       "discovery_url": "https://modelcontextprotocol.io/registry/quickstart",
       "submission_url": "https://modelcontextprotocol.io/registry/quickstart",
       "route": "mcp-publisher metadata registration after PyPI publication and GitHub namespace authentication",
-      "next_step": "Local server.json and README marker prepared; package publication and namespace ownership verification intentionally pending.",
-      "status": "not_submitted",
+      "next_step": "Published and verified active: io.github.akougkas/cite-nexus-mcp 0.2.0, backed by PyPI 0.2.0. Verify rendered installation when clients ingest the entry.",
+      "status": "listed",
       "evidence_urls": [
-        "https://modelcontextprotocol.io/registry/quickstart"
+        "https://modelcontextprotocol.io/registry/quickstart",
+        "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.akougkas/cite-nexus-mcp"
       ],
-      "checked_at": "2026-09-16",
+      "checked_at": "2026-09-17",
       "http_check": {
         "status": 200,
         "final_url": "https://modelcontextprotocol.io/registry/quickstart"
@@ -29,7 +30,10 @@
         "status": 200,
         "final_url": "https://modelcontextprotocol.io/registry/quickstart",
         "checked_at": "2026-09-16"
-      }
+      },
+      "published_at": "2026-09-17T12:07:43.980474Z",
+      "published_version": "0.2.0",
+      "listing_url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.akougkas/cite-nexus-mcp"
     },
     {
       "id": "github-mcp",
@@ -1105,5 +1109,7 @@
         "checked_at": "2026-09-16"
       }
     }
-  ]
+  ],
+  "outreach_authorized": false,
+  "release_authorization_scope": "CiteNexus package, GitHub release and official MCP Registry; other directory submissions and advertisements remain deferred."
 }

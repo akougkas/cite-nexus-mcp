@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def render(data: dict) -> dict[str, str]:
     entries = data["entries"]
+    listed = sum(e["status"] == "listed" for e in entries)
+    submitted = sum(e["status"] == "submitted" for e in entries)
     out = io.StringIO(newline="")
     fields = [
         "id",
@@ -38,7 +40,8 @@ def render(data: dict) -> dict[str, str]:
     lines = [
         "# MCP marketplace and distribution inventory",
         "",
-        f"Researched {data['researched_at']}. **{len(entries)} channels and leads; none submitted.**",
+        f"Researched {data['researched_at']}. **{len(entries)} channels and leads; "
+        f"{listed} listed, {submitted} awaiting listing.**",
         "",
         data["scope"],
         "",
@@ -56,14 +59,16 @@ def render(data: dict) -> dict[str, str]:
         lines += [
             f"## {priority}",
             "",
-            "| Channel | Kind / route | Preparation still needed |",
-            "|---|---|---|",
+            "| Channel | Status | Kind / route | Next step |",
+            "|---|---|---|---|",
         ]
         for e in entries:
             if e["priority"] != priority:
                 continue
             url = e["submission_url"] or e["discovery_url"]
-            lines.append(f"| [{e['name']}]({url}) | {e['kind']}. {e['route']} | {e['next_step']} |")
+            lines.append(
+                f"| [{e['name']}]({url}) | {e['status']} | {e['kind']}. {e['route']} | {e['next_step']} |"
+            )
         lines.append("")
     lines += [
         "## Avoid duplicate submissions",
@@ -122,7 +127,7 @@ def main() -> None:
     if args.check and drift:
         raise SystemExit("Marketplace export drift: " + ", ".join(drift))
     print(
-        f"Inventory {'checked' if args.check else 'rendered'}: {len(data['entries'])} channels/leads; no submissions."
+        f"Inventory {'checked' if args.check else 'rendered'}: {len(data['entries'])} channels/leads; no submissions made by this command."
     )
 
 
