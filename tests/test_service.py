@@ -311,3 +311,87 @@ async def test_unknown_identifier_names_providers_and_suggests_search():
     assert "doi:10.1109/hpdc.2019.00023" in message
     assert "crossref, datacite, europe_pmc" in message
     assert "search-papers" in message
+
+
+def arxiv_datacite_record(arxiv_id):
+    doi = f"10.48550/arxiv.{arxiv_id}"
+    return {
+        "id": doi,
+        "type": "dois",
+        "attributes": {
+            "doi": doi,
+            "titles": [{"title": "Ray: A Distributed Framework for Emerging AI Applications"}],
+            "creators": [
+                {"name": "Moritz, Philipp", "givenName": "Philipp", "familyName": "Moritz"}
+            ],
+            "publicationYear": 2017,
+            "types": {"resourceTypeGeneral": "Preprint"},
+            "publisher": {"name": "arXiv"},
+            "url": f"https://arxiv.org/abs/{arxiv_id}",
+        },
+    }
+
+
+async def test_arxiv_citation_falls_back_to_the_datacite_doi_when_arxiv_fails():
+    requested = []
+
+    def handler(request):
+        requested.append(request.url.host)
+        if request.url.host == "export.arxiv.org":
+            return httpx.Response(503)
+        assert request.url.raw_path == b"/dois/10.48550%2Farxiv.1712.05889", request.url.raw_path
+        return httpx.Response(200, json={"data": arxiv_datacite_record("1712.05889")})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        settings = Settings(retries=0)
+        service = ResearchService(settings, HTTP(settings, client))
+        result = await service.citation("arXiv:1712.05889")
+    assert requested == ["export.arxiv.org", "api.datacite.org"]
+    assert result.paper.title == "Ray: A Distributed Framework for Emerging AI Applications"
+    assert result.paper.identifiers["arxiv"] == "1712.05889"
+    assert result.paper.identifiers["doi"] == "10.48550/arxiv.1712.05889"
+    assert any(w.startswith("arxiv [upstream_error]") for w in result.warnings)
+
+
+async def test_arxiv_resolution_does_not_query_datacite_when_arxiv_answers(arxiv_xml):
+    requested = []
+
+    def handler(request):
+        requested.append(request.url.host)
+        return httpx.Response(200, content=arxiv_xml)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        settings = Settings(retries=0)
+        service = ResearchService(settings, HTTP(settings, client))
+        resolved = await service.resolve("arXiv:2403.12345")
+    assert requested == ["export.arxiv.org"]
+    assert resolved.paper.identifiers["arxiv"] == "2403.12345"
+
+
+async def test_unknown_arxiv_identifier_names_both_providers():
+    def handler(request):
+        if request.url.host == "export.arxiv.org":
+            return httpx.Response(200, content=b'<feed xmlns="http://www.w3.org/2005/Atom"></feed>')
+        return httpx.Response(404)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        settings = Settings(retries=0)
+        service = ResearchService(settings, HTTP(settings, client))
+        with pytest.raises(ProviderError) as not_found:
+            await service.resolve("arXiv:2999.99999")
+    assert not_found.value.issue.code == "not_found"
+    assert "providers: arxiv, datacite" in not_found.value.issue.message
+
+
+async def test_datacite_record_with_a_different_doi_is_rejected_for_an_arxiv_identifier():
+    def handler(request):
+        if request.url.host == "export.arxiv.org":
+            return httpx.Response(406)
+        return httpx.Response(200, json={"data": arxiv_datacite_record("1712.00000")})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        settings = Settings(retries=0)
+        service = ResearchService(settings, HTTP(settings, client))
+        with pytest.raises(ProviderError) as failed:
+            await service.resolve("arXiv:1712.05889")
+    assert "datacite [identifier_mismatch]" in failed.value.issue.message

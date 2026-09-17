@@ -7,6 +7,11 @@
 - Name the providers that could not find an identifier and suggest search-papers for titles.
 - Reject undeclared tool arguments in the input schema (`additionalProperties: false`) and on the
   server, listing the accepted names, so a misnamed `max_results` no longer returns a default page.
+- Fix arXiv search and lookup, which failed with HTTP 406 in 0.2.0. arXiv's CDN refuses TLS
+  handshakes that offer ALPN without TLS 1.3 post-handshake authentication, which is httpcore's
+  default. The HTTP client now enables post-handshake authentication, as Python's `http.client` does.
+- Resolve arXiv identifiers through their DataCite DOI (`10.48550/arXiv.<id>`) when arXiv does not
+  answer. The record keeps both identifiers and the arXiv issue stays visible as a warning.
 
 ## 0.2.0 — 2026-09-17
 

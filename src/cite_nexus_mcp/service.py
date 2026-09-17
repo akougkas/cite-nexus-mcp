@@ -322,9 +322,11 @@ class ResearchService:
             selected = self.select(providers)
         elif identifier.kind == "doi":
             selected = [self.providers[name] for name in ("crossref", "datacite", "europe_pmc")]
+        elif identifier.kind == "arxiv":
+            # Every arXiv paper has a DataCite DOI, which answers when the arXiv API refuses.
+            selected = [self.providers["arxiv"], self.providers["datacite"]]
         else:
             defaults = {
-                "arxiv": "arxiv",
                 "pmid": "europe_pmc",
                 "pmcid": "europe_pmc",
                 "europe_pmc": "europe_pmc",
@@ -338,7 +340,10 @@ class ResearchService:
         issues = []
         result = None
         for provider in selected:
-            if identifier.kind not in provider.kinds:
+            lookup = identifier
+            if identifier.kind == "arxiv" and provider.id == "datacite":
+                lookup = Identifier("doi", f"10.48550/arxiv.{identifier.value.lower()}")
+            if lookup.kind not in provider.kinds:
                 issues.append(
                     ProviderIssue(
                         provider=provider.id,
@@ -347,13 +352,13 @@ class ResearchService:
                     )
                 )
                 continue
-            outcome = await self.attempt(provider, partial(provider.resolve, identifier))
+            outcome = await self.attempt(provider, partial(provider.resolve, lookup))
             if isinstance(outcome, ProviderIssue):
                 issues.append(outcome)
                 continue
             # A lookup endpoint is not enough: verify that its result contains the requested ID.
-            actual = outcome.identifiers.get(identifier.kind)
-            expected = identifier.value
+            actual = outcome.identifiers.get(lookup.kind)
+            expected = lookup.value
             if identifier.kind == "semantic_scholar" and expected.lower().startswith("corpusid:"):
                 corpus_id = outcome.identifiers.get("semantic_scholar_corpus")
                 actual = f"CorpusId:{corpus_id}" if corpus_id else None
@@ -366,6 +371,7 @@ class ResearchService:
                     )
                 )
                 continue
+            outcome.identifiers.setdefault(identifier.kind, identifier.value)
             if result is None:
                 result = outcome
             elif same_work(result, outcome):
