@@ -1,10 +1,12 @@
-# Release preparation — 0.2.0
+# CiteNexus 0.2.0 release and distribution
 
-**Prepared locally. No release, tag, registry submission, marketplace claim or advertisement
-is authorized by this preparation.** `release/product.json` records that state. The generation
-scripts only write local metadata. CI does not publish automatically. A separate manual
-`publish.yml` workflow requires finalized release state, an annotated tag and explicit
-production confirmation before its protected PyPI publishing job can run.
+The owner authorized the CiteNexus 0.2.0 package release on 2026-09-17.
+`release/product.json` records that decision. WTF-P 0.7.0 is being handled separately by its
+team. Marketplace submissions, advertisements and native client qualification remain
+separate launch work. The generation scripts only write local metadata; CI does not publish
+automatically. The manual `publish.yml` workflow supports PyPI Trusted Publishing once the
+account owner configures its pending publisher. An authorized operator can also publish
+the tested wheel and sdist using existing PyPI credentials from their environment.
 
 Start with the [step-by-step 0.2.0 runbook](release-0.2.0.md). The
 [WTF-P team handoff](wtfp-team-prompt.md) targets the separate `0.7.0` minor release.
@@ -31,13 +33,13 @@ under `release/` retain evidence URLs, observed redirects and unresolved eligibi
 
 | Asset | Purpose |
 |---|---|
-| `release/product.json` | Canonical product name, descriptions, keywords, namespace and preparation state |
-| `server.json` | Official MCP Registry metadata for the future PyPI 0.2.0 artifact |
+| `release/product.json` | Canonical product name, descriptions, keywords, namespace and release authorization |
+| `server.json` | Official MCP Registry metadata for the PyPI 0.2.0 artifact |
 | README `mcp-name` marker | PyPI package ownership evidence for `io.github.akougkas/cite-nexus-mcp` |
 | `packaging/cite-nexus/` | Portable Agent Plugins 1.0 plus Codex/Claude compatibility manifests; local testing only |
 | `assets/cite-nexus.svg` and `cite-nexus-400.png` | Vector source and 400×400 listing icon |
 | `assets/social-card.svg` and `social-card.png` | Editable source and 1200×630 promotional image |
-| `llms-install.md` | Explicit checkout installation steps for agents and Cline review |
+| `llms-install.md` | Pinned package installation steps for agents and Cline review |
 | `docs/wtf-p.md` | Companion setup, workflow boundaries and removal instructions |
 | `scripts/check_wtfp.py` | Generated WTF-P → companion → actual MCP stdio → fixture provider verification |
 | `release/schemas/` | Pinned upstream schemas for offline validation, with attribution |
@@ -71,8 +73,8 @@ offline suite. Paid provider entitlement checks require configured accounts and 
 
 ## Gates before a release decision
 
-- [ ] Select final CiteNexus and WTF-P release versions and record their exact source commits.
-  CiteNexus 0.2.0 and WTF-P's `Unreleased` section are preparation labels, not a release claim.
+- [x] Select CiteNexus 0.2.0 and target WTF-P 0.7.0 as separate releases.
+  The CiteNexus source is identified by the annotated `v0.2.0` tag at publication.
 - [ ] Review the final diff, package manifests, lockfile, wheel and sdist contents. Keep private
   environment files and client settings out of artifacts. Verify the README marker survives
   wheel metadata generation. Recheck dependencies for disclosed vulnerabilities.
@@ -91,8 +93,8 @@ offline suite. Paid provider entitlement checks require configured accounts and 
 - [ ] Recheck marketplace routes and account/ownership requirements. Keep hosted ChatGPT/Codex
   public-directory submissions and remote connector routes deferred until authentication,
   credential isolation, hosting and review are implemented.
-- [ ] Obtain a later explicit release instruction. Only then publish the Python artifact,
-  verify its metadata, authenticate the matching registry namespace and submit `server.json`.
+- [x] Obtain an explicit release instruction for CiteNexus (2026-09-17). Publish the Python
+  artifact and verify its metadata before authenticating and submitting the registry entry.
   Registry ownership validation depends on the already published PyPI artifact; offline JSON
   Schema validation cannot replace that step.
 - [ ] Coordinate the WTF-P release separately. Do not tell users that npm 0.6.0 includes this

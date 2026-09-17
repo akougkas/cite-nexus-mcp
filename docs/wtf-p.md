@@ -2,10 +2,23 @@
 
 **CiteNexus finds and checks research sources. WTF-P turns research into a writing workflow.**
 The companion links WTF-P's existing citation-search command to CiteNexus through real MCP
-stdio, preserving provenance and candidate status. Both checkouts contain local, unreleased
-preparation. The published `wtf-p@0.6.0` and older CiteNexus releases do not include this bridge.
+stdio, preserving provenance and candidate status. CiteNexus 0.2.0 includes the companion.
+The WTF-P team is preparing its matching **0.7.0** release; `wtf-p@0.6.0` does not include
+the backend. Use their integration branch until that separate release is available.
 
-## Start with the checkouts
+## Install the companion
+
+```bash
+uv tool install cite-nexus-mcp==0.2.0
+cite-nexus-wtfp --check
+```
+
+Keep `cite-nexus-wtfp` on the PATH used by WTF-P, or set `WTFP_CITE_NEXUS_COMMAND` to its
+absolute installed path. On Windows, use the installed `cite-nexus-wtfp.exe` path. The
+companion is a separate Python installation; adding the WTF-P backend does not install it.
+Wait for WTF-P 0.7.0 or use the team's integration branch to select `--backend=cite-nexus`.
+
+## Develop and verify the paired checkouts
 
 With CiteNexus and [WTF-P](https://github.com/akougkas/wtf-p) checked out side by side:
 

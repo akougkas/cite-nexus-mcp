@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 — unreleased
+## 0.2.0 — 2026-09-17
 
 CiteNexus becomes a provider-independent scholarly metadata service with public API defaults.
 

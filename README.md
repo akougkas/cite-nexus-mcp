@@ -1,6 +1,6 @@
 # CiteNexus MCP
 
-<img src="assets/cite-nexus.svg" alt="CiteNexus" width="88" height="88" align="right">
+<img src="https://raw.githubusercontent.com/akougkas/cite-nexus-mcp/v0.2.0/assets/cite-nexus.svg" alt="CiteNexus" width="88" height="88" align="right">
 
 **Scholarly discovery and citations with evidence you can trace.**
 
@@ -12,13 +12,13 @@ asking a language model to invent the missing fields.
 This is a citation and metadata service for the assistant you already use. It works alongside
 reference managers such as Zotero and writing environments that support MCP.
 
-**0.2.0 is in release preparation.** Run this checkout to try the current implementation.
-Marketplace registration and the WTF-P companion are prepared locally; nothing in the release
-kit has been published or submitted.
+**CiteNexus 0.2.0** includes the MCP service and the `cite-nexus-wtfp` companion.
+The WTF-P integration targets its separate 0.7.0 release. Marketplace listings and native
+client plugin qualification are tracked independently.
 
-[Quick start](#run-this-checkout) · [WTF-P integration](docs/wtf-p.md) ·
-[Provider guide](docs/providers.md) · [Troubleshooting](docs/troubleshooting.md) ·
-[Release preparation](docs/release/README.md)
+[Quick start](#quick-start) · [WTF-P integration](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/wtf-p.md) ·
+[Provider guide](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/providers.md) · [Troubleshooting](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/troubleshooting.md) ·
+[Release information](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/release/README.md)
 
 - **Useful without credentials:** Crossref, DataCite and Europe PMC are the default search sources.
   arXiv and Semantic Scholar are also available without mandatory keys.
@@ -31,21 +31,14 @@ kit has been published or submitted.
   resources, prompts, progress, stdio and Streamable HTTP. Earlier clients remain supported by
   the SDK's legacy protocol path.
 
-## Run this checkout
+## Quick start
 
 Python 3.11+ and [uv](https://docs.astral.sh/uv/) are required.
 
 ```bash
-git clone https://github.com/akougkas/cite-nexus-mcp.git
-cd cite-nexus-mcp
-uv sync --locked
-uv run cite-nexus-mcp --list-providers
-uv run cite-nexus-mcp
+uvx --from cite-nexus-mcp==0.2.0 cite-nexus-mcp --version
+uvx --from cite-nexus-mcp==0.2.0 cite-nexus-mcp --no-env-file --list-providers
 ```
-
-The last command starts MCP over stdio and waits for a client. It is not an interactive search
-shell. No API key or `.env` file is required. These instructions run the code in your checkout;
-the versioned package installation instructions will apply after publication.
 
 For an MCP client with a `mcpServers` configuration:
 
@@ -53,20 +46,32 @@ For an MCP client with a `mcpServers` configuration:
 {
   "mcpServers": {
     "cite-nexus": {
-      "command": "uv",
-      "args": [
-        "--directory", "/absolute/path/to/cite-nexus-mcp",
-        "run", "--locked", "cite-nexus-mcp"
-      ]
+      "command": "uvx",
+      "args": ["--from", "cite-nexus-mcp==0.2.0", "cite-nexus-mcp", "--no-env-file"]
     }
   }
 }
 ```
 
+The client starts MCP over stdio. No API key or `.env` file is required. Running the server
+command directly waits for a client; it is not an interactive search shell. If your client
+cannot find `uvx`, use its absolute executable path. The first run downloads the package and
+its dependencies.
+
+For a persistent installation, including the WTF-P companion:
+
+```bash
+uv tool install cite-nexus-mcp==0.2.0
+cite-nexus-wtfp --check
+```
+
+The diagnostic starts the actual MCP service and lists providers without querying vendor APIs.
+See the [WTF-P setup](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/wtf-p.md) for the separate integration and executable-path setting.
+
 For local HTTP clients:
 
 ```bash
-uv run cite-nexus-mcp --transport streamable-http --port 8000
+uvx --from cite-nexus-mcp==0.2.0 cite-nexus-mcp --no-env-file --transport streamable-http --port 8000
 ```
 
 Connect to `http://127.0.0.1:8000/mcp`. The CLI binds only to loopback and serves a single trust
@@ -105,7 +110,7 @@ documentation links without testing access or revealing key values.
 
 Use CiteNexus to build a literature shortlist, repair an uncertain reference, check the source
 behind a citation count, or prepare a bibliography for your writing tool. For a full writing
-workflow, the [WTF-P companion](docs/wtf-p.md) connects discovery to evidence tables, outlines
+workflow, the [WTF-P companion](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/wtf-p.md) connects discovery to evidence tables, outlines
 and manuscript work while keeping candidate references visible for review.
 
 Ask your assistant to use the tools directly, or start with the `literature-review` and
@@ -192,7 +197,7 @@ Copy `.env.example` to `.env` only if you need optional settings. Existing proce
 variables take precedence. The CLI loads `./.env`, or an explicit `--env-file`; it never searches
 parent directories. Importing the Python package does not read `.env` or call external services.
 Pass `--no-env-file` for clients that manage credentials themselves. The WTF-P companion and
-prepared plugin manifests always use this mode.
+plugin manifests always use this mode.
 
 | Variable | Default | Meaning |
 |---|---|---|
@@ -209,12 +214,16 @@ bounded and partitions responses by credentials. Responses larger than 8 MB are 
 `Retry-After` cooldowns return a provider issue instead of holding the call open. Keys and upstream
 error bodies are excluded from tool errors. Local stderr logging keeps stdout clean for MCP.
 
-See [provider details](docs/providers.md), [migration notes](docs/migration.md), and
-[product direction](docs/product-direction.md) for access nuances and boundaries.
+See [provider details](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/providers.md), [migration notes](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/migration.md), and
+[product direction](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/product-direction.md) for access nuances and boundaries.
 
 ## Development and verification
 
+To work from source:
+
 ```bash
+git clone https://github.com/akougkas/cite-nexus-mcp.git
+cd cite-nexus-mcp
 uv sync --locked
 uv run ruff check src tests scripts
 uv run ruff format --check src tests scripts
@@ -241,17 +250,17 @@ anonymous Semantic Scholar. Rate limits and network failures are reported as out
 
 The official MCP Tasks extension is not advertised. SDK 2.2 does not implement it yet.
 `batch-citations` is a bounded synchronous workflow with progress and cancellation, not a durable
-job queue. [The roadmap](docs/product-direction.md) describes the criteria for adding persistent
+job queue. [The roadmap](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/product-direction.md) describes the criteria for adding persistent
 tasks, local libraries and further licensed providers.
 
-The [launch kit](docs/release/launch-kit.md) includes positioning, listing copy, a demo script,
-and promotional drafts. The [marketplace inventory](docs/release/marketplaces.md) tracks 41
+The [launch kit](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/release/launch-kit.md) includes positioning, listing copy, a demo script,
+and promotional drafts. The [marketplace inventory](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/release/marketplaces.md) tracks 41
 channels and leads, including verified routes, duplicate channels and inactive or unresolved
 sites. Source metadata, portable plugin manifests and image assets are prepared for review.
-See [data handling](docs/data-handling.md) before configuring optional providers or hosting.
+See [data handling](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/data-handling.md) before configuring optional providers or hosting.
 
 ## License
 
-[MIT](LICENSE). Provider content, API access and redistribution remain subject to each source's terms.
+[MIT](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/LICENSE). Provider content, API access and redistribution remain subject to each source's terms.
 
 <!-- mcp-name: io.github.akougkas/cite-nexus-mcp -->

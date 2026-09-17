@@ -1,6 +1,6 @@
 # CiteNexus 0.2.0
 
-**Release notes draft. Remove this banner only for the approved publication.**
+Release date: 2026-09-17. Source: annotated tag `v0.2.0`.
 
 CiteNexus provides scholarly discovery and citations with evidence you can trace. Search
 free metadata sources, resolve identifiers, check references and export citations through MCP.
@@ -27,7 +27,7 @@ The companion preserves candidate status and provider evidence, forwards only in
 credentials through the WTF-P boundary, rejects offline network calls, and closes the server
 on deadlines or cancellation. It does not write bibliography files or silently switch vendors.
 
-## Install after publication
+## Install
 
 Python 3.11+ and uv:
 
