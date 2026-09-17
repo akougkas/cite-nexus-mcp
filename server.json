@@ -1,0 +1,87 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.akougkas/cite-nexus-mcp",
+  "title": "CiteNexus",
+  "description": "Search scholarly sources, verify references, and export citations with traceable evidence.",
+  "version": "0.2.0",
+  "repository": {
+    "url": "https://github.com/akougkas/cite-nexus-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/akougkas/cite-nexus-mcp",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "cite-nexus-mcp",
+      "version": "0.2.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "named",
+          "name": "--no-env-file"
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "CITE_NEXUS_CONTACT_EMAIL",
+          "description": "Optional Crossref polite-pool contact email",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "SEMANTIC_SCHOLAR_API_KEY",
+          "description": "Optional Semantic Scholar account key",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "OPENALEX_API_KEY",
+          "description": "Key for explicitly selected OpenAlex queries; account credits apply",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "SERPAPI_API_KEY",
+          "description": "Key for explicitly selected commercial Google Scholar queries",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "SCOPUS_API_KEY",
+          "description": "Key for explicitly selected Scopus queries; entitlement required",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "SCOPUS_INSTTOKEN",
+          "description": "Optional Scopus institutional token",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "WOS_API_KEY",
+          "description": "Key for explicitly selected Web of Science Starter queries",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "UNPAYWALL_EMAIL",
+          "description": "Optional email for Unpaywall open-access enrichment",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

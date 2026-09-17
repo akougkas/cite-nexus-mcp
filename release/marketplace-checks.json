@@ -1,0 +1,246 @@
+{
+  "checked_at": "2026-09-16",
+  "method": "GET, follow redirects; no login or submissions",
+  "results": [
+    {
+      "id": "official-registry",
+      "url": "https://modelcontextprotocol.io/registry/quickstart",
+      "status": 200,
+      "final_url": "https://modelcontextprotocol.io/registry/quickstart"
+    },
+    {
+      "id": "github-mcp",
+      "url": "https://github.com/mcp",
+      "status": 200,
+      "final_url": "https://github.com/mcp"
+    },
+    {
+      "id": "vscode-gallery",
+      "url": "https://code.visualstudio.com/mcp",
+      "status": 200,
+      "final_url": "https://github.com/mcp?utm_source=vscode-website&utm_campaign=mcp-registry-server-launch-2025"
+    },
+    {
+      "id": "smithery",
+      "url": "https://smithery.ai/docs/build/publish",
+      "status": 200,
+      "final_url": "https://smithery.ai/docs/build/publish"
+    },
+    {
+      "id": "glama",
+      "url": "https://glama.ai/mcp/servers",
+      "status": 200,
+      "final_url": "https://glama.ai/mcp/servers"
+    },
+    {
+      "id": "pulsemcp",
+      "url": "https://www.pulsemcp.com/submit",
+      "status": 200,
+      "final_url": "https://www.pulsemcp.com/submit"
+    },
+    {
+      "id": "cline",
+      "url": "https://github.com/cline/mcp-marketplace/issues/new?template=mcp-server-submission.yml",
+      "status": 200,
+      "final_url": "https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2Fcline%2Fmcp-marketplace%2Fissues%2Fnew%3Ftemplate%3Dmcp-server-submission.yml"
+    },
+    {
+      "id": "docker",
+      "url": "https://github.com/docker/mcp-registry/blob/main/CONTRIBUTING.md",
+      "status": 200,
+      "final_url": "https://github.com/docker/mcp-registry/blob/main/CONTRIBUTING.md"
+    },
+    {
+      "id": "mcp-so",
+      "url": "https://mcp.so/submit",
+      "status": 200,
+      "final_url": "https://mcp.so/submit?type=server"
+    },
+    {
+      "id": "mcpservers-org",
+      "url": "https://mcpservers.org/submit",
+      "status": 200,
+      "final_url": "https://mcpservers.org/submit"
+    },
+    {
+      "id": "mcpmarket",
+      "url": "https://mcpmarket.com/submit",
+      "status": 200,
+      "final_url": "https://mcpmarket.com/submit"
+    },
+    {
+      "id": "mcpserverfinder",
+      "url": "https://www.mcpserverfinder.com/categories/submit-mcp-server",
+      "status": 200,
+      "final_url": "https://www.mcpserverfinder.com/categories/submit-mcp-server"
+    },
+    {
+      "id": "lobehub",
+      "url": "https://market.lobehub.com/s/publish-mcp",
+      "status": 200,
+      "final_url": "https://market.lobehub.com/s/publish-mcp"
+    },
+    {
+      "id": "awesome-punkpeye",
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/blob/main/CONTRIBUTING.md",
+      "status": 200,
+      "final_url": "https://github.com/punkpeye/awesome-mcp-servers/blob/main/CONTRIBUTING.md"
+    },
+    {
+      "id": "awesome-wong2",
+      "url": "https://mcpservers.org/submit",
+      "status": 200,
+      "final_url": "https://mcpservers.org/submit"
+    },
+    {
+      "id": "awesome-appcypher",
+      "url": "https://github.com/appcypher/awesome-mcp-servers/blob/main/CONTRIBUTING.md",
+      "status": 200,
+      "final_url": "https://github.com/appcypher/awesome-mcp-servers/blob/main/CONTRIBUTING.md"
+    },
+    {
+      "id": "claude-plugins",
+      "url": "https://platform.claude.com/plugins/submit",
+      "status": 200,
+      "final_url": "https://platform.claude.com/plugins/submit"
+    },
+    {
+      "id": "claude-connectors",
+      "url": "https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq",
+      "status": 200,
+      "final_url": "https://support.claude.com/en/articles/11596036-anthropic-connectors-directory-faq"
+    },
+    {
+      "id": "openai-plugins",
+      "url": "https://developers.openai.com/plugins/build/plugins",
+      "status": 200,
+      "final_url": "https://developers.openai.com/plugins/build/plugins"
+    },
+    {
+      "id": "gemini-gallery",
+      "url": "https://geminicli.com/docs/extensions/releasing/",
+      "status": 200,
+      "final_url": "https://geminicli.com/docs/extensions/releasing/"
+    },
+    {
+      "id": "agentplugins",
+      "url": "https://agent-plugins.org",
+      "status": 200,
+      "final_url": "https://agent-plugins.org"
+    },
+    {
+      "id": "cursor-directory",
+      "url": "https://cursor.directory/mcp",
+      "status": 429
+    },
+    {
+      "id": "mcpservers-com",
+      "url": "https://mcpservers.com",
+      "status": 200,
+      "final_url": "https://mcpservers.com"
+    },
+    {
+      "id": "mcp-get",
+      "url": "https://mcp-get.com",
+      "status": 200,
+      "final_url": "https://mcp-get.com"
+    },
+    {
+      "id": "mcp-awesome",
+      "url": "https://mcpawesome.com",
+      "status": 200,
+      "final_url": "https://mcpawesome.com"
+    },
+    {
+      "id": "mcp-list",
+      "url": "https://mcplist.ai",
+      "status": 200,
+      "final_url": "https://www.mcplist.ai/"
+    },
+    {
+      "id": "azure-api-center",
+      "url": "https://learn.microsoft.com/en-us/azure/api-center/register-discover-mcp-server",
+      "status": 200,
+      "final_url": "https://learn.microsoft.com/en-us/azure/api-center/register-discover-mcp-server"
+    },
+    {
+      "id": "composio",
+      "url": "https://composio.dev/toolkits",
+      "status": 200,
+      "final_url": "https://composio.dev/toolkits"
+    },
+    {
+      "id": "pipedream",
+      "url": "https://pipedream.com/docs/connect/mcp",
+      "status": 200,
+      "final_url": "https://pipedream.com/docs/connect/mcp"
+    },
+    {
+      "id": "railway",
+      "url": "https://railway.com/templates",
+      "status": 200,
+      "final_url": "https://railway.com/deploy"
+    },
+    {
+      "id": "aws-marketplace",
+      "url": "https://docs.aws.amazon.com/marketplace/latest/userguide/mcp-server-products.html",
+      "status": 200,
+      "final_url": "https://docs.aws.amazon.com/marketplace/latest/userguide/"
+    },
+    {
+      "id": "google-cloud-marketplace",
+      "url": "https://cloud.google.com/marketplace/docs/partners/mcp-server-overview",
+      "status": 404
+    },
+    {
+      "id": "mcp-directory",
+      "url": "https://www.mcp-directory.com",
+      "status": 200,
+      "final_url": "https://mcp-directory-com.l.ink/"
+    },
+    {
+      "id": "mcpserver-directory",
+      "url": "https://mcpserver.directory",
+      "status": 402
+    },
+    {
+      "id": "mcp-hub",
+      "url": "https://mcphub.io",
+      "status": 402
+    },
+    {
+      "id": "mcp-run",
+      "url": "https://www.mcp.run",
+      "status": 200,
+      "final_url": "https://turbomcp.ai/"
+    },
+    {
+      "id": "mcp-cat",
+      "url": "https://mcpcat.io",
+      "status": 200,
+      "final_url": "https://agentcat.com/"
+    },
+    {
+      "id": "bolt-directory",
+      "url": "https://mcp.boltai.com",
+      "status": 200,
+      "final_url": "https://boltai.com/?ref=dotcom"
+    },
+    {
+      "id": "mcpserverslist",
+      "url": "https://mcpserverslist.com",
+      "status": 200,
+      "final_url": "http://ww38.mcpserverslist.com/"
+    },
+    {
+      "id": "findmcp",
+      "url": "https://findmcpserver.com",
+      "status": "unreachable"
+    },
+    {
+      "id": "mcp-next",
+      "url": "https://mcpnext.com",
+      "status": "unreachable"
+    }
+  ]
+}

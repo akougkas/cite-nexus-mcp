@@ -1,0 +1,76 @@
+name: Publish to PyPI
+
+# Manual only. Pushing a tag or creating a GitHub release does not publish a package.
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Reviewed annotated release tag, for example v0.2.0
+        required: true
+        type: string
+      confirm_pypi:
+        description: Publish this tested version to production PyPI
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pypi-publication
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/master' && inputs.confirm_pypi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: refs/tags/${{ inputs.release_tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          python-version: '3.13'
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Verify release state, identity and reviewed tag
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: uv run python scripts/release_gate.py --tag "$RELEASE_TAG"
+      - run: uv run ruff check src tests scripts
+      - run: uv run ruff format --check src tests scripts
+      - run: uv run mypy src/cite_nexus_mcp
+      - run: uv run python scripts/prepare_release.py --check
+      - run: uv run python scripts/marketplaces.py --check
+      - run: uv run pytest -q
+      - run: uv build --out-dir dist/pypi
+      - run: uv run python scripts/check_distribution.py --directory dist/pypi --install
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pypi-distributions
+          path: |
+            dist/pypi/*.whl
+            dist/pypi/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/cite-nexus-mcp/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: pypi-distributions
+          path: dist/pypi
+      - name: Publish the tested artifacts with PyPI Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+        with:
+          packages-dir: dist/pypi/
+          attestations: true

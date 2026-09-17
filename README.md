@@ -1,164 +1,257 @@
 # CiteNexus MCP
 
-**The AI-Native Academic Citation & Research Engine**
+<img src="assets/cite-nexus.svg" alt="CiteNexus" width="88" height="88" align="right">
 
-[![Model Context Protocol](https://img.shields.io/badge/MCP-Enabled-blue.svg)](https://modelcontextprotocol.io/)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+**Scholarly discovery and citations with evidence you can trace.**
 
-CiteNexus is a fast, lightweight Model Context Protocol (MCP) server designed to give AI agents (like Claude Code, Gemini CLI, Cursor, and Windsurf) native access to the global academic literature graph. 
+CiteNexus connects research assistants to open scholarly metadata, specialist academic indexes,
+and optional commercial databases through the Model Context Protocol. Search without an API key,
+resolve stable identifiers, check references against their sources, and export citations without
+asking a language model to invent the missing fields.
 
-The name says it all: it is the **nexus** where your AI assistant connects directly to the world's academic **citations**. Rather than forcing researchers to break their writing flow to navigate web interfaces, CiteNexus brings powerful reference management, citation generation, and metadata formatting directly into the IDEs and terminals where the writing actually happens.
+This is a citation and metadata service for the assistant you already use. It works alongside
+reference managers such as Zotero and writing environments that support MCP.
 
----
+**0.2.0 is in release preparation.** Run this checkout to try the current implementation.
+Marketplace registration and the WTF-P companion are prepared locally; nothing in the release
+kit has been published or submitted.
 
-## 🌟 The Vision
+[Quick start](#run-this-checkout) · [WTF-P integration](docs/wtf-p.md) ·
+[Provider guide](docs/providers.md) · [Troubleshooting](docs/troubleshooting.md) ·
+[Release preparation](docs/release/README.md)
 
-For decades, reference management has meant opening dedicated desktop applications (like Zotero or EndNote) or navigating browser-based walled gardens. While modern tools like Google Scholar Labs offer fantastic human-centric reading experiences, they remain isolated from the actual writing environment.
+- **Useful without credentials:** Crossref, DataCite and Europe PMC are the default search sources.
+  arXiv and Semantic Scholar are also available without mandatory keys.
+- **Optional specialist and commercial access:** OpenAlex, Google Scholar through SerpAPI,
+  Scopus and Web of Science Starter have explicit configuration and provider selection.
+- **Source-backed records:** namespaced identifiers, retrieval timestamps, field attribution,
+  incomplete-author warnings and provider-specific citation counts.
+- **Deterministic export:** BibTeX, RIS and CSL-JSON from retrieved metadata. No model is required.
+- **Current MCP:** Python SDK 2.2, the **2026-07-28** specification, structured tool results,
+  resources, prompts, progress, stdio and Streamable HTTP. Earlier clients remain supported by
+  the SDK's legacy protocol path.
 
-CiteNexus takes a different approach: **Innovation through Integration.**
+## Run this checkout
 
-We believe the future of research is *Agentic*. Your AI assistant should be able to seamlessly fetch, format, and verify citations without you ever leaving your editor. CiteNexus acts as the critical bridge between massive academic databases (like Google Scholar) and your local AI workflows. It doesn't compete with the giants of academic search; it unlocks their full potential for the AI era.
-
-### Why CiteNexus?
-- **Cluster-First Architecture:** Uses Google Scholar "Cluster IDs" as the universal source of truth, bypassing the brittleness of DOIs, mismatched titles, or broken URLs.
-- **LLM-Powered Formatting (Elicitation):** Replaces thousands of lines of fragile parsing code with dynamic AI formatting. Need a bespoke BibTeX format for a niche IEEE conference? CiteNexus handles it gracefully.
-- **Local AI Native:** Native support for local AI servers (like `llama.cpp`) for zero-cost, fully private citation parsing and enhancement.
-- **Where You Write:** Integrates directly into your AI coding assistants, meta-prompting frameworks (like [WTF-P](https://github.com/akougkas/wtf-p)), and terminal agents. No more tab-switching.
-
----
-
-## 🛠️ Core Capabilities
-
-CiteNexus exposes four focused MCP tools to your AI agent:
-
-1. **`find-scholar-id`**: Converts any messy input (a loose title, an ArXiv ID, a DOI, or a fragmented citation) into a universal, stable Google Scholar Cluster ID.
-2. **`get-citation`**: Fetches the complete metadata for a Cluster ID and generates a perfectly accurate BibTeX entry natively in JSON.
-3. **`enhance-citation`**: An expert academic librarian tool. Feed it a raw citation and an instruction (e.g., *"Make this ready for an IEEE journal. It's a highly cited AI paper"*), and it intelligently infers keywords, corrects capitalization, fixes missing author lists, and standardizes field names based on the target template.
-4. **`paper-metrics`**: Retrieves impact analytics, citation counts, and top related modern papers to help your agent evaluate a source's significance.
-
----
-
-## 🚀 Quickstart
-
-CiteNexus is packaged with `uv` for lightning-fast installation and execution.
-
-### Prerequisites
-
-You need a [SerpAPI Key](https://serpapi.com/) to query Google Scholar.
+Python 3.11+ and [uv](https://docs.astral.sh/uv/) are required.
 
 ```bash
-export SERP_API_KEY="your-serpapi-key"
+git clone https://github.com/akougkas/cite-nexus-mcp.git
+cd cite-nexus-mcp
+uv sync --locked
+uv run cite-nexus-mcp --list-providers
+uv run cite-nexus-mcp
 ```
 
-### 🧠 LLM Elicitation Configuration
+The last command starts MCP over stdio and waits for a client. It is not an interactive search
+shell. No API key or `.env` file is required. These instructions run the code in your checkout;
+the versioned package installation instructions will apply after publication.
 
-CiteNexus heavily utilizes MCP Elicitation (having the AI format the data). If your primary MCP client does not yet support native MCP Elicitation, CiteNexus automatically falls back to either a local AI server or a cloud provider. 
+For an MCP client with a `mcpServers` configuration:
 
-**Option A: Local AI Native Support (Recommended)**
-Point CiteNexus to your local model server for completely free, private extraction and enhancement. CiteNexus will automatically detect the loaded model and gracefully handle the formatting. 
-
-We highly recommend the **Qwen2.5** family of models, as they excel at precise JSON generation, metadata extraction, and academic reasoning.
-
-**Hardware / Model Recommendations:**
-| VRAM | Recommended Model | Use Case |
-|---|---|---|
-| **8GB** | `qwen2.5:3b` or `qwen2.5:7b-q4` | Fast, lightweight extraction on entry-level GPUs or MacBooks. |
-| **12GB - 16GB** | `qwen2.5:14b` | Excellent balance of speed and complex academic reasoning. |
-| **24GB+** | `qwen2.5:32b` or `qwen2.5-coder:32b` | Near-GPT-4 level intelligence for advanced `enhance-citation` tasks. |
-
-**Setup Instructions:**
-
-* **[Ollama](https://ollama.com/) (Easiest)**
-  1. Install Ollama and pull your desired model: `ollama run qwen2.5:7b`
-  2. Ollama's API runs on port `11434` by default.
-  3. Set: `export LOCAL_AI_API_BASE="http://localhost:11434/v1"`
-
-* **[LM Studio](https://lmstudio.ai/)**
-  1. Download LM Studio and search for a GGUF of Qwen2.5 (e.g., `Qwen2.5-7B-Instruct-GGUF`).
-  2. Start the Local Server from the left sidebar.
-  3. Note the port (usually `1234`).
-  4. Set: `export LOCAL_AI_API_BASE="http://localhost:1234/v1"`
-
-* **[llama.cpp](https://github.com/ggerganov/llama.cpp) (Linux / WSL2 Power Users)**
-  1. Compile `llama.cpp` with CUDA support for maximum performance:
-     ```bash
-     make LLAMA_CUDA=1
-     ```
-  2. Download your preferred GGUF model from HuggingFace.
-  3. Start the server (example for 24GB VRAM):
-     ```bash
-     ./llama-server -m path/to/Qwen2.5-32B-Instruct-Q4_K_M.gguf --port 8080 --n-gpu-layers 999 --ctx-size 8192
-     ```
-  4. Set: `export LOCAL_AI_API_BASE="http://localhost:8080/v1"`
-
-**Option B: OpenAI-Compatible API**
-
-```bash
-export OPENAI_API_KEY="sk-..."
-# Optional overrides:
-# export OPENAI_API_BASE="https://api.openai.com/v1" 
-# export OPENAI_MODEL="gpt-4o-mini"
-```
-
-### Running via `uvx`
-
-You can run the server instantly without permanently installing it into your global environment:
-
-```bash
-uvx cite-nexus-mcp
-```
-
-### IDE / Agent Integration Examples
-
-#### Claude Desktop
-Add CiteNexus to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
     "cite-nexus": {
-      "command": "uvx",
-      "args": ["cite-nexus-mcp"],
-      "env": {
-        "SERP_API_KEY": "your-serp-api-key",
-        "LOCAL_AI_API_BASE": "http://127.0.0.1:8080/v1"
-      }
+      "command": "uv",
+      "args": [
+        "--directory", "/absolute/path/to/cite-nexus-mcp",
+        "run", "--locked", "cite-nexus-mcp"
+      ]
     }
   }
 }
 ```
 
-#### Cursor / Windsurf
-Provide the exact same command (`uvx cite-nexus-mcp`) and environment variables in the MCP configuration panel of your IDE settings.
+For local HTTP clients:
 
----
+```bash
+uv run cite-nexus-mcp --transport streamable-http --port 8000
+```
 
-## 🏗️ Development
+Connect to `http://127.0.0.1:8000/mcp`. The CLI binds only to loopback and serves a single trust
+boundary. A public, multi-user deployment needs authentication, credential isolation and its
+own deployment integration; the CLI does not supply those features.
 
-To build on top of CiteNexus or run it locally:
+## Sources and access
 
-1. Install `uv`:
-   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
-2. Clone and install:
-   ```bash
-   git clone https://github.com/akougkas/cite-nexus-mcp.git
-   cd cite-nexus-mcp
-   uv sync
-   ```
-3. Copy the environment template and run the development server:
-   ```bash
-   cp .env.example .env
-   # Add your SERP_API_KEY and LOCAL_AI_API_BASE to .env
-   uv run cite-nexus-mcp
-   ```
+| Provider ID | Coverage | Access | Setup |
+|---|---|---|---|
+| `crossref` | Publisher-deposited DOI metadata and citation counts | Free; default | Optional `CITE_NEXUS_CONTACT_EMAIL` for the polite pool |
+| `datacite` | Datasets, software and other DOI-registered research outputs | Free; default | None |
+| `europe_pmc` | Biomedical literature, PubMed/PMC records, references and citations | Free; default | None |
+| `arxiv` | Preprints in physics, mathematics, computing and related fields | Free | Select explicitly; paced to one request per three seconds |
+| `semantic_scholar` | Academic Graph discovery and citation traversal | Free/shared anonymous limits; optional key | Optional `SEMANTIC_SCHOLAR_API_KEY` |
+| `openalex` | Multidisciplinary research graph | Free credits / metered account access | `OPENALEX_API_KEY` |
+| `serpapi` | Google Scholar through a vendor API | Commercial; account allowances vary | `SERPAPI_API_KEY` |
+| `scopus` | Elsevier's curated literature index | Institutional/commercial entitlement | `SCOPUS_API_KEY`; optional `SCOPUS_INSTTOKEN` |
+| `wos` | Clarivate Web of Science Starter | Institutional/commercial entitlement | `WOS_API_KEY` |
 
----
+`find-open-access` can additionally enrich DOI records with **Unpaywall** when
+`UNPAYWALL_EMAIL` is configured. It returns reported legal OA locations and licensing information;
+it does not download PDFs or bypass access restrictions.
 
-## 🤝 Philosophy & The Future
+Free access is subject to provider rate limits and terms. Anonymous Semantic Scholar can be
+heavily throttled. OpenAlex access policies have changed over time; CiteNexus requires a key for
+that adapter even when an anonymous request happens to succeed. Institution keys do not by
+themselves guarantee subscription access or access outside an institution's network.
 
-CiteNexus is built on the **"Engine in the Car"** philosophy. It is designed to be the ultimate citation engine that powers larger, more ambitious academic AI frameworks. As the academic ecosystem evolves, CiteNexus will grow to encompass citation graph traversal, local library (PDF) syncing, and hallucination verification, empowering researchers to do their best work at the speed of thought.
+Commercial and metered adapters are called only when selected explicitly, when resolving their
+own namespaced IDs, or when deliberately configured as search defaults. Setting a key alone does
+not add a vendor to default searches. `list-providers` reports configuration, capabilities and
+documentation links without testing access or revealing key values.
 
-## 📄 License
-MIT License
+## Research workflows
+
+Use CiteNexus to build a literature shortlist, repair an uncertain reference, check the source
+behind a citation count, or prepare a bibliography for your writing tool. For a full writing
+workflow, the [WTF-P companion](docs/wtf-p.md) connects discovery to evidence tables, outlines
+and manuscript work while keeping candidate references visible for review.
+
+Ask your assistant to use the tools directly, or start with the `literature-review` and
+`bibliography-audit` MCP prompts. Example tool arguments:
+
+```json
+{"query": "reproducible machine learning benchmarks", "providers": ["crossref", "arxiv"], "limit": 5}
+```
+
+```json
+{"identifier": "10.1038/nature14539", "format": "bibtex"}
+```
+
+```json
+{"citation": "10.1038/nature14539", "expected_title": "Deep learning", "expected_year": 2015}
+```
+
+```json
+{"identifier": "PMID:26017442", "direction": "references", "provider": "europe_pmc", "limit": 10}
+```
+
+```json
+{"identifiers": ["10.1038/nature14539", "arxiv:1706.03762"], "format": "csl-json"}
+```
+
+| Tool | Purpose |
+|---|---|
+| `list-providers` | Inspect source capabilities, access tiers and credential configuration |
+| `search-papers` | Concurrent federated search, conservative deduplication and per-source pagination |
+| `resolve-paper` | Retrieve and validate a DOI or namespaced identifier; optionally merge selected sources |
+| `get-citation` | Export one resolved record as `bibtex`, `ris` or `csl-json` |
+| `verify-citation` | Check an identifier or single BibTeX entry, including supplied title and year |
+| `batch-citations` | Resolve and export 1–20 identifiers with ordered results, partial failures and progress |
+| `related-papers` | Page through a source's citations or references |
+| `paper-metrics` | Return observed citation counts, separated by provider and index |
+| `find-open-access` | Find source-reported OA locations, with optional Unpaywall enrichment |
+| `enhance-citation` | Normalize BibTeX formatting while preserving supplied bibliographic facts |
+| `find-scholar-id` | Legacy Scholar discovery through SerpAPI; returns candidates for review |
+
+`search-papers` defaults to 10 results **per provider**, not 10 overall. Results interleave each
+provider's ranking, then merge compatible records. `limit` is 1–50, or at most 20 when using
+SerpAPI. Use each provider's `next_offsets` with the **same limit**, selecting that provider for
+the next call. Europe PMC search uses `next_cursors` instead: pass its token as `cursor`,
+select only `europe_pmc`, keep the same query and limit, and leave `offset` at zero.
+Offsets must be multiples of the limit, up to 10,000. `year_from`, `year_to` and
+`open_access_only` filter the fetched page; unknown values are excluded. Abstracts are omitted
+from search results by default; set `include_abstract: true` or resolve a record to retrieve them.
+Provider search languages differ: explicit advanced queries use that provider's syntax.
+
+Supported identifiers include `10.1038/nature14539`, `arxiv:1706.03762`, `PMID:26017442`,
+`PMC12345`, `openalex:W2919115771`, `s2:<paperId>`, `s2:CorpusId:<number>`,
+`scholar:<numericClusterId>`, `scopus:<numericId>`, and `WOS:<recordId>`. DOI, arXiv and PubMed
+URLs are recognized. Arbitrary URLs are not fetched, and unprefixed numeric strings are not
+assumed to be PubMed or Scholar IDs.
+
+DOI resolution tries Crossref, DataCite and Europe PMC in order until a matching record is
+retrieved. An explicit `providers` list instead checks each compatible selected source and
+retains evidence and disagreements. Native identifiers route to their corresponding source.
+A title search always returns candidates; it never silently declares the first result a match.
+
+Read the MCP resources `cite-nexus://methodology`, `cite-nexus://providers` and
+`cite-nexus://workflows` for machine-accessible guidance.
+
+## What “verified” means
+
+Verification establishes that an identifier exists in retrieved metadata and checks any supplied
+title and year. It does **not** establish that a paper's findings are correct, that every author
+is present, that the paper supports a specific claim, or that no retraction exists. A provider
+outage produces `unavailable`, rather than a claim that the citation is fabricated.
+
+Exports omit unavailable metadata. Partial author lists generate warnings; BibTeX uses `others`
+where appropriate. Citation counts retain their source, index and observation timestamp and are
+never summed across databases. Counts from different providers are not directly interchangeable.
+Metadata can contain errors or conflicting publication years, and an absent retraction flag is
+not proof that a paper is unretracted.
+
+CSL-JSON is structured bibliographic data. Use a CSL processor or your reference manager to render
+APA, IEEE or a journal's house style. `enhance-citation` supports `default` and `compact` formatting;
+it does not infer keywords, awards, impact factors or missing authors.
+
+## Configuration
+
+Copy `.env.example` to `.env` only if you need optional settings. Existing process environment
+variables take precedence. The CLI loads `./.env`, or an explicit `--env-file`; it never searches
+parent directories. Importing the Python package does not read `.env` or call external services.
+Pass `--no-env-file` for clients that manage credentials themselves. The WTF-P companion and
+prepared plugin manifests always use this mode.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `CITE_NEXUS_DEFAULT_PROVIDERS` | `crossref,datacite,europe_pmc` | Explicit search source IDs, comma separated |
+| `CITE_NEXUS_TIMEOUT` | `12` | Timeout in seconds for each HTTP request |
+| `CITE_NEXUS_OPERATION_TIMEOUT` | `40` | Time budget for a provider operation or identifier resolution |
+| `CITE_NEXUS_RETRIES` | `1` | Retries for transport failures, HTTP 429 and 5xx responses |
+| `CITE_NEXUS_CONCURRENCY` | `6` | Maximum simultaneous outbound requests |
+| `CITE_NEXUS_CACHE_TTL` | `300` | In-process response-cache lifetime in seconds; `0` disables it |
+| `CITE_NEXUS_CACHE_SIZE` | `256` | Maximum cached responses; `0` disables caching |
+
+Cached records retain their original retrieval and citation-observation timestamps. The cache is
+bounded and partitions responses by credentials. Responses larger than 8 MB are rejected. Long
+`Retry-After` cooldowns return a provider issue instead of holding the call open. Keys and upstream
+error bodies are excluded from tool errors. Local stderr logging keeps stdout clean for MCP.
+
+See [provider details](docs/providers.md), [migration notes](docs/migration.md), and
+[product direction](docs/product-direction.md) for access nuances and boundaries.
+
+## Development and verification
+
+```bash
+uv sync --locked
+uv run ruff check src tests scripts
+uv run ruff format --check src tests scripts
+uv run mypy src/cite_nexus_mcp
+uv run python scripts/prepare_release.py --check
+uv run python scripts/marketplaces.py --check
+uv run pytest -q
+uv build
+```
+
+The automated suite uses synthetic provider fixtures and mock HTTP, plus real local stdio and
+Streamable HTTP processes. It requires no vendor credentials and blocks external network access
+from the test process. Paid and institutional adapters have fixture-based contract coverage;
+live entitlement testing requires an account with access.
+
+An explicit public-API smoke test is available separately:
+
+```bash
+uv run python scripts/smoke_public.py
+```
+
+It ignores account credentials and only contacts Crossref, DataCite, Europe PMC, arXiv and
+anonymous Semantic Scholar. Rate limits and network failures are reported as outcomes.
+
+The official MCP Tasks extension is not advertised. SDK 2.2 does not implement it yet.
+`batch-citations` is a bounded synchronous workflow with progress and cancellation, not a durable
+job queue. [The roadmap](docs/product-direction.md) describes the criteria for adding persistent
+tasks, local libraries and further licensed providers.
+
+The [launch kit](docs/release/launch-kit.md) includes positioning, listing copy, a demo script,
+and promotional drafts. The [marketplace inventory](docs/release/marketplaces.md) tracks 41
+channels and leads, including verified routes, duplicate channels and inactive or unresolved
+sites. Source metadata, portable plugin manifests and image assets are prepared for review.
+See [data handling](docs/data-handling.md) before configuring optional providers or hosting.
+
+## License
+
+[MIT](LICENSE). Provider content, API access and redistribution remain subject to each source's terms.
+
+<!-- mcp-name: io.github.akougkas/cite-nexus-mcp -->

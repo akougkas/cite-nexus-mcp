@@ -1,0 +1,24 @@
+name: Bug report
+description: Report a reproducible CiteNexus problem
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Versions and setup
+      description: CiteNexus, Python, OS, MCP client, and stdio or HTTP transport.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Tool name, provider IDs, and a minimal public query or identifier. Remove credentials and confidential text.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual result
+      description: Include sanitized error codes and whether other providers worked.
+    validations:
+      required: true

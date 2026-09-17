@@ -48,3 +48,12 @@ venv.bak/
 OPT_PLAN.md
 plan.md
 CLAUDE.md
+
+# Test, lint and local configuration artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.env.*
+!.env.example

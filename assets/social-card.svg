@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="CiteNexus: scholarly discovery and citations with evidence you can trace">
+  <rect width="1200" height="630" fill="#F4F1E9"/>
+  <rect x="64" y="60" width="55" height="8" fill="#CA633B"/>
+  <text x="64" y="118" font-family="DejaVu Sans, sans-serif" font-size="19" letter-spacing="3" fill="#145C53">RESEARCH, WITH SOURCES.</text>
+  <text x="60" y="246" font-family="DejaVu Serif, serif" font-size="94" fill="#153E38">CiteNexus</text>
+  <text x="66" y="326" font-family="DejaVu Sans, sans-serif" font-size="30" fill="#153E38">Scholarly discovery and citations</text>
+  <text x="66" y="370" font-family="DejaVu Sans, sans-serif" font-size="30" fill="#153E38">with evidence you can trace.</text>
+  <path d="M895 150h-35v250h35M1070 150h35v250h-35" fill="none" stroke="#145C53" stroke-width="14"/>
+  <path d="M927 199l113 76-113 76z" fill="none" stroke="#145C53" stroke-width="7"/>
+  <circle cx="927" cy="199" r="18" fill="#145C53"/><circle cx="1040" cy="275" r="25" fill="#CA633B"/><circle cx="927" cy="351" r="18" fill="#145C53"/>
+  <path d="M64 467h1072" stroke="#D2D4C9" stroke-width="2"/>
+  <text x="66" y="519" font-family="DejaVu Sans, sans-serif" font-size="22" fill="#145C53">Free default sources   /   Optional academic APIs   /   Built for MCP</text>
+  <text x="66" y="573" font-family="DejaVu Sans, sans-serif" font-size="18" fill="#54645C">github.com/akougkas/cite-nexus-mcp</text>
+</svg>

@@ -1,0 +1,14 @@
+{
+  "name": "CiteNexus",
+  "slug": "cite-nexus",
+  "registry_name": "io.github.akougkas/cite-nexus-mcp",
+  "tagline": "Scholarly discovery and citations with evidence you can trace.",
+  "short_description": "Search scholarly sources, verify references, and export citations with traceable evidence.",
+  "description": "CiteNexus connects research assistants to free scholarly metadata and optional academic APIs. Discover papers, resolve identifiers, check references, and export BibTeX, RIS or CSL-JSON with source provenance. No model or API key is required for default searches.",
+  "repository": "https://github.com/akougkas/cite-nexus-mcp",
+  "author": { "name": "Anthony Kougkas", "url": "https://github.com/akougkas" },
+  "license": "MIT",
+  "keywords": ["mcp", "research", "citations", "bibliography", "academic", "bibtex", "crossref", "wtf-p"],
+  "stage": "unreleased-preparation",
+  "release_authorized": false
+}

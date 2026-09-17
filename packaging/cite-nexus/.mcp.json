@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "cite-nexus": {
+      "type": "stdio",
+      "command": "cite-nexus-mcp",
+      "args": [
+        "--no-env-file"
+      ]
+    }
+  }
+}
