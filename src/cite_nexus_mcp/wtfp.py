@@ -114,6 +114,7 @@ async def execute(request: Request, server: Any = None) -> dict[str, Any]:
                         if "serpapi" in request.providers
                         else request.limit,
                         "include_abstract": True,
+                        "detail": "full",
                     }
                     if request.year is not None:
                         arguments.update(year_from=request.year, year_to=request.year)

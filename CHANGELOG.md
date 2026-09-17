@@ -1,12 +1,26 @@
 # Changelog
 
-## 0.2.1 — 2026-09-17
+## 0.2.2 — 2026-09-17
+
+0.2.1 was merged but never tagged or published; its changes are folded into 0.2.2, the first
+release after 0.2.0.
 
 - Report invalid input, unknown providers and provider outcomes as readable tool errors. MCP SDK 2.2
   previously reduced them to "Error executing tool <name>".
 - Name the providers that could not find an identifier and suggest search-papers for titles.
 - Reject undeclared tool arguments in the input schema (`additionalProperties: false`) and on the
   server, listing the accepted names, so a misnamed `max_results` no longer returns a default page.
+- Fix arXiv search and lookup, which failed with HTTP 406 in 0.2.0. arXiv's CDN refuses TLS
+  handshakes that offer ALPN without TLS 1.3 post-handshake authentication, which is httpcore's
+  default. The HTTP client now enables post-handshake authentication, as Python's `http.client` does.
+- Resolve arXiv identifiers through their DataCite DOI (`10.48550/arXiv.<id>`) when arXiv does not
+  answer. The record keeps both identifiers and the arXiv issue stays visible as a warning.
+- **Default change:** `search-papers` accepts `detail` (`compact` or `full`, default `compact`).
+  Compact records return an empty `field_sources`; `sources` still names each provider. Set
+  `detail: "full"` for the 0.2.0 record. A default page for three providers drops from 45.4 KB to
+  36.7 KB of structured content. The WTF-P companion requests `full`.
+- Send tool results as unindented JSON text. The text block previously repeated structured content
+  with two-space indentation, 75.0 KB for the same default page; it is now 36.7 KB.
 
 ## 0.2.0 — 2026-09-17
 

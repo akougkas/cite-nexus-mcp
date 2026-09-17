@@ -27,12 +27,23 @@ class HTTP:
     def __init__(self, settings: Settings, client: httpx.AsyncClient | None = None):
         self.settings = settings
         self._owned = client is None
-        self.client = client or httpx.AsyncClient(
-            timeout=settings.timeout,
-            follow_redirects=False,
-            headers={"User-Agent": "CiteNexus/0.2 (+https://github.com/akougkas/cite-nexus-mcp)"},
-            limits=httpx.Limits(max_connections=settings.concurrency, max_keepalive_connections=10),
-        )
+        if client is None:
+            # httpcore offers ALPN without TLS 1.3 post-handshake auth, a handshake that arXiv's
+            # CDN answers with HTTP 406. Python's http.client enables it, and so does this client.
+            tls = httpx.create_ssl_context()
+            tls.post_handshake_auth = True
+            client = httpx.AsyncClient(
+                verify=tls,
+                timeout=settings.timeout,
+                follow_redirects=False,
+                headers={
+                    "User-Agent": "CiteNexus/0.2 (+https://github.com/akougkas/cite-nexus-mcp)"
+                },
+                limits=httpx.Limits(
+                    max_connections=settings.concurrency, max_keepalive_connections=10
+                ),
+            )
+        self.client = client
         self._semaphore = asyncio.Semaphore(settings.concurrency)
         self._locks: dict[str, asyncio.Lock] = {}
         self._next: dict[str, float] = {}

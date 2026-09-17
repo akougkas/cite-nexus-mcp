@@ -141,3 +141,23 @@ async def test_invalid_json_is_not_cached():
         with pytest.raises(ProviderError):
             await http.json("test", "https://api.example.org/")
         assert await http.json("test", "https://api.example.org/") == {"ok": True}
+
+
+async def test_owned_client_offers_post_handshake_auth_like_the_stdlib_https_client(monkeypatch):
+    # arXiv's CDN answers HTTP 406 to TLS clients that offer ALPN without post-handshake auth,
+    # which is httpcore's default; Python's http.client enables it and is accepted.
+    created = {}
+
+    class Recorder(httpx.AsyncClient):
+        def __init__(self, **kwargs):
+            created.update(kwargs)
+            super().__init__(**kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", Recorder)
+    http = HTTP(Settings())
+    try:
+        assert created["verify"].post_handshake_auth is True
+        assert created["verify"].verify_mode.name == "CERT_REQUIRED"
+        assert created["verify"].check_hostname is True
+    finally:
+        await http.close()

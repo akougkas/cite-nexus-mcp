@@ -2,14 +2,14 @@
 
 **CiteNexus finds and checks research sources. WTF-P turns research into a writing workflow.**
 The companion links WTF-P's existing citation-search command to CiteNexus through real MCP
-stdio, preserving provenance and candidate status. CiteNexus 0.2.1 includes the companion.
+stdio, preserving provenance and candidate status. CiteNexus 0.2.2 includes the companion.
 The WTF-P team is preparing its matching **0.7.0** release; `wtf-p@0.6.0` does not include
 the backend. Use their integration branch until that separate release is available.
 
 ## Install the companion
 
 ```bash
-uv tool install cite-nexus-mcp==0.2.1
+uv tool install cite-nexus-mcp==0.2.2
 cite-nexus-wtfp --check
 ```
 

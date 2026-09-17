@@ -187,3 +187,42 @@ async def test_unknown_arguments_are_rejected_before_any_request():
             assert failed.is_error
             text = failed.content[0].text
             assert "max_results" in text and "limit" in text, text
+
+
+async def test_search_records_are_compact_by_default_and_full_on_request(records):
+    def handler(_):
+        return httpx.Response(200, json={"message": {"items": [records["crossref"]]}})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+        service = ResearchService(Settings(), HTTP(Settings(), http_client))
+        async with Client(create_server(service=service), read_timeout_seconds=5) as client:
+            tools = (await client.list_tools()).tools
+            search = next(t for t in tools if t.name == "search-papers")
+            assert search.input_schema["properties"]["detail"]["enum"] == ["compact", "full"]
+            assert search.input_schema["properties"]["detail"]["default"] == "compact"
+            compact = await client.call_tool(
+                "search-papers", {"query": "q", "providers": ["crossref"]}
+            )
+            full = await client.call_tool(
+                "search-papers", {"query": "q", "providers": ["crossref"], "detail": "full"}
+            )
+    assert not compact.is_error and not full.is_error
+    compact_paper = compact.structured_content["papers"][0]
+    assert compact_paper["field_sources"] == {}
+    assert compact_paper["sources"][0]["provider"] == "crossref"
+    assert full.structured_content["papers"][0]["field_sources"]["title"] == ["crossref"]
+    jsonschema.validate(compact.structured_content, search.output_schema)
+
+
+async def test_text_content_is_the_structured_result_without_indentation(records):
+    def handler(_):
+        return httpx.Response(200, json={"message": records["crossref"]})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+        service = ResearchService(Settings(), HTTP(Settings(), http_client))
+        async with Client(create_server(service=service), read_timeout_seconds=5) as client:
+            result = await client.call_tool("resolve-paper", {"identifier": "10.1234/example"})
+    assert not result.is_error
+    text = result.content[0].text
+    assert "\n" not in text
+    assert json.loads(text) == result.structured_content
