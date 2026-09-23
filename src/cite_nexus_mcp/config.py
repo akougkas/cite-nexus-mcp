@@ -10,6 +10,7 @@ class Settings(BaseModel):
     openalex_api_key: SecretStr | None = None
     semantic_scholar_api_key: SecretStr | None = None
     serpapi_api_key: SecretStr | None = None
+    searchapi_api_key: SecretStr | None = None
     scopus_api_key: SecretStr | None = None
     scopus_insttoken: SecretStr | None = None
     wos_api_key: SecretStr | None = None
@@ -29,6 +30,7 @@ class Settings(BaseModel):
             "openalex_api_key": "OPENALEX_API_KEY",
             "semantic_scholar_api_key": "SEMANTIC_SCHOLAR_API_KEY",
             "serpapi_api_key": "SERPAPI_API_KEY",
+            "searchapi_api_key": "SEARCHAPI_API_KEY",
             "scopus_api_key": "SCOPUS_API_KEY",
             "scopus_insttoken": "SCOPUS_INSTTOKEN",
             "wos_api_key": "WOS_API_KEY",

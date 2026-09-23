@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.3 — 2026-09-23
+
+Add SearchApi.io (`searchapi`) as an alternative commercial provider for Google Scholar discovery, resolution, and citation graphs.
+
+- Add `searchapi` provider adapter accessing `https://www.searchapi.io/api/v1/search` with the `google_scholar` engine.
+- Provide a significantly more economical alternative to SerpAPI (~$4/1k queries vs ~$15–$25/1k on SerpAPI) with full parameter and feature parity (`q`, `cluster`, `cites`).
+- Support automatic resolution for `scholar:<cluster_id>` identifiers using either `SEARCHAPI_API_KEY` or `SERPAPI_API_KEY`.
+- Generalize Google Scholar parser in `commercial.py` to seamlessly normalize both SerpApi and SearchApi.io payload structures (including root-level `authors`, text `publication` summaries, `data_cid` cluster keys, and standard pagination).
+- Expose `SEARCHAPI_API_KEY` across configuration, MCP stdio/HTTP servers, tools, and the `cite-nexus-wtfp` bridge companion.
+- SerpAPI remains fully supported and unchanged for existing deployments.
+
 ## 0.2.2 — 2026-09-17
 
 0.2.1 was merged but never tagged or published; its changes are folded into 0.2.2, the first

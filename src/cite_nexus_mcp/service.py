@@ -331,13 +331,18 @@ class ResearchService:
             # Every arXiv paper has a DataCite DOI, which answers when the arXiv API refuses.
             selected = [self.providers["arxiv"], self.providers["datacite"]]
         else:
+            scholar_default = (
+                "searchapi"
+                if self.providers.get("searchapi") and self.providers["searchapi"].available
+                else "serpapi"
+            )
             defaults = {
                 "pmid": "europe_pmc",
                 "pmcid": "europe_pmc",
                 "europe_pmc": "europe_pmc",
                 "openalex": "openalex",
                 "semantic_scholar": "semantic_scholar",
-                "scholar": "serpapi",
+                "scholar": scholar_default,
                 "scopus": "scopus",
                 "wos": "wos",
             }

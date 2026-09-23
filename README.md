@@ -1,6 +1,6 @@
 # CiteNexus MCP
 
-<img src="https://raw.githubusercontent.com/akougkas/cite-nexus-mcp/v0.2.2/assets/cite-nexus.svg" alt="CiteNexus" width="88" height="88" align="right">
+<img src="https://raw.githubusercontent.com/akougkas/cite-nexus-mcp/v0.2.3/assets/cite-nexus.svg" alt="CiteNexus" width="88" height="88" align="right">
 
 **Scholarly discovery and citations with evidence you can trace.**
 
@@ -12,17 +12,17 @@ asking a language model to invent the missing fields.
 This is a citation and metadata service for the assistant you already use. It works alongside
 reference managers such as Zotero and writing environments that support MCP.
 
-**CiteNexus 0.2.2** includes the MCP service and the `cite-nexus-wtfp` companion.
+**CiteNexus 0.2.3** includes the MCP service and the `cite-nexus-wtfp` companion.
 The WTF-P integration targets its separate 0.7.0 release. Marketplace listings and native
 client plugin qualification are tracked independently.
 
-[Quick start](#quick-start) · [WTF-P integration](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/wtf-p.md) ·
-[Provider guide](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/providers.md) · [Troubleshooting](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/troubleshooting.md) ·
-[Release information](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/release/README.md)
+[Quick start](#quick-start) · [WTF-P integration](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/wtf-p.md) ·
+[Provider guide](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/providers.md) · [Troubleshooting](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/troubleshooting.md) ·
+[Release information](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/release/README.md)
 
 - **Useful without credentials:** Crossref, DataCite and Europe PMC are the default search sources.
   arXiv and Semantic Scholar are also available without mandatory keys.
-- **Optional specialist and commercial access:** OpenAlex, Google Scholar through SerpAPI,
+- **Optional specialist and commercial access:** OpenAlex, Google Scholar through SerpAPI or SearchApi,
   Scopus and Web of Science Starter have explicit configuration and provider selection.
 - **Source-backed records:** namespaced identifiers, retrieval timestamps, field attribution,
   incomplete-author warnings and provider-specific citation counts.
@@ -36,8 +36,8 @@ client plugin qualification are tracked independently.
 Python 3.11+ and [uv](https://docs.astral.sh/uv/) are required.
 
 ```bash
-uvx --from cite-nexus-mcp==0.2.2 cite-nexus-mcp --version
-uvx --from cite-nexus-mcp==0.2.2 cite-nexus-mcp --no-env-file --list-providers
+uvx --from cite-nexus-mcp==0.2.3 cite-nexus-mcp --version
+uvx --from cite-nexus-mcp==0.2.3 cite-nexus-mcp --no-env-file --list-providers
 ```
 
 For an MCP client with a `mcpServers` configuration:
@@ -47,7 +47,7 @@ For an MCP client with a `mcpServers` configuration:
   "mcpServers": {
     "cite-nexus": {
       "command": "uvx",
-      "args": ["--from", "cite-nexus-mcp==0.2.2", "cite-nexus-mcp", "--no-env-file"]
+      "args": ["--from", "cite-nexus-mcp==0.2.3", "cite-nexus-mcp", "--no-env-file"]
     }
   }
 }
@@ -61,17 +61,17 @@ its dependencies.
 For a persistent installation, including the WTF-P companion:
 
 ```bash
-uv tool install cite-nexus-mcp==0.2.2
+uv tool install cite-nexus-mcp==0.2.3
 cite-nexus-wtfp --check
 ```
 
 The diagnostic starts the actual MCP service and lists providers without querying vendor APIs.
-See the [WTF-P setup](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/wtf-p.md) for the separate integration and executable-path setting.
+See the [WTF-P setup](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/wtf-p.md) for the separate integration and executable-path setting.
 
 For local HTTP clients:
 
 ```bash
-uvx --from cite-nexus-mcp==0.2.2 cite-nexus-mcp --no-env-file --transport streamable-http --port 8000
+uvx --from cite-nexus-mcp==0.2.3 cite-nexus-mcp --no-env-file --transport streamable-http --port 8000
 ```
 
 Connect to `http://127.0.0.1:8000/mcp`. The CLI binds only to loopback and serves a single trust
@@ -88,7 +88,8 @@ own deployment integration; the CLI does not supply those features.
 | `arxiv` | Preprints in physics, mathematics, computing and related fields | Free | Select explicitly; paced to one request per three seconds |
 | `semantic_scholar` | Academic Graph discovery and citation traversal | Free/shared anonymous limits; optional key | Optional `SEMANTIC_SCHOLAR_API_KEY` |
 | `openalex` | Multidisciplinary research graph | Free credits / metered account access | `OPENALEX_API_KEY` |
-| `serpapi` | Google Scholar through a vendor API | Commercial; account allowances vary | `SERPAPI_API_KEY` |
+| `serpapi` | Google Scholar through SerpAPI vendor API | Commercial; account allowances vary | `SERPAPI_API_KEY` |
+| `searchapi` | Google Scholar through SearchApi.io vendor API | Commercial; account allowances vary | `SEARCHAPI_API_KEY` |
 | `scopus` | Elsevier's curated literature index | Institutional/commercial entitlement | `SCOPUS_API_KEY`; optional `SCOPUS_INSTTOKEN` |
 | `wos` | Clarivate Web of Science Starter | Institutional/commercial entitlement | `WOS_API_KEY` |
 
@@ -148,11 +149,11 @@ Ask your assistant to use the tools directly, or start with the `literature-revi
 | `paper-metrics` | Return observed citation counts, separated by provider and index |
 | `find-open-access` | Find source-reported OA locations, with optional Unpaywall enrichment |
 | `enhance-citation` | Normalize BibTeX formatting while preserving supplied bibliographic facts |
-| `find-scholar-id` | Legacy Scholar discovery through SerpAPI; returns candidates for review |
+| `find-scholar-id` | Legacy Scholar discovery through SerpAPI or SearchApi; returns candidates for review |
 
 `search-papers` defaults to 10 results **per provider**, not 10 overall. Results interleave each
 provider's ranking, then merge compatible records. `limit` is 1–50, or at most 20 when using
-SerpAPI. Use each provider's `next_offsets` with the **same limit**, selecting that provider for
+SerpAPI or SearchApi. Use each provider's `next_offsets` with the **same limit**, selecting that provider for
 the next call. Europe PMC search uses `next_cursors` instead: pass its token as `cursor`,
 select only `europe_pmc`, keep the same query and limit, and leave `offset` at zero.
 Offsets must be multiples of the limit, up to 10,000. `year_from`, `year_to` and
@@ -216,8 +217,8 @@ bounded and partitions responses by credentials. Responses larger than 8 MB are 
 `Retry-After` cooldowns return a provider issue instead of holding the call open. Keys and upstream
 error bodies are excluded from tool errors. Local stderr logging keeps stdout clean for MCP.
 
-See [provider details](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/providers.md), [migration notes](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/migration.md), and
-[product direction](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/product-direction.md) for access nuances and boundaries.
+See [provider details](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/providers.md), [migration notes](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/migration.md), and
+[product direction](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/product-direction.md) for access nuances and boundaries.
 
 ## Development and verification
 
@@ -252,17 +253,17 @@ anonymous Semantic Scholar. Rate limits and network failures are reported as out
 
 The official MCP Tasks extension is not advertised. SDK 2.2 does not implement it yet.
 `batch-citations` is a bounded synchronous workflow with progress and cancellation, not a durable
-job queue. [The roadmap](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/product-direction.md) describes the criteria for adding persistent
+job queue. [The roadmap](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/product-direction.md) describes the criteria for adding persistent
 tasks, local libraries and further licensed providers.
 
-The [launch kit](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/release/launch-kit.md) includes positioning, listing copy, a demo script,
-and promotional drafts. The [marketplace inventory](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/release/marketplaces.md) tracks 41
+The [launch kit](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/release/launch-kit.md) includes positioning, listing copy, a demo script,
+and promotional drafts. The [marketplace inventory](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/release/marketplaces.md) tracks 41
 channels and leads, including verified routes, duplicate channels and inactive or unresolved
 sites. Source metadata, portable plugin manifests and image assets are prepared for review.
-See [data handling](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/docs/data-handling.md) before configuring optional providers or hosting.
+See [data handling](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/docs/data-handling.md) before configuring optional providers or hosting.
 
 ## License
 
-[MIT](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.2/LICENSE). Provider content, API access and redistribution remain subject to each source's terms.
+[MIT](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.3/LICENSE). Provider content, API access and redistribution remain subject to each source's terms.
 
 <!-- mcp-name: io.github.akougkas/cite-nexus-mcp -->

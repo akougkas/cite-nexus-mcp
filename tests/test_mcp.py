@@ -53,7 +53,7 @@ async def test_protocol_schemas_resources_prompts_and_errors(mode, records):
             methodology = await client.read_resource("cite-nexus://methodology")
             assert "untrusted" in methodology.contents[0].text
             providers = await client.read_resource("cite-nexus://providers")
-            assert len(json.loads(providers.contents[0].text)) == 9
+            assert len(json.loads(providers.contents[0].text)) == 10
             prompts = await client.list_prompts()
             assert {p.name for p in prompts.prompts} == {"literature-review", "bibliography-audit"}
             prompt = await client.get_prompt(
@@ -118,7 +118,7 @@ async def test_real_streamable_http_process(mode, tmp_path):
             async with Client(url, mode=mode, read_timeout_seconds=5) as client:
                 result = await client.call_tool("list-providers", {})
                 assert not result.is_error
-                assert len(result.structured_content["providers"]) == 9
+                assert len(result.structured_content["providers"]) == 10
         finally:
             process.terminate()
             try:
@@ -129,7 +129,11 @@ async def test_real_streamable_http_process(mode, tmp_path):
 
 
 def test_cli_provider_listing_never_prints_secret(tmp_path):
-    env = {**os.environ, "SERPAPI_API_KEY": "do-not-print-this-secret"}
+    env = {
+        **os.environ,
+        "SERPAPI_API_KEY": "do-not-print-this-secret",
+        "SEARCHAPI_API_KEY": "do-not-print-searchapi-secret",
+    }
     result = subprocess.run(
         [sys.executable, "-m", "cite_nexus_mcp", "--list-providers"],
         cwd=tmp_path,
@@ -139,8 +143,10 @@ def test_cli_provider_listing_never_prints_secret(tmp_path):
         check=True,
     )
     assert "do-not-print-this-secret" not in result.stdout + result.stderr
+    assert "do-not-print-searchapi-secret" not in result.stdout + result.stderr
     data = json.loads(result.stdout)
     assert next(p for p in data if p["id"] == "serpapi")["available"]
+    assert next(p for p in data if p["id"] == "searchapi")["available"]
 
 
 async def test_unknown_identifier_and_invalid_input_are_readable_tool_errors():

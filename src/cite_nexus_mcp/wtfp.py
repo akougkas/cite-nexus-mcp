@@ -34,6 +34,7 @@ Provider = Literal[
     "semantic_scholar",
     "openalex",
     "serpapi",
+    "searchapi",
     "scopus",
     "wos",
 ]
@@ -52,6 +53,7 @@ ENVIRONMENT = (
     "SEMANTIC_SCHOLAR_API_KEY",
     "OPENALEX_API_KEY",
     "SERPAPI_API_KEY",
+    "SEARCHAPI_API_KEY",
     "SCOPUS_API_KEY",
     "SCOPUS_INSTTOKEN",
     "WOS_API_KEY",
@@ -62,7 +64,7 @@ class Request(Model):
     schema_version: Literal["cite-nexus.wtfp/v1"] = SCHEMA
     operation: Literal["search", "providers"] = "search"
     query: Annotated[str, Field(min_length=1, max_length=512)] | None = None
-    providers: Annotated[list[Provider], Field(min_length=1, max_length=9)] = [
+    providers: Annotated[list[Provider], Field(min_length=1, max_length=10)] = [
         "crossref",
         "datacite",
         "europe_pmc",
@@ -111,7 +113,7 @@ async def execute(request: Request, server: Any = None) -> dict[str, Any]:
                         "query": request.query,
                         "providers": list(dict.fromkeys(request.providers)),
                         "limit": min(request.limit, 20)
-                        if "serpapi" in request.providers
+                        if any(p in request.providers for p in ("serpapi", "searchapi"))
                         else request.limit,
                         "include_abstract": True,
                         "detail": "full",

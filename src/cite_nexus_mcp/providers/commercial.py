@@ -31,9 +31,11 @@ class SerpAPI(Provider):
         versions = links.get("versions") or {}
         cluster = versions.get("cluster_id") or cited.get("cites_id")
         publication = data.get("publication_info") or {}
-        years = re.findall(r"\b(?:19|20)\d{2}\b", publication.get("summary", ""))
+        summary = publication.get("summary") or data.get("publication") or ""
+        years = re.findall(r"\b(?:19|20)\d{2}\b", summary)
         count = integer(cited.get("total"))
-        record_id = str(cluster or data.get("result_id", "unknown"))
+        record_id = str(cluster or data.get("data_cid") or data.get("result_id", "unknown"))
+        authors_data = publication.get("authors") or data.get("authors") or []
         return self.paper(
             record_id,
             f"https://scholar.google.com/scholar?cluster={cluster}"
@@ -41,9 +43,7 @@ class SerpAPI(Provider):
             else "https://scholar.google.com/",
             identifiers={"scholar": str(cluster) if cluster else None},
             title=data.get("title"),
-            authors=[
-                Author(name=a["name"]) for a in publication.get("authors", []) if a.get("name")
-            ],
+            authors=[Author(name=a["name"]) for a in authors_data if a.get("name")],
             authors_complete=False,
             year=integer(years[-1]) if years else None,
             url=data.get("link"),
@@ -55,27 +55,33 @@ class SerpAPI(Provider):
 
     async def request(self, **kwargs: Any) -> dict[str, Any]:
         self.require()
+        api_key = secret(getattr(self.settings, self.credential)) if self.credential else None
         data = await self.http.json(
             self.id,
             self.root,
             params={
                 "engine": "google_scholar",
-                "api_key": secret(self.settings.serpapi_api_key),
+                "api_key": api_key,
                 **kwargs,
             },
         )
         if data.get("error"):
             raise ProviderError(
-                self.id, "upstream_error", "SerpAPI returned an error; check query, quota and key."
+                self.id,
+                "upstream_error",
+                f"{self.name} returned an error; check query, quota and key.",
             )
         return data
 
     async def search(self, query: str, limit: int, offset: int) -> Page:
         data = await self.request(q=query, num=min(limit, 20), start=offset)
         papers = [self.parse(item) for item in data.get("organic_results", [])]
+        has_next = bool(
+            data.get("serpapi_pagination", {}).get("next") or data.get("pagination", {}).get("next")
+        )
         return Page(
             papers,
-            offset + min(limit, 20) if data.get("serpapi_pagination", {}).get("next") else None,
+            offset + min(limit, 20) if has_next else None,
         )
 
     async def resolve(self, identifier: Identifier) -> Paper:
@@ -94,10 +100,24 @@ class SerpAPI(Provider):
             return await super().graph(identifier, direction, limit, offset)
         data = await self.request(cites=identifier.value, num=min(limit, 20), start=offset)
         papers = [self.parse(item) for item in data.get("organic_results", [])]
+        has_next = bool(
+            data.get("serpapi_pagination", {}).get("next") or data.get("pagination", {}).get("next")
+        )
         return Page(
             papers,
-            offset + min(limit, 20) if data.get("serpapi_pagination", {}).get("next") else None,
+            offset + min(limit, 20) if has_next else None,
         )
+
+
+class SearchAPI(SerpAPI):
+    id = "searchapi"
+    name = "Google Scholar via SearchApi.io"
+    access = "commercial"
+    description = "Vendor-mediated Google Scholar discovery via SearchApi.io. Snippets and partial author lists are explicitly marked."
+    documentation = "https://www.searchapi.io/docs/google-scholar-api"
+    required_env = ("SEARCHAPI_API_KEY",)
+    credential = "searchapi_api_key"
+    root = "https://www.searchapi.io/api/v1/search"
 
 
 class Scopus(Provider):

@@ -46,7 +46,7 @@ async def test_portable_plugin_schema_and_actual_connection():
         assert len(listing.tools) == 11
         result = await client.call_tool("list-providers", {})
         assert not result.is_error
-        assert len(result.structured_content["providers"]) == 9
+        assert len(result.structured_content["providers"]) == 10
 
 
 def test_generated_release_metadata_and_inventory_are_current():

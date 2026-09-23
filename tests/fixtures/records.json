@@ -54,6 +54,13 @@
     "snippet": "Truncated search summary; not an abstract.",
     "inline_links": {"cited_by": {"total": 2300, "cites_id": "123456789"}, "versions": {"cluster_id": "123456789"}}
   },
+  "searchapi": {
+    "data_cid": "abc123", "title": "Reliable Research & Data", "link": "https://example.org/paper",
+    "publication": "A Lovelace - Research Journal, 2024 - example.org",
+    "authors": [{"name": "Ada Lovelace"}],
+    "snippet": "Truncated search summary; not an abstract.",
+    "inline_links": {"cited_by": {"total": 2300, "cites_id": "123456789"}, "versions": {"cluster_id": "123456789"}}
+  },
   "scopus": {
     "dc:identifier": "SCOPUS_ID:987654321", "dc:title": "Reliable Research & Data",
     "dc:creator": "Lovelace, A.", "prism:doi": "10.1234/example", "prism:coverDate": "2024-03-12",

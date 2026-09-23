@@ -13,6 +13,7 @@ def settings():
         retries=0,
         openalex_api_key=SecretStr("openalex-test"),
         serpapi_api_key=SecretStr("serp-test"),
+        searchapi_api_key=SecretStr("searchapi-test"),
         scopus_api_key=SecretStr("scopus-test"),
         wos_api_key=SecretStr("wos-test"),
     )
@@ -27,6 +28,7 @@ def settings():
         "semantic_scholar",
         "openalex",
         "serpapi",
+        "searchapi",
         "scopus",
         "wos",
     ],
@@ -39,7 +41,7 @@ def test_native_metadata_is_normalized(name, records):
     assert paper.sources[0].provider == name
     assert paper.sources[0].retrieved_at
     assert paper.field_sources["title"] == [name]
-    if name != "serpapi":
+    if name not in {"serpapi", "searchapi"}:
         assert paper.identifiers["doi"] == "10.1234/example"
     else:
         assert paper.abstract is None
@@ -78,6 +80,7 @@ def test_xml_external_entities_are_rejected():
         "semantic_scholar",
         "openalex",
         "serpapi",
+        "searchapi",
         "scopus",
         "wos",
     ],
@@ -93,6 +96,10 @@ async def test_search_request_contracts(name, records, arxiv_xml):
         "serpapi": {
             "organic_results": [records["serpapi"]],
             "serpapi_pagination": {"next": "https://serpapi.com/next"},
+        },
+        "searchapi": {
+            "organic_results": [records["searchapi"]],
+            "pagination": {"next": "https://www.searchapi.io/next"},
         },
         "scopus": {
             "search-results": {"entry": [records["scopus"]], "opensearch:totalResults": "21"}
@@ -121,6 +128,9 @@ async def test_search_request_contracts(name, records, arxiv_xml):
     if name == "serpapi":
         assert request.url.params["api_key"] == "serp-test"
         assert request.url.params["engine"] == "google_scholar"
+    if name == "searchapi":
+        assert request.url.params["api_key"] == "searchapi-test"
+        assert request.url.params["engine"] == "google_scholar"
     if name == "scopus":
         assert request.headers["X-ELS-APIKey"] == "scopus-test"
         assert request.url.params["query"] == 'TITLE-ABS-KEY("research")'
@@ -139,6 +149,7 @@ async def test_search_request_contracts(name, records, arxiv_xml):
         ("semantic_scholar", "doi", "10.1234/example"),
         ("openalex", "openalex", "W12345678"),
         ("serpapi", "scholar", "123456789"),
+        ("searchapi", "scholar", "123456789"),
         ("scopus", "scopus", "987654321"),
         ("wos", "wos", "000123456789"),
     ],
@@ -151,6 +162,7 @@ async def test_identifier_lookup_contracts(name, kind, value, records, arxiv_xml
         "semantic_scholar": records["semantic_scholar"],
         "openalex": records["openalex"],
         "serpapi": {"organic_results": [records["serpapi"]]},
+        "searchapi": {"organic_results": [records["searchapi"]]},
         "scopus": {"search-results": {"entry": [records["scopus"]]}},
         "wos": records["wos"],
     }

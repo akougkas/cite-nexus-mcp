@@ -239,8 +239,14 @@ def create_server(
 
     @app.tool(name="find-scholar-id", annotations=READ)
     async def find_scholar_id(query: Query, ctx: Context) -> SearchResult:
-        """Legacy Google Scholar discovery via paid SerpAPI. Returns candidates with namespaced cluster IDs; the first result is not identity proof. Requires SERPAPI_API_KEY."""
-        return await _service(ctx).search(query, ["serpapi"], limit=5)
+        """Legacy Google Scholar discovery via paid SerpAPI or SearchApi. Returns candidates with namespaced cluster IDs; the first result is not identity proof. Requires SERPAPI_API_KEY or SEARCHAPI_API_KEY."""
+        svc = _service(ctx)
+        provider = (
+            "searchapi"
+            if svc.providers.get("searchapi") and svc.providers["searchapi"].available
+            else "serpapi"
+        )
+        return await svc.search(query, [provider], limit=5)
 
     @app.tool(name="get-citation", annotations=READ)
     async def get_citation(
@@ -277,7 +283,7 @@ def create_server(
         limit: Limit = 10,
         offset: Offset = 0,
     ) -> GraphResult:
-        """Page through citing papers or references in one provider's graph. Supports Semantic Scholar, Europe PMC, OpenAlex, and SerpAPI citations. Offset must be a multiple of limit."""
+        """Page through citing papers or references in one provider's graph. Supports Semantic Scholar, Europe PMC, OpenAlex, SerpAPI, and SearchApi citations. Offset must be a multiple of limit."""
         return await _service(ctx).graph(identifier, direction, provider, limit, offset)
 
     @app.tool(name="resolve-paper", annotations=READ)

@@ -4,7 +4,7 @@ from ..config import Settings
 from ..http import HTTP
 from .academic import Arxiv, EuropePMC
 from .base import Provider
-from .commercial import Scopus, SerpAPI, WebOfScience
+from .commercial import Scopus, SearchAPI, SerpAPI, WebOfScience
 from .graphs import OpenAlex, SemanticScholar
 from .open_metadata import Crossref, DataCite
 
@@ -18,6 +18,7 @@ def registry(http: HTTP, settings: Settings) -> dict[str, Provider]:
         SemanticScholar,
         OpenAlex,
         SerpAPI,
+        SearchAPI,
         Scopus,
         WebOfScience,
     )

@@ -42,6 +42,10 @@ def outputs() -> dict[str, str]:
             "Key for explicitly selected OpenAlex queries; account credits apply",
         ),
         "SERPAPI_API_KEY": (True, "Key for explicitly selected commercial Google Scholar queries"),
+        "SEARCHAPI_API_KEY": (
+            True,
+            "Key for explicitly selected commercial Google Scholar queries via SearchApi.io",
+        ),
         "SCOPUS_API_KEY": (
             True,
             "Key for explicitly selected Scopus queries; entitlement required",

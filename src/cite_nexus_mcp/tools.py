@@ -8,8 +8,13 @@ from .service import ResearchService
 
 async def find_scholar_id(query: str, elicitation_client=None) -> TextContent:
     service = ResearchService()
+    scholar_provider = (
+        "searchapi"
+        if service.providers.get("searchapi") and service.providers["searchapi"].available
+        else "serpapi"
+    )
     try:
-        result = await service.search(query, ["serpapi"], limit=5)
+        result = await service.search(query, [scholar_provider], limit=5)
         if not result.papers:
             return TextContent(type="text", text="No Scholar candidates found.")
         paper = result.papers[0]
