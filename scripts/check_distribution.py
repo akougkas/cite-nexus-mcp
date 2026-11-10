@@ -113,10 +113,17 @@ def installed_check(wheel: Path, version: str) -> None:
             timeout=30,
         )
         data = json.loads(result.stdout)
-        if (
-            data["schema_version"] != "cite-nexus.wtfp/v1"
-            or len(data["providers"]["providers"]) != 9
-        ):
+        listed = subprocess.run(
+            [str(python), "-I", "-m", "cite_nexus_mcp", "--no-env-file", "--list-providers"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        expected = sorted(provider["id"] for provider in json.loads(listed.stdout))
+        reported = sorted(provider["id"] for provider in data["providers"]["providers"])
+        if data["schema_version"] != "cite-nexus.wtfp/v1" or not expected or reported != expected:
             raise ValueError("Installed companion diagnostic returned an incompatible response")
         print("Installed wheel and companion checks passed without provider queries")
 

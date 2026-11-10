@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.4 — 2026-11-10
+
+0.2.3 was tagged but never published to PyPI; 0.2.4 is the first published release with its changes,
+including the SearchApi.io (`searchapi`) provider.
+
+- Fix the installed-wheel distribution check, which expected exactly nine providers and failed on the
+  ten that 0.2.3 lists. It now compares the companion's providers with those the installed package
+  lists.
+
 ## 0.2.3 — 2026-09-23
 
 Add SearchApi.io (`searchapi`) as an alternative commercial provider for Google Scholar discovery, resolution, and citation graphs.
