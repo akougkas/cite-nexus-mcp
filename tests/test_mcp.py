@@ -204,7 +204,11 @@ async def test_search_records_are_compact_by_default_and_full_on_request(records
         async with Client(create_server(service=service), read_timeout_seconds=5) as client:
             tools = (await client.list_tools()).tools
             search = next(t for t in tools if t.name == "search-papers")
-            assert search.input_schema["properties"]["detail"]["enum"] == ["compact", "full"]
+            assert search.input_schema["properties"]["detail"]["enum"] == [
+                "minimal",
+                "compact",
+                "full",
+            ]
             assert search.input_schema["properties"]["detail"]["default"] == "compact"
             compact = await client.call_tool(
                 "search-papers", {"query": "q", "providers": ["crossref"]}
@@ -232,3 +236,70 @@ async def test_text_content_is_the_structured_result_without_indentation(records
     text = result.content[0].text
     assert "\n" not in text
     assert json.loads(text) == result.structured_content
+
+
+async def test_minimal_search_caps_total_and_drops_defaults(records):
+    def handler(request):
+        if request.url.host == "api.crossref.org":
+            items = [dict(records["crossref"], DOI=f"10.1234/x{i}") for i in range(5)]
+            return httpx.Response(200, json={"message": {"items": items}})
+        if request.url.host == "api.datacite.org":
+            return httpx.Response(200, json={"data": [records["datacite"]] * 5, "meta": {}})
+        return httpx.Response(200, json={"resultList": {"result": []}})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+        service = ResearchService(Settings(), HTTP(Settings(), http_client))
+        async with Client(create_server(service=service), read_timeout_seconds=5) as client:
+            tools = (await client.list_tools()).tools
+            search = next(t for t in tools if t.name == "search-papers")
+            assert "PER PROVIDER" in search.description and "Example:" in search.description
+            args = {"query": "q", "limit": 5}
+            compact = await client.call_tool("search-papers", args)
+            minimal = await client.call_tool(
+                "search-papers", {**args, "limit_total": 3, "detail": "minimal"}
+            )
+    assert not minimal.is_error, minimal.content
+    data = minimal.structured_content
+    assert data["returned"] == len(data["papers"]) == 3
+    assert any("limit_total" in w for w in data["warnings"])
+    paper = data["papers"][0]
+    assert set(paper) <= {"id", "title", "identifiers", "authors", "year", "venue", "warnings"}
+    assert set(paper["identifiers"]) <= {"doi", "arxiv", "pmid"}
+    assert json.loads(minimal.content[0].text) == data
+    assert len(minimal.content[0].text) * 4 < len(compact.content[0].text)
+    jsonschema.validate(data, search.output_schema)
+
+
+async def test_verify_accepts_identifier_alias_and_reports_match_kind(records):
+    bare = {k: v for k, v in records["crossref"].items() if k != "abstract"}
+
+    def handler(request):
+        if "noabs" in str(request.url):
+            return httpx.Response(200, json={"message": dict(bare, DOI="10.1234/noabs")})
+        return httpx.Response(200, json={"message": records["crossref"]})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+        service = ResearchService(Settings(), HTTP(Settings(), http_client))
+        async with Client(create_server(service=service), read_timeout_seconds=5) as client:
+            tools = {t.name: t for t in (await client.list_tools()).tools}
+            assert all("Example:" in t.description for t in tools.values())
+            assert "NEVER checks whether the paper supports" in tools["verify-citation"].description
+            alias = await client.call_tool("verify-citation", {"identifier": "10.1234/example"})
+            both = await client.call_tool(
+                "verify-citation", {"identifier": "10.1234/example", "citation": "10.1234/example"}
+            )
+            matched = await client.call_tool(
+                "verify-citation",
+                {"citation": "10.1234/example", "expected_title": "Reliable Research & Data"},
+            )
+            resolved = await client.call_tool("resolve-paper", {"identifier": "10.1234/noabs"})
+    assert not alias.is_error, alias.content
+    assert alias.structured_content["status"] == "verified"
+    assert alias.structured_content["match"] == "identifier"
+    assert alias.structured_content["claim_support"] == "not_checked"
+    assert both.is_error
+    assert matched.structured_content["match"] == "metadata"
+    paper = resolved.structured_content["paper"]
+    assert paper["abstract"] is None
+    assert "Do not infer findings" in paper["abstract_missing_reason"]
+    jsonschema.validate(alias.structured_content, tools["verify-citation"].output_schema)

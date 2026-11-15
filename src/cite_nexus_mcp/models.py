@@ -3,7 +3,7 @@
 from datetime import UTC, datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 
 
 def now() -> str:
@@ -58,6 +58,7 @@ class Paper(Model):
     issue: str | None = None
     pages: str | None = None
     abstract: str | None = None
+    abstract_missing_reason: str | None = None
     url: str | None = None
     is_retracted: bool | None = None
     access: list[AccessLocation] = Field(default_factory=list)
@@ -83,6 +84,8 @@ class SearchResult(Model):
     next_offsets: dict[str, int] = Field(default_factory=dict)
     next_cursors: dict[str, str] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)
+    # Serialize without default-valued fields (detail=minimal); not part of the schema.
+    _slim: bool = PrivateAttr(default=False)
 
 
 class Resolution(Model):
@@ -100,6 +103,8 @@ class CitationResult(Model):
 
 class VerificationResult(Model):
     status: Literal["verified", "mismatch", "ambiguous", "not_found", "unavailable"]
+    match: Literal["identifier", "metadata"] | None = None
+    claim_support: Literal["not_checked"] = "not_checked"
     identifier: str | None = None
     paper: Paper | None = None
     candidates: list[Paper] = Field(default_factory=list)

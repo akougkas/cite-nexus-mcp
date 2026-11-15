@@ -114,9 +114,15 @@ def _reported(fn: Callable[..., Any], is_async: bool) -> Callable[..., Any]:
         # search page. Send the same JSON without indentation; structured content is unchanged.
         if not isinstance(result, BaseModel):
             return result
+        slim = isinstance(result, SearchResult) and result._slim
+        data = result.model_dump(mode="json", by_alias=True, exclude_defaults=slim)
         return CallToolResult(
-            content=[TextContent(type="text", text=result.model_dump_json(by_alias=True))],
-            structured_content=result.model_dump(mode="json", by_alias=True),
+            content=[
+                TextContent(
+                    type="text", text=json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+                )
+            ],
+            structured_content=data,
         )
 
     def translate(exc: Exception) -> ToolError:
@@ -215,7 +221,7 @@ def create_server(
         format: CitationFormat = "bibtex",
         providers: list[str] | None = None,
     ) -> BatchResult:
-        """Resolve and export up to 20 identifiers, preserving order and per-item failures. Reports progress; no durable background task is created."""
+        """Resolve and export up to 20 identifiers, preserving order and per-item failures. Reports progress; no durable background task is created. Example: {"identifiers": ["10.1038/nature14539", "arXiv:1706.03762"], "format": "bibtex"}"""
 
         async def progress(done: int, total: int) -> None:
             await ctx.report_progress(done, total, f"Resolved {done}/{total} citations")
@@ -227,19 +233,19 @@ def create_server(
         bibtex: Annotated[str, Field(min_length=1, max_length=100000)],
         template: Literal["default", "compact"] = "default",
     ) -> EnhancementResult:
-        """Normalize BibTeX formatting while preserving supplied metadata. Does not invent authors, awards or keywords. Use verify-citation to check facts."""
+        """Normalize BibTeX formatting while preserving supplied metadata. Does not invent authors, awards or keywords. Use verify-citation to check facts. Example: {"bibtex": "@article{key, title={A work}, year={2020}}"}"""
         return enhance(bibtex, template)
 
     @app.tool(name="find-open-access", annotations=READ)
     async def find_open_access(
         identifier: Query, ctx: Context, providers: list[str] | None = None
     ) -> AccessResult:
-        """Find source-reported open-access locations, with optional Unpaywall enrichment. Returns links and licenses without downloading full texts."""
+        """Find source-reported open-access locations, with optional Unpaywall enrichment. Returns links and licenses without downloading full texts. Example: {"identifier": "10.1371/journal.pone.0000308"}"""
         return await _service(ctx).open_access(identifier, providers)
 
     @app.tool(name="find-scholar-id", annotations=READ)
     async def find_scholar_id(query: Query, ctx: Context) -> SearchResult:
-        """Legacy Google Scholar discovery via paid SerpAPI or SearchApi. Returns candidates with namespaced cluster IDs; the first result is not identity proof. Requires SERPAPI_API_KEY or SEARCHAPI_API_KEY."""
+        """Legacy Google Scholar discovery via paid SerpAPI or SearchApi. Returns candidates with namespaced cluster IDs; the first result is not identity proof. Requires SERPAPI_API_KEY or SEARCHAPI_API_KEY. Example: {"query": "attention is all you need"}"""
         svc = _service(ctx)
         provider = (
             "searchapi"
@@ -256,12 +262,12 @@ def create_server(
         providers: list[str] | None = None,
         scholar_id: Query | None = None,
     ) -> CitationResult:
-        """Resolve a DOI or namespaced ID and export deterministic BibTeX, RIS or CSL-JSON with provenance and missing-field warnings. Legacy scholar_id remains accepted."""
+        """Resolve a DOI or namespaced ID and export deterministic BibTeX, RIS or CSL-JSON with provenance and missing-field warnings. Legacy scholar_id remains accepted. Example: {"identifier": "10.1038/nature14539", "format": "bibtex"}"""
         return await _service(ctx).citation(_identifier(identifier, scholar_id), format, providers)
 
     @app.tool(name="list-providers", annotations=LOCAL)
     async def list_providers(ctx: Context) -> ProvidersResult:
-        """List sources, access tiers, configured availability, supported operations and setup variables. Does not call vendors or expose secrets."""
+        """List sources, access tiers, configured availability, supported operations and setup variables. Does not call vendors or expose secrets. Example: {}"""
         return _service(ctx).list_providers()
 
     @app.tool(name="paper-metrics", annotations=READ)
@@ -271,7 +277,7 @@ def create_server(
         providers: list[str] | None = None,
         scholar_id: Query | None = None,
     ) -> MetricsResult:
-        """Retrieve observed citation counts by provider and index, never an estimated impact factor or sample length. Select multiple providers to compare coverage."""
+        """Retrieve observed citation counts by provider and index, never an estimated impact factor or sample length. Select multiple providers to compare coverage. Example: {"identifier": "10.1038/nature14539", "providers": ["crossref", "openalex"]}"""
         return await _service(ctx).metrics(_identifier(identifier, scholar_id), providers)
 
     @app.tool(name="related-papers", annotations=READ)
@@ -283,14 +289,14 @@ def create_server(
         limit: Limit = 10,
         offset: Offset = 0,
     ) -> GraphResult:
-        """Page through citing papers or references in one provider's graph. Supports Semantic Scholar, Europe PMC, OpenAlex, SerpAPI, and SearchApi citations. Offset must be a multiple of limit."""
+        """Page through citing papers or references in one provider's graph. Supports Semantic Scholar, Europe PMC, OpenAlex, SerpAPI, and SearchApi citations. Offset must be a multiple of limit. Example: {"identifier": "10.1038/nature14539", "direction": "citations", "limit": 10}"""
         return await _service(ctx).graph(identifier, direction, provider, limit, offset)
 
     @app.tool(name="resolve-paper", annotations=READ)
     async def resolve_paper(
         identifier: Query, ctx: Context, providers: list[str] | None = None
     ) -> Resolution:
-        """Resolve a DOI, arXiv ID, PMID, PMCID, OpenAlex, Semantic Scholar, Scholar, Scopus or WOS ID. Validates returned identifiers; use search-papers for titles."""
+        """Resolve a DOI, arXiv ID, PMID, PMCID, OpenAlex, Semantic Scholar, Scholar, Scopus or WOS ID. Validates returned identifiers; use search-papers for titles. A missing abstract is returned as abstract: null with abstract_missing_reason; never infer findings from the title. Example: {"identifier": "10.1038/nature14539"}"""
         return await _service(ctx).resolve(identifier, providers)
 
     @app.tool(name="search-papers", annotations=READ)
@@ -305,10 +311,11 @@ def create_server(
         open_access_only: bool = False,
         include_abstract: bool = False,
         cursor: Annotated[str, Field(min_length=1, max_length=4000)] | None = None,
-        detail: Literal["compact", "full"] = "compact",
+        detail: Literal["minimal", "compact", "full"] = "compact",
+        limit_total: Annotated[int, Field(ge=1, le=150)] | None = None,
     ) -> SearchResult:
-        """Search scholarly sources concurrently (defaults: Crossref, DataCite, Europe PMC). Limit is per provider. Page one source at a time using next_offsets, or next_cursors as cursor for Europe PMC, with the same query and limit. Filters apply to fetched pages. Partial failures remain visible. detail=compact omits per-field field_sources; use full or resolve-paper for them."""
-        return await _service(ctx).search(
+        """Search scholarly sources concurrently (defaults: Crossref, DataCite, Europe PMC). limit is PER PROVIDER: limit=5 with 3 providers returns up to 15 records. limit_total caps records returned across all providers. detail=minimal returns only id, title, year, first 3 authors, venue and doi/arxiv/pmid (about 5x smaller than compact); compact drops per-field field_sources; full keeps everything. Page one source at a time using next_offsets, or next_cursors as cursor for Europe PMC, with the same query and limit. Filters apply to fetched pages. Partial failures remain visible. Results are candidates; resolve-paper an identifier before citing. Example: {"query": "burst buffers HPC I/O", "limit": 5, "limit_total": 5, "detail": "minimal"}"""
+        result = await _service(ctx).search(
             query,
             providers,
             limit,
@@ -319,18 +326,29 @@ def create_server(
             include_abstract,
             cursor,
             detail,
+            limit_total,
         )
+        # Minimal records leave most fields at their defaults; omitting them is most of the saving.
+        result._slim = detail == "minimal"
+        return result
 
     @app.tool(name="verify-citation", annotations=READ)
     async def verify_citation(
-        citation: Annotated[str, Field(min_length=1, max_length=100000)],
         ctx: Context,
+        citation: Annotated[str, Field(min_length=1, max_length=100000)] | None = None,
         expected_title: Query | None = None,
         expected_year: Year | None = None,
         providers: list[str] | None = None,
+        identifier: Query | None = None,
     ) -> VerificationResult:
-        """Verify an identifier or single BibTeX entry against sources and compare supplied title/year. Title-only input returns ambiguous candidates. Provider outages are distinct from missing records. Does not validate scientific claims."""
-        return await _service(ctx).verify(citation, expected_title, expected_year, providers)
+        """Check that a citation's identifier exists and, if expected_title/expected_year are given, that they match the source record. Pass a DOI/arXiv/PMID or one BibTeX entry as citation (identifier is accepted as an alias). status=verified with match=identifier means the ID resolved; match=metadata means the supplied title/year also matched. It NEVER checks whether the paper supports a claim (claim_support is always not_checked). Title-only input returns ambiguous candidates. Provider outages are distinct from missing records. Example: {"citation": "10.1038/nature14539", "expected_title": "Deep learning", "expected_year": 2015}"""
+        if bool(citation) == bool(identifier):
+            raise ValueError(
+                "Provide exactly one of citation or identifier (an alias of citation)."
+            )
+        return await _service(ctx).verify(
+            cast(str, citation or identifier), expected_title, expected_year, providers
+        )
 
     @app.resource("cite-nexus://providers", mime_type="application/json")
     def provider_resource() -> str:

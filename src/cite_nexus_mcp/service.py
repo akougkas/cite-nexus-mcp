@@ -15,6 +15,7 @@ from .identifiers import Identifier, normalize_doi, parse_identifier, title_key
 from .models import (
     AccessLocation,
     AccessResult,
+    Author,
     BatchItem,
     BatchResult,
     CitationResult,
@@ -146,6 +147,39 @@ def merge(left: Paper, right: Paper) -> Paper:
     return result
 
 
+def note_missing_abstract(paper: Paper) -> None:
+    if paper.abstract:
+        paper.abstract_missing_reason = None
+        return
+    paper.abstract = None
+    providers = ", ".join(dict.fromkeys(s.provider for s in paper.sources)) or "the source"
+    paper.abstract_missing_reason = (
+        f"No abstract in the record from {providers}. "
+        "Do not infer findings or claims from the title or venue."
+    )
+
+
+MINIMAL_IDS = ("doi", "arxiv", "pmid")
+
+
+def minimal(paper: Paper) -> Paper:
+    """Identity fields only: enough to choose a record, then resolve it for the rest."""
+    ids = {k: v for k, v in paper.identifiers.items() if k in MINIMAL_IDS}
+    return Paper(
+        id=paper.id,
+        title=paper.title,
+        identifiers=ids,
+        authors=[Author(name=a.name) for a in paper.authors[:3]],
+        authors_complete=paper.authors_complete and len(paper.authors) <= 3,
+        year=paper.year,
+        venue=paper.venue,
+        abstract=paper.abstract,
+        abstract_missing_reason=paper.abstract_missing_reason,
+        is_retracted=paper.is_retracted,
+        warnings=paper.warnings,
+    )
+
+
 def deduplicate(papers: list[Paper]) -> list[Paper]:
     merged: list[Paper] = []
     for paper in papers:
@@ -225,7 +259,8 @@ class ResearchService:
         open_access_only: bool = False,
         include_abstract: bool = False,
         cursor: str | None = None,
-        detail: Literal["compact", "full"] = "compact",
+        detail: Literal["minimal", "compact", "full"] = "compact",
+        limit_total: int | None = None,
     ) -> SearchResult:
         query = query.strip()
         if not query or len(query) > 2000:
@@ -234,6 +269,8 @@ class ResearchService:
             raise ValueError("limit must be 1–50; offset must be 0–10,000 and a multiple of limit.")
         if year_from and year_to and year_from > year_to:
             raise ValueError("year_from must not be later than year_to.")
+        if limit_total is not None and not 1 <= limit_total <= 150:
+            raise ValueError("limit_total must be 1–150.")
         selected = self.select(providers)
         if cursor is not None and (
             offset != 0
@@ -278,17 +315,31 @@ class ResearchService:
             papers = [p for p in papers if p.year is not None and p.year <= year_to]
         if open_access_only:
             papers = [p for p in papers if any(a.is_open for a in p.access)]
-        if not include_abstract:
+        result_warnings = [
+            "limit applies per provider. Results use provider-rank interleaving and conservative deduplication; this is not an exhaustive systematic review."
+        ]
+        if limit_total is not None and len(papers) > limit_total:
+            result_warnings.append(
+                f"limit_total kept the first {limit_total} of {len(papers)} interleaved records. "
+                "next_offsets advance past the whole fetched page, so dropped records are not returned again."
+            )
+            papers = papers[:limit_total]
+        if include_abstract:
+            for paper in papers:
+                note_missing_abstract(paper)
+        else:
+            result_warnings.append(
+                "Abstracts omitted because include_abstract=false; abstract: null here says nothing about the paper."
+            )
             for paper in papers:
                 paper.abstract = None
                 paper.field_sources.pop("abstract", None)
-        if detail == "compact":
+        if detail != "full":
             # Per-field provenance is a fifth of a search page; sources still name every provider.
             for paper in papers:
                 paper.field_sources = {}
-        result_warnings = [
-            "Each provider contributes up to limit records. Results use provider-rank interleaving and conservative deduplication; this is not an exhaustive systematic review."
-        ]
+        if detail == "minimal":
+            papers = [minimal(paper) for paper in papers]
         if year_from or year_to or open_access_only:
             result_warnings.append(
                 "Filters apply to the fetched page. Unknown year or open-access status is excluded; page further for more matches."
@@ -412,6 +463,7 @@ class ResearchService:
                 "; ".join(f"{i.provider} [{i.code}]: {i.message}" for i in issues)
                 or "No provider can resolve this identifier.",
             )
+        note_missing_abstract(result)
         return Resolution(identifier=identifier.canonical, paper=result, issues=issues)
 
     async def citation(
@@ -458,13 +510,24 @@ class ResearchService:
                 differences.append(
                     f"Year differs or is unavailable: supplied {expected_year}; source {resolved.paper.year}."
                 )
+            compared = bool(expected_title) or expected_year is not None
             return VerificationResult(
                 status="mismatch" if differences else "verified",
+                match=None if differences else ("metadata" if compared else "identifier"),
                 identifier=identifier.canonical,
                 paper=resolved.paper,
                 differences=differences,
                 issues=resolved.issues,
-                explanation="Verified identifier existence and any supplied title/year against retrieved metadata. This does not verify the paper's claims, full author list, or publication integrity.",
+                explanation=(
+                    "verified means the identifier resolved"
+                    + (
+                        " and the supplied title/year match the source record"
+                        if compared
+                        else "; no title or year was supplied to compare"
+                    )
+                    + ". It does NOT mean the paper supports any claim: claim_support is not_checked. "
+                    "Read the abstract or full text before citing it as evidence. The full author list and publication integrity are also unchecked."
+                ),
             )
         query = expected_title or citation.strip()
         try:
