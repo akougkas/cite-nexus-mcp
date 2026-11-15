@@ -1,5 +1,6 @@
 """Biomedical literature and arXiv, including source-native identifiers."""
 
+import re
 from typing import Any
 from urllib.parse import quote
 
@@ -148,10 +149,29 @@ class EuropePMC(Provider):
         return Page(papers, offset + limit if offset + limit < total else None)
 
 
+ARXIV_STOPWORDS = frozenset(
+    "a an and are as at by for from in into is of on or the to using via what which with".split()
+)
+
+
+def arxiv_query(query: str) -> str:
+    """Require every content term. arXiv applies all: to the first word only and ORs the rest,
+    so "all:LLM multi-agent orchestration" ranks any multi-agent paper. Explicit field or
+    boolean syntax passes through unchanged."""
+    if re.search(r"\b(?:ti|au|abs|cat|all|id|co|jr|rn):|\b(?:AND|OR|ANDNOT)\b", query):
+        return query
+    terms = [
+        t
+        for t in re.findall(r'"[^"]+"|[^\s"]+', query)
+        if t.startswith('"') or t.casefold() not in ARXIV_STOPWORDS
+    ]
+    return " AND ".join(f"all:{t}" for t in terms) or f"all:{query}"
+
+
 class Arxiv(Provider):
     id = "arxiv"
     name = "arXiv"
-    description = "Preprints in physics, mathematics, computer science and related fields; paced at one request per three seconds."
+    description = "Preprints in physics, mathematics, computer science and related fields; recommended with semantic_scholar for computer-science queries. Plain queries require every non-stopword term; ti:/abs:/OR syntax passes through. Paced at one request per three seconds."
     documentation = "https://info.arxiv.org/help/api/user-manual.html"
     kinds = ("arxiv",)
     root = "https://export.arxiv.org/api/query"
@@ -202,11 +222,7 @@ class Arxiv(Provider):
         return papers
 
     async def search(self, query: str, limit: int, offset: int) -> Page:
-        search = (
-            query
-            if any(f"{f}:" in query for f in ("ti", "au", "abs", "cat", "all", "id"))
-            else f"all:{query}"
-        )
+        search = arxiv_query(query)
         data = await self.http.get(
             self.id,
             self.root,

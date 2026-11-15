@@ -13,7 +13,7 @@ from .base import Page, Provider, clean, integer
 class SemanticScholar(Provider):
     id = "semantic_scholar"
     name = "Semantic Scholar"
-    description = "Academic Graph search, citation counts and graph traversal; optional key, shared anonymous rate limits."
+    description = "Academic Graph search, citation counts and graph traversal; strong computer-science coverage; optional key, shared anonymous rate limits."
     documentation = "https://api.semanticscholar.org/api-docs/graph"
     kinds = ("doi", "arxiv", "pmid", "pmcid", "semantic_scholar")
     capabilities = ("search", "resolve", "citations", "references")

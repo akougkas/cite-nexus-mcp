@@ -195,3 +195,23 @@ async def test_semantic_graph_preserves_direction(direction, records):
     assert seen[0].url.path.endswith("/" + direction)
     assert result.next_offset == 10
     assert result.papers[0].metrics[0].count == 910
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        (
+            "LLM multi-agent orchestration framework",
+            "all:LLM AND all:multi-agent AND all:orchestration AND all:framework",
+        ),
+        ("a survey of the transformers", "all:survey AND all:transformers"),
+        ('"burst buffer" for HPC', 'all:"burst buffer" AND all:HPC'),
+        ("ti:attention AND au:vaswani", "ti:attention AND au:vaswani"),
+        ("graph OR network", "graph OR network"),
+        ("the of", "all:the of"),
+    ],
+)
+def test_arxiv_plain_queries_require_every_term(query, expected):
+    from cite_nexus_mcp.providers.academic import arxiv_query
+
+    assert arxiv_query(query) == expected
