@@ -36,6 +36,30 @@ async def test_bridge_preserves_candidate_evidence_and_never_ranks_counts(record
     assert data["metadata"]["errors"] == []
 
 
+async def test_bridge_passes_detail_and_limit_total_and_echoes_them(records):
+    items = [dict(records["crossref"], DOI=f"10.1234/x{i}") for i in range(5)]
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(
+            lambda _: httpx.Response(200, json={"message": {"items": items}})
+        )
+    ) as client:
+        settings = Settings()
+        server = create_server(service=ResearchService(settings, HTTP(settings, client)))
+        full = await execute(Request(query="q", providers=["crossref"], limit=5), server)
+        minimal = await execute(
+            Request(query="q", providers=["crossref"], limit=5, limit_total=2, detail="minimal"),
+            server,
+        )
+    assert full["metadata"]["detail"] == "full" and full["metadata"]["limit_total"] is None
+    assert full["results"][0]["citeNexus"]["abstract"] == full["results"][0]["abstract"]
+    assert minimal["metadata"]["detail"] == "minimal"
+    assert minimal["metadata"]["limit_total"] == 2
+    assert minimal["metadata"]["total"] == len(minimal["results"]) == 2
+    record = minimal["results"][0]["citeNexus"]
+    assert "abstract" not in record and "sources" not in record
+    assert len(json.dumps(minimal)) * 2 < len(json.dumps(full))
+
+
 async def test_bridge_retains_partial_outages(records):
     def handler(request):
         if "crossref" in request.url.host:
@@ -73,6 +97,9 @@ async def test_bridge_rejects_incompatible_mcp():
         {"command": "anything"},
         {"api_key": "sensitive"},
         {"schema_version": "different/v2"},
+        {"detail": "verbose"},
+        {"limit_total": 0},
+        {"limit_total": "5"},
     ],
 )
 def test_bridge_input_bounds(changes):

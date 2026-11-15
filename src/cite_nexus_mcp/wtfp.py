@@ -72,6 +72,9 @@ class Request(Model):
     limit: Annotated[int, Field(strict=True, ge=1, le=25)] = 10
     year: Annotated[int, Field(strict=True, ge=1000, le=2200)] | None = None
     timeout_seconds: Annotated[int, Field(strict=True, ge=1, le=600)] = 20
+    # full keeps the pre-0.2.6 output; minimal and compact pass through to search-papers.
+    detail: Literal["minimal", "compact", "full"] = "full"
+    limit_total: Annotated[int, Field(strict=True, ge=1, le=150)] | None = None
 
     @model_validator(mode="after")
     def require_search_query(self) -> Self:
@@ -116,8 +119,10 @@ async def execute(request: Request, server: Any = None) -> dict[str, Any]:
                         if any(p in request.providers for p in ("serpapi", "searchapi"))
                         else request.limit,
                         "include_abstract": True,
-                        "detail": "full",
+                        "detail": request.detail,
                     }
+                    if request.limit_total is not None:
+                        arguments["limit_total"] = request.limit_total
                     if request.year is not None:
                         arguments.update(year_from=request.year, year_to=request.year)
                 result = await client.call_tool(tool, arguments)
@@ -150,6 +155,8 @@ async def execute(request: Request, server: Any = None) -> dict[str, Any]:
         truncated=len(search.papers) > len(papers),
         # Keep provider page state explicitly separate from the displayed total limit.
         provider_limit=arguments["limit"],
+        detail=request.detail,
+        limit_total=request.limit_total,
         next_offsets=search.next_offsets,
         next_cursors=search.next_cursors,
     )
@@ -172,7 +179,12 @@ async def execute(request: Request, server: Any = None) -> dict[str, Any]:
                 "verification": "candidate",
                 "bibtex": bibtex(paper),
                 "warnings": warnings(paper),
-                "citeNexus": paper.model_dump(),
+                # The record's abstract is already top-level; minimal omits defaults and the copy.
+                "citeNexus": paper.model_dump()
+                if request.detail == "full"
+                else paper.model_dump(
+                    exclude_defaults=request.detail == "minimal", exclude={"abstract"}
+                ),
             }
             for paper in papers
         ],

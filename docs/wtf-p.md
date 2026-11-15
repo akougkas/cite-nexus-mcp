@@ -41,8 +41,8 @@ node ../wtf-p/vendors/plugin/tools/wtfp-tool.js citation-search \
   --backend=cite-nexus --query="reproducible research" --limit=5 --timeout=30
 ```
 
-The search contacts Crossref, DataCite and Europe PMC. For computing preprints, add
-`--providers=crossref,arxiv`. Optional graph, commercial and institutional providers use
+The search contacts Crossref, DataCite and Europe PMC. For computer-science topics, use
+`--providers=arxiv,semantic_scholar`, adding `crossref` for published versions. Optional graph, commercial and institutional providers use
 the [documented credential names](providers.md) and must be selected explicitly.
 The companion ignores `.env` files and `CITE_NEXUS_DEFAULT_PROVIDERS`; set optional keys in
 the launching environment. Only selected providers' credentials pass through WTF-P.
@@ -65,6 +65,18 @@ The displayed result limit is 1–25 overall; native CiteNexus limits are per pr
 records both the fetched-page count and the displayed count. Upstream pagination information
 describes provider pages; use native `search-papers` for complete paging when a displayed result
 set is truncated. Per-call startup means the metadata cache is not reused between WTF-P calls.
+
+A `cite-nexus.wtfp/v1` request may add `detail` (`minimal`, `compact` or `full`; default `full`)
+and `limit_total` (1–150). Both pass through to `search-papers` and are echoed in `metadata`.
+The default keeps the full source record in each result's `citeNexus` field. `compact` drops
+per-field provenance, and `minimal` keeps only identity fields; both leave the abstract in the
+top-level `abstract` field instead of repeating it in `citeNexus`. `limit_total` caps records across
+providers before the displayed `limit` applies:
+
+```json
+{"schema_version": "cite-nexus.wtfp/v1", "query": "LLM multi-agent orchestration",
+ "providers": ["arxiv", "semantic_scholar"], "limit": 10, "limit_total": 10, "detail": "minimal"}
+```
 
 ## Host support and optional native MCP connection
 
