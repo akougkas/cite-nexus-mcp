@@ -78,6 +78,41 @@ Connect to `http://127.0.0.1:8000/mcp`. The CLI binds only to loopback and serve
 boundary. A public, multi-user deployment needs authentication, credential isolation and its
 own deployment integration; the CLI does not supply those features.
 
+### Clio
+
+Declare CiteNexus in the user scope `~/.config/clio-coder/mcp.yaml`. Every CiteNexus tool is
+read-only, and searches contact the selected providers, so the server needs the network grant:
+
+```yaml
+version: 1
+servers:
+  - id: cite-nexus
+    command: /absolute/path/to/cite-nexus-mcp   # from `uv tool install cite-nexus-mcp==0.2.5`
+    args:
+      - --no-env-file
+    timeoutMs: 120000
+    actionClass: read
+    network: true
+    toolActionClasses:
+      batch-citations: read
+      enhance-citation: read
+      find-open-access: read
+      find-scholar-id: read
+      get-citation: read
+      list-providers: read
+      paper-metrics: read
+      related-papers: read
+      resolve-paper: read
+      search-papers: read
+      verify-citation: read
+```
+
+Tool names are hyphenated, exactly as `tools/list` reports them. Run
+`clio-coder mcp test cite-nexus --call list-providers` to check the declaration. Clio honors
+`network: true` only in a user declaration. A plugin-scope declaration's own `network` field is
+ignored, so grant it explicitly with `clio-coder mcp trust cite-nexus --network`.
+Small local models should call `search-papers` with `detail: "minimal"` and `limit_total`.
+
 ## Sources and access
 
 | Provider ID | Coverage | Access | Setup |
@@ -157,7 +192,10 @@ SerpAPI or SearchApi. Use each provider's `next_offsets` with the **same limit**
 the next call. Europe PMC search uses `next_cursors` instead: pass its token as `cursor`,
 select only `europe_pmc`, keep the same query and limit, and leave `offset` at zero.
 Offsets must be multiples of the limit, up to 10,000. `year_from`, `year_to` and
-`open_access_only` filter the fetched page; unknown values are excluded. Abstracts are omitted
+`open_access_only` filter the fetched page; unknown values are excluded. Ordering interleaves each
+provider's own ranking, so the first record is the first selected provider's top hit. For
+computer-science topics, select `arxiv` and `semantic_scholar`; plain arXiv queries require every
+non-stopword term, while explicit `ti:`, `abs:`, `AND` or `OR` syntax passes through unchanged. Abstracts are omitted
 from search results by default; set `include_abstract: true` or resolve a record to retrieve them.
 Search records are compact by default: `field_sources` is empty while `sources` still names every
 provider. Set `detail: "full"` or resolve a record for per-field provenance.
@@ -183,6 +221,9 @@ Verification establishes that an identifier exists in retrieved metadata and che
 title and year. It does **not** establish that a paper's findings are correct, that every author
 is present, that the paper supports a specific claim, or that no retraction exists. A provider
 outage produces `unavailable`, rather than a claim that the citation is fabricated.
+`verify-citation` reports `match: "identifier"` when only the identifier was checked and
+`match: "metadata"` when a supplied title or year also matched; `claim_support` is always
+`not_checked`.
 
 Exports omit unavailable metadata. Partial author lists generate warnings; BibTeX uses `others`
 where appropriate. Citation counts retain their source, index and observation timestamp and are
