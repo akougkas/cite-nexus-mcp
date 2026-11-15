@@ -72,7 +72,7 @@ class Request(Model):
     limit: Annotated[int, Field(strict=True, ge=1, le=25)] = 10
     year: Annotated[int, Field(strict=True, ge=1000, le=2200)] | None = None
     timeout_seconds: Annotated[int, Field(strict=True, ge=1, le=600)] = 20
-    # full keeps the pre-0.2.6 output; minimal and compact pass through to search-papers.
+    # full keeps the pre-0.2.5 output; minimal and compact pass through to search-papers.
     detail: Literal["minimal", "compact", "full"] = "full"
     limit_total: Annotated[int, Field(strict=True, ge=1, le=150)] | None = None
 

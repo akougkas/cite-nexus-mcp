@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.2.5 — 2026-11-15
+
+Tool output, descriptions and search relevance tuned after a live WTF-P and Clio run, where a 27B
+local model spent about 20K tokens on three searches and misread verification results.
+
+- `search-papers` adds `limit_total`, which caps records across providers, and `detail: "minimal"`,
+  which returns id, title, year, the first three authors, venue and DOI/arXiv/PMID and omits
+  default-valued fields. The description states that `limit` applies per provider.
+- `verify-citation` accepts `identifier` as an alias of `citation`. Results add `match`
+  (`identifier` or `metadata`) and `claim_support: "not_checked"`; verification never checks
+  whether a paper supports a claim.
+- Records without an abstract return `abstract: null` with `abstract_missing_reason`, so callers
+  do not infer findings from titles. Searches without `include_abstract` say abstracts were omitted.
+- Every tool description includes one example call.
+- The `cite-nexus.wtfp/v1` companion request accepts `detail` (`minimal`, `compact` or `full`;
+  default `full`) and `limit_total`, passes both to `search-papers`, and echoes them in metadata.
+  The default output is unchanged.
+- arXiv plain-text queries require every non-stopword term. Previously `all:` applied only to the
+  first word and the rest were OR'd, which ranked unrelated multi-agent papers first. Explicit
+  field or boolean syntax passes through unchanged.
+- `list-providers` and `search-papers` recommend `arxiv` and `semantic_scholar` for
+  computer-science queries and state that ordering interleaves provider ranks.
+- The README documents a Clio `mcp.yaml` declaration and the plugin-scope
+  `clio-coder mcp trust cite-nexus --network` step.
+
 ## 0.2.4 — 2026-11-10
 
 0.2.3 was tagged but never published to PyPI; 0.2.4 is the first published release with its changes,
