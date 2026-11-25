@@ -29,7 +29,7 @@ pancode mcp trust cite-nexus --surface
 
 ## The launch
 
-`mcp.json` launches `uvx --from cite-nexus-mcp==0.2.5 cite-nexus-mcp --no-env-file`. The
+`mcp.json` launches `uvx --from cite-nexus-mcp==0.2.6 cite-nexus-mcp --no-env-file`. The
 exact version pins uv's input, not the bytes PyPI serves for it. The first launch needs PyPI
 to install the package into uv's cache; later launches reuse that cache. `uvx` must be on
 `PATH`. `--no-env-file` keeps the server from reading a `.env` file in the pack directory.
@@ -48,7 +48,7 @@ PanCode passes an MCP server only a safe allowlist of environment variables, so 
 in your shell reaches this server, and the pack sets none. The free providers need no key. To
 use a keyed or metered provider, write your own user-scope server declaration with the keys in
 its `env`. Choosing such a provider accepts that provider's terms; see
-[providers](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.5/docs/providers.md).
+[providers](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.6/docs/providers.md).
 
 ## Network
 
