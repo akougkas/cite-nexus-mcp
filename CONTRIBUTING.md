@@ -42,3 +42,4 @@ Keep the version in `pyproject.toml` and `cite_nexus_mcp.__version__` aligned, r
 build both artifacts with `uv build`. Verify that the wheel and source archive contain no `.env`,
 credentials, local assistant configuration or manual user experiments. Validate an installed wheel
 outside the repository before publishing. The local HTTP CLI is not a multi-user deployment layer.
+The PanCode pack in `pancode/` is generated with the other release metadata.

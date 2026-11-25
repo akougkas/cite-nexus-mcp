@@ -78,40 +78,19 @@ Connect to `http://127.0.0.1:8000/mcp`. The CLI binds only to loopback and serve
 boundary. A public, multi-user deployment needs authentication, credential isolation and its
 own deployment integration; the CLI does not supply those features.
 
-### Clio
+### PanCode
 
-Declare CiteNexus in the user scope `~/.config/clio-coder/mcp.yaml`. Every CiteNexus tool is
-read-only, and searches contact the selected providers, so the server needs the network grant:
+The `pancode/` directory is a PanCode pack that launches this release with `uvx`:
 
-```yaml
-version: 1
-servers:
-  - id: cite-nexus
-    command: /absolute/path/to/cite-nexus-mcp   # from `uv tool install cite-nexus-mcp==0.2.5`
-    args:
-      - --no-env-file
-    timeoutMs: 120000
-    actionClass: read
-    network: true
-    toolActionClasses:
-      batch-citations: read
-      enhance-citation: read
-      find-open-access: read
-      find-scholar-id: read
-      get-citation: read
-      list-providers: read
-      paper-metrics: read
-      related-papers: read
-      resolve-paper: read
-      search-papers: read
-      verify-citation: read
+```bash
+pancode hub install <checkout>/pancode --user
+pancode mcp trust cite-nexus
+pancode mcp trust cite-nexus --surface   # prints the digest; repeat with --hash <digest>
 ```
 
-Tool names are hyphenated, exactly as `tools/list` reports them. Run
-`clio-coder mcp test cite-nexus --call list-providers` to check the declaration. Clio honors
-`network: true` only in a user declaration. A plugin-scope declaration's own `network` field is
-ignored, so grant it explicitly with `clio-coder mcp trust cite-nexus --network`.
-Small local models should call `search-papers` with `detail: "minimal"` and `limit_total`.
+PanCode passes the server no key from your shell. Keyed providers need your own user-scope
+declaration with the keys in its `env`. See the
+[pack page](https://github.com/akougkas/cite-nexus-mcp/blob/master/pancode/README.md).
 
 ## Sources and access
 

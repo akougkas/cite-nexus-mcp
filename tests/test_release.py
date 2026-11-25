@@ -8,6 +8,8 @@ import jsonschema
 from mcp import Client, StdioServerParameters
 
 from cite_nexus_mcp import __version__
+from cite_nexus_mcp.config import Settings
+from cite_nexus_mcp.server import create_server
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -47,6 +49,28 @@ async def test_portable_plugin_schema_and_actual_connection():
         result = await client.call_tool("list-providers", {})
         assert not result.is_error
         assert len(result.structured_content["providers"]) == 10
+
+
+async def test_pancode_pack_pins_release_and_declares_every_tool_read():
+    plugin = read("pancode/plugin.json")
+    config = read("pancode/mcp.json")
+    server = config["mcpServers"]["cite-nexus"]
+    assert plugin["version"] == __version__
+    assert server["command"] == "uvx"
+    assert server["args"] == [
+        "--from",
+        f"cite-nexus-mcp=={__version__}",
+        "cite-nexus-mcp",
+        "--no-env-file",
+    ]
+    assert plugin["license"] == read("release/product.json")["license"]
+    # PanCode drops a plugin mcp.json with any field outside its known set, refuses a
+    # server-level actionClass, and ignores a plugin's own network grant.
+    assert set(config) == {"mcpServers"}
+    assert set(server) <= {"type", "command", "args", "timeoutMs", "toolActionClasses"}
+    async with Client(create_server(Settings()), read_timeout_seconds=5) as client:
+        listing = await client.list_tools()
+    assert server["toolActionClasses"] == {tool.name: "read" for tool in listing.tools}
 
 
 def test_generated_release_metadata_and_inventory_are_current():
