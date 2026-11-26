@@ -6,9 +6,9 @@
     "name": "Anthony Kougkas",
     "url": "https://github.com/akougkas"
   },
-  "homepage": "https://github.com/akougkas/cite-nexus-mcp",
-  "repository": "https://github.com/akougkas/cite-nexus-mcp",
-  "license": "MIT",
+  "homepage": "https://github.com/PanStudio/pancite",
+  "repository": "https://github.com/PanStudio/pancite",
+  "license": "Apache-2.0",
   "keywords": [
     "mcp",
     "research",

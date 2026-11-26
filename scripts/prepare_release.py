@@ -26,7 +26,7 @@ PANCODE_READ_TOOLS = (
 PANCODE_README = """\
 # CiteNexus for PanCode
 
-This pack runs the CiteNexus MCP server in PanCode. CiteNexus is MIT-licensed.
+This pack runs the CiteNexus MCP server in PanCode. CiteNexus is licensed under Apache-2.0.
 
 ## Install
 
@@ -55,7 +55,7 @@ pancode mcp trust cite-nexus --surface
 
 ## The launch
 
-`mcp.json` launches `uvx --from cite-nexus-mcp=={version} cite-nexus-mcp --no-env-file`. The
+`mcp.json` launches `uvx --from pancite=={version} cite-nexus-mcp --no-env-file`. The
 exact version pins uv's input, not the bytes PyPI serves for it. The first launch needs PyPI
 to install the package into uv's cache; later launches reuse that cache. `uvx` must be on
 `PATH`. `--no-env-file` keeps the server from reading a `.env` file in the pack directory.
@@ -74,7 +74,7 @@ PanCode passes an MCP server only a safe allowlist of environment variables, so 
 in your shell reaches this server, and the pack sets none. The free providers need no key. To
 use a keyed or metered provider, write your own user-scope server declaration with the keys in
 its `env`. Choosing such a provider accepts that provider's terms; see
-[providers](https://github.com/akougkas/cite-nexus-mcp/blob/v{version}/docs/providers.md).
+[providers](https://github.com/PanStudio/pancite/blob/v{version}/docs/providers.md).
 
 ## Network
 
@@ -146,7 +146,7 @@ def outputs() -> dict[str, str]:
             "packages": [
                 {
                     "registryType": "pypi",
-                    "identifier": "cite-nexus-mcp",
+                    "identifier": "pancite",
                     "version": version,
                     "runtimeHint": "uvx",
                     "transport": {"type": "stdio"},
@@ -201,7 +201,7 @@ def outputs() -> dict[str, str]:
                     "command": "uvx",
                     "args": [
                         "--from",
-                        f"cite-nexus-mcp=={version}",
+                        f"pancite=={version}",
                         "cite-nexus-mcp",
                         "--no-env-file",
                     ],
@@ -216,7 +216,9 @@ def outputs() -> dict[str, str]:
     }
     rendered["packaging/cite-nexus/assets/logo.svg"] = (ROOT / "assets/cite-nexus.svg").read_text()
     rendered["packaging/cite-nexus/LICENSE"] = (ROOT / "LICENSE").read_text()
+    rendered["packaging/cite-nexus/NOTICE"] = (ROOT / "NOTICE").read_text()
     rendered["pancode/LICENSE"] = (ROOT / "LICENSE").read_text()
+    rendered["pancode/NOTICE"] = (ROOT / "NOTICE").read_text()
     rendered["pancode/README.md"] = PANCODE_README.format(version=version)
     return rendered
 

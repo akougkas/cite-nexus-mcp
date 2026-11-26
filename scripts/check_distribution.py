@@ -50,8 +50,8 @@ def check_paths(paths: list[str]) -> None:
 
 
 def inspect(directory: Path, version: str) -> Path:
-    wheel = directory / f"cite_nexus_mcp-{version}-py3-none-any.whl"
-    sdist = directory / f"cite_nexus_mcp-{version}.tar.gz"
+    wheel = directory / f"pancite-{version}-py3-none-any.whl"
+    sdist = directory / f"pancite-{version}.tar.gz"
     files = set(directory.iterdir())
     ignore = directory / ".gitignore"
     # uv creates this marker in its build directory; it is not uploaded by the
@@ -64,17 +64,13 @@ def inspect(directory: Path, version: str) -> Path:
         )
     with zipfile.ZipFile(wheel) as archive:
         check_paths(archive.namelist())
-        metadata = email.message_from_bytes(
-            archive.read(f"cite_nexus_mcp-{version}.dist-info/METADATA")
-        )
-        if metadata["Name"] != "cite-nexus-mcp" or metadata["Version"] != version:
+        metadata = email.message_from_bytes(archive.read(f"pancite-{version}.dist-info/METADATA"))
+        if metadata["Name"] != "pancite" or metadata["Version"] != version:
             raise ValueError("Wheel identity does not match the release")
-        if "mcp-name: io.github.akougkas/cite-nexus-mcp" not in metadata.get_payload():
+        if "mcp-name: io.github.PanStudio/pancite" not in metadata.get_payload():
             raise ValueError("PyPI ownership marker is missing from wheel metadata")
         entries = configparser.ConfigParser()
-        entries.read_string(
-            archive.read(f"cite_nexus_mcp-{version}.dist-info/entry_points.txt").decode()
-        )
+        entries.read_string(archive.read(f"pancite-{version}.dist-info/entry_points.txt").decode())
         if not {"cite-nexus-mcp", "cite-nexus-wtfp"} <= set(entries["console_scripts"]):
             raise ValueError("Required installed commands are missing")
         if "cite_nexus_mcp/wtfp.py" not in archive.namelist():
@@ -83,8 +79,14 @@ def inspect(directory: Path, version: str) -> Path:
         check_paths(archive.getnames())
         if any(member.issym() or member.islnk() for member in archive):
             raise ValueError("Source artifact must not contain filesystem links")
-        for required in ("pyproject.toml", "server.json", "src/cite_nexus_mcp/wtfp.py", "LICENSE"):
-            if f"cite_nexus_mcp-{version}/{required}" not in archive.getnames():
+        for required in (
+            "pyproject.toml",
+            "server.json",
+            "src/cite_nexus_mcp/wtfp.py",
+            "LICENSE",
+            "NOTICE",
+        ):
+            if f"pancite-{version}/{required}" not in archive.getnames():
                 raise ValueError(f"Source artifact is missing {required}")
     for path in (wheel, sdist):
         print(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}")

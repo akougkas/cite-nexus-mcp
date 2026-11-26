@@ -50,6 +50,6 @@ Verification checks metadata identity and supplied title/year; it does not estab
 truth or claim support. Citation counts are provider-specific observations. The HTTP CLI serves
 a local trust boundary and is not a public hosted service with multi-user authentication.
 
-See the [README](https://github.com/akougkas/cite-nexus-mcp/tree/v0.2.0),
-[migration guide](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/migration.md),
-and [WTF-P setup](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.0/docs/wtf-p.md).
+See the [README](https://github.com/PanStudio/pancite/tree/v0.2.0),
+[migration guide](https://github.com/PanStudio/pancite/blob/v0.2.0/docs/migration.md),
+and [WTF-P setup](https://github.com/PanStudio/pancite/blob/v0.2.0/docs/wtf-p.md).

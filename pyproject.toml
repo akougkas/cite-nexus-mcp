@@ -1,10 +1,11 @@
 [project]
-name = "cite-nexus-mcp"
+name = "pancite"
 version = "0.2.6"
 description = "Evidence-backed scholarly discovery and citation tools for MCP, from open metadata to institutional databases."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 dependencies = [
  "anyio>=4.9,<5",
  "mcp>=2.2,<3",
@@ -16,13 +17,12 @@ dependencies = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
 
 [[project.authors]]
-name = "akougkas.io (Anthony K)"
-email = "a.kougkas@gmail.com"
+name = "Anthony Kougkas"
 
 [build-system]
 requires = ["hatchling"]
@@ -46,8 +46,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/akougkas/cite-nexus-mcp"
-Issues = "https://github.com/akougkas/cite-nexus-mcp/issues"
+Homepage = "https://github.com/PanStudio/pancite"
+Issues = "https://github.com/PanStudio/pancite/issues"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -72,4 +72,4 @@ ignore_missing_imports = true
 packages = ["src/cite_nexus_mcp"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src", "tests", "scripts", "docs", "assets", "release", "packaging", "server.json", "llms-install.md", "README.md", "LICENSE", "pyproject.toml", "uv.lock", ".env.example", "CHANGELOG.md", "CONTRIBUTING.md"]
+include = ["src", "tests", "scripts", "docs", "assets", "release", "packaging", "server.json", "llms-install.md", "README.md", "LICENSE", "NOTICE", "pyproject.toml", "uv.lock", ".env.example", "CHANGELOG.md", "CONTRIBUTING.md"]

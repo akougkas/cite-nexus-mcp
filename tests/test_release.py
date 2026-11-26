@@ -59,7 +59,7 @@ async def test_pancode_pack_pins_release_and_declares_every_tool_read():
     assert server["command"] == "uvx"
     assert server["args"] == [
         "--from",
-        f"cite-nexus-mcp=={__version__}",
+        f"pancite=={__version__}",
         "cite-nexus-mcp",
         "--no-env-file",
     ]

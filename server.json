@@ -1,18 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.akougkas/cite-nexus-mcp",
+  "name": "io.github.PanStudio/pancite",
   "title": "CiteNexus",
   "description": "Search scholarly sources, verify references, and export citations with traceable evidence.",
   "version": "0.2.6",
   "repository": {
-    "url": "https://github.com/akougkas/cite-nexus-mcp",
+    "url": "https://github.com/PanStudio/pancite",
     "source": "github"
   },
-  "websiteUrl": "https://github.com/akougkas/cite-nexus-mcp",
+  "websiteUrl": "https://github.com/PanStudio/pancite",
   "packages": [
     {
       "registryType": "pypi",
-      "identifier": "cite-nexus-mcp",
+      "identifier": "pancite",
       "version": "0.2.6",
       "runtimeHint": "uvx",
       "transport": {

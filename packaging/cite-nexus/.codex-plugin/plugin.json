@@ -6,9 +6,9 @@
     "name": "Anthony Kougkas",
     "url": "https://github.com/akougkas"
   },
-  "homepage": "https://github.com/akougkas/cite-nexus-mcp",
-  "repository": "https://github.com/akougkas/cite-nexus-mcp",
-  "license": "MIT",
+  "homepage": "https://github.com/PanStudio/pancite",
+  "repository": "https://github.com/PanStudio/pancite",
+  "license": "Apache-2.0",
   "keywords": [
     "mcp",
     "research",
@@ -29,7 +29,7 @@
     "capabilities": [
       "Read"
     ],
-    "websiteURL": "https://github.com/akougkas/cite-nexus-mcp",
+    "websiteURL": "https://github.com/PanStudio/pancite",
     "brandColor": "#145C53",
     "logo": "./assets/logo.svg",
     "defaultPrompt": "Search free scholarly sources for my topic, retain source evidence, and verify identifiers before exporting citations."

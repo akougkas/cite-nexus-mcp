@@ -1,6 +1,6 @@
 # Data handling and provider access
 
-CiteNexus is a locally runnable MIT-licensed metadata service. The current project
+CiteNexus is a locally runnable Apache-2.0-licensed metadata service. The current project
 does not operate a hosted research service, account system or application telemetry.
 
 Selected provider APIs receive the search query or identifier needed for the operation.

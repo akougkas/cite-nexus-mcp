@@ -26,7 +26,7 @@ teams that need the same evidence record across public and institutionally licen
 Lead with a concrete workflow: **discover → resolve → verify → export → write with WTF-P**.
 The first search should work without an account. Optional vendor keys extend coverage; they
 are not the entrance requirement. Keep pricing statements at the correct boundary: the
-software is MIT-licensed, default APIs need no key, and upstream quotas or licenses still apply.
+software is licensed under Apache-2.0, default APIs need no key, and upstream quotas or licenses still apply.
 
 Use [launch-kit.md](launch-kit.md) for copy and demos, and
 [marketplaces.md](marketplaces.md) for the researched distribution queue. JSON and CSV sources
@@ -38,7 +38,7 @@ under `release/` retain evidence URLs, observed redirects and unresolved eligibi
 |---|---|
 | `release/product.json` | Canonical product name, descriptions, keywords, namespace and release authorization |
 | `server.json` | Official MCP Registry metadata for the PyPI 0.2.0 artifact |
-| README `mcp-name` marker | PyPI package ownership evidence for `io.github.akougkas/cite-nexus-mcp` |
+| README `mcp-name` marker | PyPI package ownership evidence for `io.github.PanStudio/pancite` |
 | `packaging/cite-nexus/` | Portable Agent Plugins 1.0 plus Codex/Claude compatibility manifests; local testing only |
 | `assets/cite-nexus.svg` and `cite-nexus-400.png` | Vector source and 400×400 listing icon |
 | `assets/social-card.svg` and `social-card.png` | Editable source and 1200×630 promotional image |

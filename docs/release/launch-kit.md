@@ -70,7 +70,7 @@ convert assets/social-card.svg assets/social-card.png
 
 ## Cline submission draft
 
-**Repository:** https://github.com/akougkas/cite-nexus-mcp
+**Repository:** https://github.com/PanStudio/pancite
 
 **Logo:** attach the prepared 400×400 PNG, or use its public URL after the approved source
 commit is available. Do not submit a local filesystem path as an image URL.
@@ -92,14 +92,14 @@ Choose the live list's research/search category and alphabetical position. Apply
 language/platform symbols justified by the list's current conventions and tested support.
 
 ```markdown
-- [akougkas/cite-nexus-mcp](https://github.com/akougkas/cite-nexus-mcp) - Scholarly discovery, reference verification, and deterministic citation export with free default sources and traceable provider evidence.
+- [PanStudio/pancite](https://github.com/PanStudio/pancite) - Scholarly discovery, reference verification, and deterministic citation export with free default sources and traceable provider evidence.
 ```
 
 **PR title:** Add CiteNexus scholarly discovery and citation server
 
 **PR body:**
 
-> Adds an installable MIT-licensed Python MCP server for scholarly search and citation
+> Adds an installable Apache-2.0-licensed Python MCP server for scholarly search and citation
 > workflows. Crossref, DataCite and Europe PMC work without mandatory credentials; optional
 > academic APIs can be selected explicitly. The README documents stdio setup, structured
 > results, provenance, deterministic export and verification limits.
@@ -128,7 +128,7 @@ The fixture integration script is reproducible engineering evidence, not a live 
 > CiteNexus connects your research assistant to scholarly sources through MCP. Start with
 > free metadata, keep the source evidence, verify references, and export citations. The
 > WTF-P companion brings those candidates into your writing workflow.
-> https://github.com/akougkas/cite-nexus-mcp
+> https://github.com/PanStudio/pancite
 
 **Research/developer community post:**
 

@@ -22,7 +22,7 @@ own tests before being advertised, but do not block the Python package release.
 
 | Item | Checked state |
 |---|---|
-| GitHub repository | Public `akougkas/cite-nexus-mcp`; default branch is **master** |
+| GitHub repository | Public `PanStudio/pancite`; default branch is **master** |
 | Local preparation branch | `prep/citenexus-0.2.0` |
 | PyPI project | Public JSON endpoint returned 404 on 2026-09-17; no public project was visible |
 | GitHub releases/workflows | No published releases or remote workflows at the time checked |
@@ -46,7 +46,7 @@ After approval to send the branch for review:
 
 ```bash
 git push -u origin prep/citenexus-0.2.0
-gh pr create --repo akougkas/cite-nexus-mcp --base master \
+gh pr create --repo PanStudio/pancite --base master \
   --head prep/citenexus-0.2.0 \
   --title "Prepare CiteNexus 0.2.0 scholarly research service and WTF-P companion" \
   --body-file docs/release/pr-body.md
@@ -71,7 +71,7 @@ Open [account publishing settings](https://pypi.org/manage/account/publishing/) 
 | Workflow filename | `publish.yml` (filename only) |
 | Environment name | `pypi` |
 
-In [GitHub repository environments](https://github.com/akougkas/cite-nexus-mcp/settings/environments),
+In [GitHub repository environments](https://github.com/PanStudio/pancite/settings/environments),
 create **pypi**, allow deployment from **master**, and configure a required reviewer if your
 repository plan supports it. Permit the intended release operator to approve their own run
 only if that matches your release policy. The workflow dispatch itself runs from `master`;
@@ -136,9 +136,9 @@ git pull --ff-only
 git tag -a v0.2.0 -m "CiteNexus 0.2.0"
 uv run python scripts/release_gate.py --tag v0.2.0
 git push origin v0.2.0
-gh workflow run publish.yml --repo akougkas/cite-nexus-mcp --ref master \
+gh workflow run publish.yml --repo PanStudio/pancite --ref master \
   -f release_tag=v0.2.0 -f confirm_pypi=true
-gh run list --repo akougkas/cite-nexus-mcp --workflow publish.yml --limit 5
+gh run list --repo PanStudio/pancite --workflow publish.yml --limit 5
 ```
 
 Open the run, inspect its selected tag and commit, approve the `pypi` environment when
@@ -178,9 +178,9 @@ and set `WTFP_CITE_NEXUS_COMMAND` to the installed companion executable.
 Download the exact workflow artifacts, rather than rebuilding potentially different files:
 
 ```bash
-gh run download <run-id> --repo akougkas/cite-nexus-mcp \
+gh run download <run-id> --repo PanStudio/pancite \
   --name pypi-distributions --dir dist/published-0.2.0
-gh release create v0.2.0 --repo akougkas/cite-nexus-mcp --verify-tag \
+gh release create v0.2.0 --repo PanStudio/pancite --verify-tag \
   --title "CiteNexus 0.2.0" --notes-file docs/release/release-notes-0.2.0.md \
   dist/published-0.2.0/*.whl dist/published-0.2.0/*.tar.gz
 ```

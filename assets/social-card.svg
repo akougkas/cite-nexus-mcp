@@ -10,5 +10,5 @@
   <circle cx="927" cy="199" r="18" fill="#145C53"/><circle cx="1040" cy="275" r="25" fill="#CA633B"/><circle cx="927" cy="351" r="18" fill="#145C53"/>
   <path d="M64 467h1072" stroke="#D2D4C9" stroke-width="2"/>
   <text x="66" y="519" font-family="DejaVu Sans, sans-serif" font-size="22" fill="#145C53">Free default sources   /   Optional academic APIs   /   Built for MCP</text>
-  <text x="66" y="573" font-family="DejaVu Sans, sans-serif" font-size="18" fill="#54645C">github.com/akougkas/cite-nexus-mcp</text>
+  <text x="66" y="573" font-family="DejaVu Sans, sans-serif" font-size="18" fill="#54645C">github.com/PanStudio/pancite</text>
 </svg>
