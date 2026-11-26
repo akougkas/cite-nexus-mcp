@@ -1,9 +1,9 @@
-# CiteNexus companion plugin — local preparation
+# PanCite companion plugin — local preparation
 
-This MCP-only plugin exposes CiteNexus alongside a writing plugin such as WTF-P.
+This MCP-only plugin exposes PanCite alongside a writing plugin such as PanWrite.
 It contains an Agent Plugins 1.0 manifest and Codex/Claude compatibility manifests.
-The running host must already be able to find `cite-nexus-mcp` on its PATH. Install
-`cite-nexus-mcp==0.2.6` with `uv tool install cite-nexus-mcp==0.2.6` first; no package
+The running host must already be able to find `pancite` on its PATH. Install
+`pancite==0.3.0` with `uv tool install pancite==0.3.0` first; no package
 installation occurs during plugin loading. This plugin directory remains a local integration
 for client qualification, independently of the Python package release.
 
@@ -14,9 +14,9 @@ No credentials are bundled here. The default sources need none.
 Test local plugin discovery and lifecycle using a disposable host profile before
 distribution. Schema validation and direct MCP process checks do not certify a
 native client's installation or uninstall behavior. This plugin is an optional
-host-managed connection to all CiteNexus tools; WTF-P's bounded citation-search
-backend uses its separate `cite-nexus-wtfp` companion and does not depend on native
-plugin MCP support. Avoid configuring duplicate CiteNexus connections in one host.
+host-managed connection to all PanCite tools; PanWrite's bounded citation-search
+backend uses its separate `pancite-panwrite` companion and does not depend on native
+plugin MCP support. Avoid configuring duplicate PanCite connections in one host.
 
 The public ChatGPT/Codex Plugins Directory has a separate submission process and
 requires a reviewed remote integration for the standard public MCP route. This

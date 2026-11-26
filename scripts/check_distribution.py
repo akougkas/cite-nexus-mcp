@@ -23,12 +23,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SMOKE = """
 import asyncio, importlib.util, json, sys
 from mcp import Client, StdioServerParameters
-from cite_nexus_mcp import __version__
+from pancite import __version__
 assert __version__ == sys.argv[1], __version__
 assert importlib.util.find_spec('litellm') is None
 async def main():
     async with Client(StdioServerParameters(command=sys.executable,
-        args=['-m', 'cite_nexus_mcp', '--no-env-file']), read_timeout_seconds=10) as client:
+        args=['-m', 'pancite', '--no-env-file']), read_timeout_seconds=10) as client:
         result = await client.list_tools()
         assert len(result.tools) == 11
         result = await client.call_tool('enhance-citation', {'bibtex':'@misc{test, title={Observed title}}'})
@@ -50,8 +50,8 @@ def check_paths(paths: list[str]) -> None:
 
 
 def inspect(directory: Path, version: str) -> Path:
-    wheel = directory / f"cite_nexus_mcp-{version}-py3-none-any.whl"
-    sdist = directory / f"cite_nexus_mcp-{version}.tar.gz"
+    wheel = directory / f"pancite-{version}-py3-none-any.whl"
+    sdist = directory / f"pancite-{version}.tar.gz"
     files = set(directory.iterdir())
     ignore = directory / ".gitignore"
     # uv creates this marker in its build directory; it is not uploaded by the
@@ -64,27 +64,29 @@ def inspect(directory: Path, version: str) -> Path:
         )
     with zipfile.ZipFile(wheel) as archive:
         check_paths(archive.namelist())
-        metadata = email.message_from_bytes(
-            archive.read(f"cite_nexus_mcp-{version}.dist-info/METADATA")
-        )
-        if metadata["Name"] != "cite-nexus-mcp" or metadata["Version"] != version:
+        metadata = email.message_from_bytes(archive.read(f"pancite-{version}.dist-info/METADATA"))
+        if metadata["Name"] != "pancite" or metadata["Version"] != version:
             raise ValueError("Wheel identity does not match the release")
-        if "mcp-name: io.github.akougkas/cite-nexus-mcp" not in metadata.get_payload():
+        if "mcp-name: io.github.PanStudio/pancite" not in metadata.get_payload():
             raise ValueError("PyPI ownership marker is missing from wheel metadata")
         entries = configparser.ConfigParser()
-        entries.read_string(
-            archive.read(f"cite_nexus_mcp-{version}.dist-info/entry_points.txt").decode()
-        )
-        if not {"cite-nexus-mcp", "cite-nexus-wtfp"} <= set(entries["console_scripts"]):
+        entries.read_string(archive.read(f"pancite-{version}.dist-info/entry_points.txt").decode())
+        if not {"pancite", "pancite-panwrite"} <= set(entries["console_scripts"]):
             raise ValueError("Required installed commands are missing")
-        if "cite_nexus_mcp/wtfp.py" not in archive.namelist():
+        if "pancite/panwrite.py" not in archive.namelist():
             raise ValueError("Companion implementation is missing")
     with tarfile.open(sdist) as archive:
         check_paths(archive.getnames())
         if any(member.issym() or member.islnk() for member in archive):
             raise ValueError("Source artifact must not contain filesystem links")
-        for required in ("pyproject.toml", "server.json", "src/cite_nexus_mcp/wtfp.py", "LICENSE"):
-            if f"cite_nexus_mcp-{version}/{required}" not in archive.getnames():
+        for required in (
+            "pyproject.toml",
+            "server.json",
+            "src/pancite/panwrite.py",
+            "LICENSE",
+            "NOTICE",
+        ):
+            if f"pancite-{version}/{required}" not in archive.getnames():
                 raise ValueError(f"Source artifact is missing {required}")
     for path in (wheel, sdist):
         print(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}")
@@ -95,7 +97,7 @@ def installed_check(wheel: Path, version: str) -> None:
     uv = shutil.which("uv")
     if not uv:
         raise ValueError("uv is required for isolated installation")
-    with tempfile.TemporaryDirectory(prefix="citenexus-distribution-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="pancite-distribution-") as temporary:
         root = Path(temporary)
         environment = root / "venv"
         subprocess.run([uv, "venv", str(environment), "--python", sys.executable], check=True)
@@ -105,7 +107,7 @@ def installed_check(wheel: Path, version: str) -> None:
         )
         subprocess.run([str(python), "-I", "-c", SMOKE, version], cwd=root, check=True, timeout=30)
         result = subprocess.run(
-            [str(python), "-I", "-m", "cite_nexus_mcp.wtfp", "--check"],
+            [str(python), "-I", "-m", "pancite.panwrite", "--check"],
             cwd=root,
             check=True,
             capture_output=True,
@@ -114,7 +116,7 @@ def installed_check(wheel: Path, version: str) -> None:
         )
         data = json.loads(result.stdout)
         listed = subprocess.run(
-            [str(python), "-I", "-m", "cite_nexus_mcp", "--no-env-file", "--list-providers"],
+            [str(python), "-I", "-m", "pancite", "--no-env-file", "--list-providers"],
             cwd=root,
             check=True,
             capture_output=True,
@@ -123,7 +125,7 @@ def installed_check(wheel: Path, version: str) -> None:
         )
         expected = sorted(provider["id"] for provider in json.loads(listed.stdout))
         reported = sorted(provider["id"] for provider in data["providers"]["providers"])
-        if data["schema_version"] != "cite-nexus.wtfp/v1" or not expected or reported != expected:
+        if data["schema_version"] != "pancite.panwrite/v1" or not expected or reported != expected:
             raise ValueError("Installed companion diagnostic returned an incompatible response")
         print("Installed wheel and companion checks passed without provider queries")
 

@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 sys.path.insert(0, os.path.abspath('src'))
-from cite_nexus_mcp.tools import find_scholar_id, get_citation
+from pancite.tools import find_scholar_id, get_citation
 
 async def main():
     load_dotenv()

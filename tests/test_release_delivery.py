@@ -65,13 +65,13 @@ def test_distribution_rejects_private_or_unsafe_paths(path):
 
 
 def test_distribution_allows_documented_environment_template():
-    distribution.check_paths(["pkg/.env.example", "pkg/src/cite_nexus_mcp/server.py"])
+    distribution.check_paths(["pkg/.env.example", "pkg/src/pancite/server.py"])
 
 
 def test_publication_directory_cannot_mix_plugin_or_stale_archives(tmp_path):
     for name in (
-        "cite_nexus_mcp-0.2.0-py3-none-any.whl",
-        "cite_nexus_mcp-0.2.0.tar.gz",
+        "pancite-0.2.0-py3-none-any.whl",
+        "pancite-0.2.0.tar.gz",
         "plugin.zip",
     ):
         (tmp_path / name).write_bytes(b"")

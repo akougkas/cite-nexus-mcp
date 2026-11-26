@@ -1,16 +1,16 @@
 {
-  "name": "CiteNexus",
-  "slug": "cite-nexus",
-  "registry_name": "io.github.akougkas/cite-nexus-mcp",
+  "name": "PanCite",
+  "slug": "pancite",
+  "registry_name": "io.github.PanStudio/pancite",
   "tagline": "Scholarly discovery and citations with evidence you can trace.",
   "short_description": "Search scholarly sources, verify references, and export citations with traceable evidence.",
-  "description": "CiteNexus connects research assistants to free scholarly metadata and optional academic APIs. Discover papers, resolve identifiers, check references, and export BibTeX, RIS or CSL-JSON with source provenance. No model or API key is required for default searches.",
-  "repository": "https://github.com/akougkas/cite-nexus-mcp",
+  "description": "PanCite connects research assistants to free scholarly metadata and optional academic APIs. Discover papers, resolve identifiers, check references, and export BibTeX, RIS or CSL-JSON with source provenance. No model or API key is required for default searches.",
+  "repository": "https://github.com/PanStudio/pancite",
   "author": {
     "name": "Anthony Kougkas",
     "url": "https://github.com/akougkas"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "mcp",
     "research",
@@ -19,7 +19,7 @@
     "academic",
     "bibtex",
     "crossref",
-    "wtf-p"
+    "panwrite"
   ],
   "stage": "release-ready",
   "release_authorized": true

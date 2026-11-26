@@ -8,10 +8,10 @@ its 0.7.0 release; its publication is not a prerequisite for this package.
 | Surface | Verified result |
 |---|---|
 | [PyPI](https://pypi.org/project/cite-nexus-mcp/0.2.0/) | 0.2.0 wheel and source distribution available |
-| [GitHub release](https://github.com/akougkas/cite-nexus-mcp/releases/tag/v0.2.0) | Public stable release, wheel, sdist, SHA-256 checksums and server.json |
+| [GitHub release](https://github.com/PanStudio/pancite/releases/tag/v0.2.0) | Public stable release, wheel, sdist, SHA-256 checksums and server.json |
 | [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.akougkas/cite-nexus-mcp) | `io.github.akougkas/cite-nexus-mcp` 0.2.0, active and latest |
-| [Release PR #1](https://github.com/akougkas/cite-nexus-mcp/pull/1) | Merged into master |
-| [CI for the release commit](https://github.com/akougkas/cite-nexus-mcp/actions/runs/35218991400) | All seven jobs passed |
+| [Release PR #1](https://github.com/PanStudio/pancite/pull/1) | Merged into master |
+| [CI for the release commit](https://github.com/PanStudio/pancite/actions/runs/35218991400) | All seven jobs passed |
 
 Source commit: `234b2f870aa3bb1c40a221012899d20fda574d7e`.
 Annotated tag: `v0.2.0` (tag object `7521a6b2b572a7c1fbdc740ea00ebc98afde7b91`).

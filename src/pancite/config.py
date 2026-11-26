@@ -26,7 +26,7 @@ class Settings(BaseModel):
     @classmethod
     def from_env(cls) -> "Settings":
         names = {
-            "contact_email": "CITE_NEXUS_CONTACT_EMAIL",
+            "contact_email": "PANCITE_CONTACT_EMAIL",
             "openalex_api_key": "OPENALEX_API_KEY",
             "semantic_scholar_api_key": "SEMANTIC_SCHOLAR_API_KEY",
             "serpapi_api_key": "SERPAPI_API_KEY",
@@ -35,18 +35,18 @@ class Settings(BaseModel):
             "scopus_insttoken": "SCOPUS_INSTTOKEN",
             "wos_api_key": "WOS_API_KEY",
             "unpaywall_email": "UNPAYWALL_EMAIL",
-            "timeout": "CITE_NEXUS_TIMEOUT",
-            "operation_timeout": "CITE_NEXUS_OPERATION_TIMEOUT",
-            "retries": "CITE_NEXUS_RETRIES",
-            "concurrency": "CITE_NEXUS_CONCURRENCY",
-            "cache_ttl": "CITE_NEXUS_CACHE_TTL",
-            "cache_size": "CITE_NEXUS_CACHE_SIZE",
+            "timeout": "PANCITE_TIMEOUT",
+            "operation_timeout": "PANCITE_OPERATION_TIMEOUT",
+            "retries": "PANCITE_RETRIES",
+            "concurrency": "PANCITE_CONCURRENCY",
+            "cache_ttl": "PANCITE_CACHE_TTL",
+            "cache_size": "PANCITE_CACHE_SIZE",
         }
         values = {field: os.environ[key] for field, key in names.items() if os.environ.get(key)}
         if "serpapi_api_key" not in values:
             if alias := os.getenv("SERP_API_KEY") or os.getenv("SERPAPI_KEY"):
                 values["serpapi_api_key"] = alias
-        providers = os.getenv("CITE_NEXUS_DEFAULT_PROVIDERS")
+        providers = os.getenv("PANCITE_DEFAULT_PROVIDERS")
         if providers:
             values["default_providers"] = tuple(  # type: ignore[assignment]
                 dict.fromkeys(p.strip() for p in providers.split(",") if p.strip())

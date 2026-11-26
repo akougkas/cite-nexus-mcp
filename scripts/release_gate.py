@@ -71,7 +71,7 @@ def main() -> None:
         except (ValueError, subprocess.CalledProcessError) as error:
             raise SystemExit(f"Release gate failed: {error}") from None
     print(
-        f"Release identity checked: cite-nexus-mcp {version}; publication {'gate passed' if args.tag else 'not authorized or attempted'}"
+        f"Release identity checked: pancite {version}; publication {'gate passed' if args.tag else 'not authorized or attempted'}"
     )
 
 

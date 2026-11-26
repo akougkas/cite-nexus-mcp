@@ -9,11 +9,11 @@ import pytest
 from mcp.server import MCPServer
 from pydantic import ValidationError
 
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.http import HTTP
-from cite_nexus_mcp.server import create_server
-from cite_nexus_mcp.service import ResearchService
-from cite_nexus_mcp.wtfp import Request, execute, server_parameters
+from pancite.config import Settings
+from pancite.http import HTTP
+from pancite.panwrite import Request, execute, server_parameters
+from pancite.server import create_server
+from pancite.service import ResearchService
 
 
 async def test_bridge_preserves_candidate_evidence_and_never_ranks_counts(records):
@@ -26,13 +26,13 @@ async def test_bridge_preserves_candidate_evidence_and_never_ranks_counts(record
         settings = Settings()
         server = create_server(service=ResearchService(settings, HTTP(settings, client)))
         data = await execute(Request(query="reliable", providers=["crossref"], limit=1), server)
-    assert data["schema_version"] == "cite-nexus.wtfp/v1"
+    assert data["schema_version"] == "pancite.panwrite/v1"
     paper = data["results"][0]
     assert paper["verification"] == "candidate"
     assert "citationCount" not in paper
     assert "wtfp_status" not in paper["bibtex"]
-    assert paper["citeNexus"]["sources"][0]["provider"] == "crossref"
-    assert paper["citeNexus"]["field_sources"]["title"] == ["crossref"]
+    assert paper["pancite"]["sources"][0]["provider"] == "crossref"
+    assert paper["pancite"]["field_sources"]["title"] == ["crossref"]
     assert data["metadata"]["errors"] == []
 
 
@@ -51,11 +51,11 @@ async def test_bridge_passes_detail_and_limit_total_and_echoes_them(records):
             server,
         )
     assert full["metadata"]["detail"] == "full" and full["metadata"]["limit_total"] is None
-    assert full["results"][0]["citeNexus"]["abstract"] == full["results"][0]["abstract"]
+    assert full["results"][0]["pancite"]["abstract"] == full["results"][0]["abstract"]
     assert minimal["metadata"]["detail"] == "minimal"
     assert minimal["metadata"]["limit_total"] == 2
     assert minimal["metadata"]["total"] == len(minimal["results"]) == 2
-    record = minimal["results"][0]["citeNexus"]
+    record = minimal["results"][0]["pancite"]
     assert "abstract" not in record and "sources" not in record
     assert len(json.dumps(minimal)) * 2 < len(json.dumps(full))
 
@@ -109,13 +109,13 @@ def test_bridge_input_bounds(changes):
 
 def test_bridge_environment_and_real_stdio_check(tmp_path, monkeypatch):
     monkeypatch.setenv("UNRELATED_TOKEN", "do-not-forward")
-    monkeypatch.setenv("CITE_NEXUS_DEFAULT_PROVIDERS", "serpapi")
+    monkeypatch.setenv("PANCITE_DEFAULT_PROVIDERS", "serpapi")
     monkeypatch.setenv("PYTHONPATH", "/untrusted/module/path")
     assert "UNRELATED_TOKEN" not in server_parameters().env
-    assert "CITE_NEXUS_DEFAULT_PROVIDERS" not in server_parameters().env
+    assert "PANCITE_DEFAULT_PROVIDERS" not in server_parameters().env
     assert "PYTHONPATH" not in server_parameters().env
     (tmp_path / ".env").write_text(
-        "SERPAPI_API_KEY=do-not-load\nCITE_NEXUS_DEFAULT_PROVIDERS=serpapi\n"
+        "SERPAPI_API_KEY=do-not-load\nPANCITE_DEFAULT_PROVIDERS=serpapi\n"
     )
     env = {
         key: value
@@ -123,7 +123,7 @@ def test_bridge_environment_and_real_stdio_check(tmp_path, monkeypatch):
         if key not in {"SERPAPI_API_KEY", "SERPAPI_KEY", "SERP_API_KEY", "PYTHONPATH"}
     }
     result = subprocess.run(
-        [sys.executable, "-m", "cite_nexus_mcp.wtfp", "--check"],
+        [sys.executable, "-m", "pancite.panwrite", "--check"],
         cwd=tmp_path,
         env=env,
         capture_output=True,
@@ -139,7 +139,7 @@ def test_bridge_environment_and_real_stdio_check(tmp_path, monkeypatch):
 
 def test_bridge_invalid_request_never_echoes_private_input():
     result = subprocess.run(
-        [sys.executable, "-m", "cite_nexus_mcp.wtfp"],
+        [sys.executable, "-m", "pancite.panwrite"],
         input=json.dumps({"query": "private-query", "token": "private-secret"}),
         capture_output=True,
         text=True,
@@ -166,9 +166,9 @@ def test_bridge_closes_hung_stdio_server(tmp_path, cancel):
     )
     bridge = tmp_path / "bridge.py"
     bridge.write_text(
-        "from cite_nexus_mcp import wtfp\nfrom mcp import StdioServerParameters\n"
-        f"wtfp.server_parameters=lambda: StdioServerParameters(command={sys.executable!r},args=[{str(server)!r}])\n"
-        "wtfp.run()\n"
+        "from pancite import panwrite\nfrom mcp import StdioServerParameters\n"
+        f"panwrite.server_parameters=lambda: StdioServerParameters(command={sys.executable!r},args=[{str(server)!r}])\n"
+        "panwrite.run()\n"
     )
     with subprocess.Popen(
         [sys.executable, str(bridge)],

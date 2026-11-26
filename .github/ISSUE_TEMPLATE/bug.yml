@@ -1,11 +1,11 @@
 name: Bug report
-description: Report a reproducible CiteNexus problem
+description: Report a reproducible PanCite problem
 body:
   - type: textarea
     id: environment
     attributes:
       label: Versions and setup
-      description: CiteNexus, Python, OS, MCP client, and stdio or HTTP transport.
+      description: PanCite, Python, OS, MCP client, and stdio or HTTP transport.
     validations:
       required: true
   - type: textarea

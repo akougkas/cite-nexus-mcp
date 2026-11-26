@@ -37,8 +37,8 @@ Python package release.
 The owner authorized publication after preparation. The release branch adds pinned public
 installation instructions and preserves the wheel/sdist artifacts from installed-package CI.
 
-- [Release PR #1](https://github.com/akougkas/cite-nexus-mcp/pull/1).
-- [Hosted CI for release source 9bad188](https://github.com/akougkas/cite-nexus-mcp/actions/runs/35218652403):
+- [Release PR #1](https://github.com/PanStudio/pancite/pull/1).
+- [Hosted CI for release source 9bad188](https://github.com/PanStudio/pancite/actions/runs/35218652403):
   all seven jobs passed. The 130-test suite passed on Python 3.11, 3.12, 3.13 and 3.14.
   Isolated wheel installation, actual MCP startup and companion diagnostics passed on Linux,
   macOS and Windows (Python 3.13). These are package/transport checks, not native client or

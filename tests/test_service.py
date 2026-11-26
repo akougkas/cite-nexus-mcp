@@ -3,10 +3,10 @@ import asyncio
 import httpx2 as httpx
 import pytest
 
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.http import HTTP, ProviderError
-from cite_nexus_mcp.models import Author, Paper, ProviderIssue
-from cite_nexus_mcp.service import ResearchService, deduplicate, merge, same_work
+from pancite.config import Settings
+from pancite.http import HTTP, ProviderError
+from pancite.models import Author, Paper, ProviderIssue
+from pancite.service import ResearchService, deduplicate, merge, same_work
 
 
 def work(doi="10.1234/a", title="An exact title of a research paper", **kwargs):
@@ -279,7 +279,7 @@ async def test_graph_reports_provider_count_not_page_length(records):
 
 
 async def test_generated_bibtex_can_be_verified_without_escape_mismatches(records):
-    from cite_nexus_mcp.citations import format_citation
+    from pancite.citations import format_citation
 
     record = {
         **records["crossref"],

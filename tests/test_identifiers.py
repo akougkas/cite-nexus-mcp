@@ -1,6 +1,6 @@
 import pytest
 
-from cite_nexus_mcp.identifiers import normalize_doi, parse_identifier
+from pancite.identifiers import normalize_doi, parse_identifier
 
 
 @pytest.mark.parametrize(

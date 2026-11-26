@@ -1,12 +1,12 @@
 {
   "mcpServers": {
-    "cite-nexus": {
+    "pancite": {
       "type": "stdio",
       "command": "uvx",
       "args": [
         "--from",
-        "cite-nexus-mcp==0.2.6",
-        "cite-nexus-mcp",
+        "pancite==0.3.0",
+        "pancite",
         "--no-env-file"
       ],
       "timeoutMs": 120000,

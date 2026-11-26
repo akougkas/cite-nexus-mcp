@@ -8,10 +8,10 @@ tagged or uploaded; 0.2.2 contains it.
 | Surface | Verified result |
 |---|---|
 | [PyPI](https://pypi.org/project/cite-nexus-mcp/0.2.2/) | 0.2.2 wheel and source distribution available |
-| [GitHub release](https://github.com/akougkas/cite-nexus-mcp/releases/tag/v0.2.2) | Public stable release with the wheel, sdist, SHA-256 checksums and server.json |
+| [GitHub release](https://github.com/PanStudio/pancite/releases/tag/v0.2.2) | Public stable release with the wheel, sdist, SHA-256 checksums and server.json |
 | [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.akougkas/cite-nexus-mcp) | `io.github.akougkas/cite-nexus-mcp` 0.2.2, active and latest; 0.2.0 remains active |
-| [Release PR #4](https://github.com/akougkas/cite-nexus-mcp/pull/4) | Merged into master |
-| [CI for the release commit](https://github.com/akougkas/cite-nexus-mcp/actions/runs/35255517177) | Passed on Python 3.13 and 3.14 |
+| [Release PR #4](https://github.com/PanStudio/pancite/pull/4) | Merged into master |
+| [CI for the release commit](https://github.com/PanStudio/pancite/actions/runs/35255517177) | Passed on Python 3.13 and 3.14 |
 
 Source commit: `be90cf832016e6e4a610198630b2ce81866bd1e9`.
 Annotated tag: `v0.2.2` (tag object `e6e97475d45138b5889e781b6d96b321e3034e31`).

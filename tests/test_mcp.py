@@ -10,10 +10,10 @@ import jsonschema
 import pytest
 from mcp import Client, StdioServerParameters
 
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.http import HTTP
-from cite_nexus_mcp.server import create_server
-from cite_nexus_mcp.service import ResearchService
+from pancite.config import Settings
+from pancite.http import HTTP
+from pancite.server import create_server
+from pancite.service import ResearchService
 
 
 @pytest.mark.parametrize("mode", ["2026-07-28", "legacy"])
@@ -50,9 +50,9 @@ async def test_protocol_schemas_resources_prompts_and_errors(mode, records):
                 assert failed.is_error, name
             resources = await client.list_resources()
             assert len(resources.resources) == 3
-            methodology = await client.read_resource("cite-nexus://methodology")
+            methodology = await client.read_resource("pancite://methodology")
             assert "untrusted" in methodology.contents[0].text
-            providers = await client.read_resource("cite-nexus://providers")
+            providers = await client.read_resource("pancite://providers")
             assert len(json.loads(providers.contents[0].text)) == 10
             prompts = await client.list_prompts()
             assert {p.name for p in prompts.prompts} == {"literature-review", "bibliography-audit"}
@@ -67,7 +67,7 @@ async def test_real_stdio_process(mode, tmp_path):
     env_file = tmp_path / ".env"
     env_file.write_text("")
     params = StdioServerParameters(
-        command=sys.executable, args=["-m", "cite_nexus_mcp", "--env-file", str(env_file)]
+        command=sys.executable, args=["-m", "pancite", "--env-file", str(env_file)]
     )
     async with Client(params, mode=mode, read_timeout_seconds=5) as client:
         result = await client.call_tool("list-providers", {})
@@ -90,7 +90,7 @@ async def test_real_streamable_http_process(mode, tmp_path):
         [
             sys.executable,
             "-m",
-            "cite_nexus_mcp",
+            "pancite",
             "--transport",
             "streamable-http",
             "--port",
@@ -135,7 +135,7 @@ def test_cli_provider_listing_never_prints_secret(tmp_path):
         "SEARCHAPI_API_KEY": "do-not-print-searchapi-secret",
     }
     result = subprocess.run(
-        [sys.executable, "-m", "cite_nexus_mcp", "--list-providers"],
+        [sys.executable, "-m", "pancite", "--list-providers"],
         cwd=tmp_path,
         env=env,
         capture_output=True,

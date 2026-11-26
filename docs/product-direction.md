@@ -2,7 +2,7 @@
 
 ## Position
 
-CiteNexus is the scholarly evidence service inside a research assistant. Its value is connecting
+PanCite is the scholarly evidence service inside a research assistant. Its value is connecting
 sources with different coverage, preserving what each source actually reports, and making that
 evidence available in a consistent MCP interface.
 
@@ -11,14 +11,14 @@ workflows, and university teams that already have access to licensed indexes. A 
 API experience comes first. Institutions can add existing subscriptions without replacing the
 core workflow or forcing every user into a paid search vendor.
 
-| Need | CiteNexus's role | Complementary tool |
+| Need | PanCite's role | Complementary tool |
 |---|---|---|
 | Find and identify research | Search multiple sources and resolve namespaced IDs | Provider search interfaces for source-specific exploration |
 | Produce a bibliography | Deterministic export with incomplete-field warnings | Zotero or another reference manager for library organization and styles |
 | Audit references | Identifier/title/year verification, explicit uncertainty | Human review and publisher records for final publication checks |
 | Inspect influence | Source-specific counts and citation/reference traversal | Specialist bibliometric tools and domain judgment |
 | Support a literature review | Traceable queries, records, sources and workflow prompts | Full-text reading and formal review methodology |
-| Turn research into a paper | Candidate discovery with source records through the optional companion | WTF-P for author decisions, evidence tables, outlines, drafting and review |
+| Turn research into a paper | Candidate discovery with source records through the optional companion | PanWrite for author decisions, evidence tables, outlines, drafting and review |
 
 The promise is inspectable metadata and predictable behavior. Avoid claims of “perfect citations,”
 “universal Scholar IDs,” proof that a paper is unretracted, or scientific truth verified from
@@ -31,7 +31,7 @@ Nine search adapters; optional Unpaywall DOI enrichment; identifier resolution; 
 version-aware deduplication; deterministic exports; reference verification; bounded batch export;
 source-specific metrics; citation/reference paging; current MCP support with backward compatibility;
 a credential-free default; documented provider boundaries; and an offline regression suite.
-The WTF-P companion adds a tested MCP process boundary to its existing citation-search
+The PanWrite companion adds a tested MCP process boundary to its existing citation-search
 command. The release kit includes registry/plugin metadata, a researched distribution queue,
 installation guidance and launch assets; it does not publish or register anything.
 
@@ -42,7 +42,7 @@ contracts and synthetic fixtures; their real account entitlements remain unteste
 ## Immediate release focus
 
 Finish a reliable first-use experience before expanding the tool catalog: clean installed
-artifacts, one useful free-source search, an inspectable reference check, and the paired WTF-P
+artifacts, one useful free-source search, an inspectable reference check, and the paired PanWrite
 workflow. Qualify actual client installations and OS behavior before making compatibility
 claims. Launch through a small verified set of registries and research communities, then
 use reported coverage gaps and unresolved references to choose the next investments.

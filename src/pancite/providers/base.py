@@ -136,5 +136,5 @@ class Provider:
 
     async def graph(self, identifier: Identifier, direction: str, limit: int, offset: int) -> Page:
         raise ProviderError(
-            self.id, "unsupported_operation", f"Does not expose {direction} through CiteNexus."
+            self.id, "unsupported_operation", f"Does not expose {direction} through PanCite."
         )

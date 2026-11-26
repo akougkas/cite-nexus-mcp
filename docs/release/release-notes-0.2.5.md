@@ -29,4 +29,4 @@ uvx --from cite-nexus-mcp==0.2.5 cite-nexus-mcp --no-env-file
 uvx --from cite-nexus-mcp==0.2.5 cite-nexus-wtfp --check
 ```
 
-See the [changelog](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.5/CHANGELOG.md) and [documentation](https://github.com/akougkas/cite-nexus-mcp/blob/v0.2.5/README.md) for further details.
+See the [changelog](https://github.com/PanStudio/pancite/blob/v0.2.5/CHANGELOG.md) and [documentation](https://github.com/PanStudio/pancite/blob/v0.2.5/README.md) for further details.
