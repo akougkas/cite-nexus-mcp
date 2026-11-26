@@ -7,9 +7,9 @@ from pathlib import Path
 import jsonschema
 from mcp import Client, StdioServerParameters
 
-from cite_nexus_mcp import __version__
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.server import create_server
+from pancite import __version__
+from pancite.config import Settings
+from pancite.server import create_server
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,15 +31,15 @@ def test_registry_identity_schema_and_pypi_ownership_marker():
 
 
 async def test_portable_plugin_schema_and_actual_connection():
-    plugin = read("packaging/cite-nexus/plugin.json")
-    config = read("packaging/cite-nexus/mcp.json")
+    plugin = read("packaging/pancite/plugin.json")
+    config = read("packaging/pancite/mcp.json")
     jsonschema.validate(plugin, read("release/schemas/plugin-1.0.0.json"))
     jsonschema.validate(config, read("release/schemas/mcp-1.0.0.json"))
-    compatibility = read("packaging/cite-nexus/.codex-plugin/plugin.json")
+    compatibility = read("packaging/pancite/.codex-plugin/plugin.json")
     assert plugin["version"] == compatibility["version"] == __version__
     assert compatibility["mcpServers"] == "./.mcp.json"
-    server = config["mcpServers"]["cite-nexus"]
-    assert server == read("packaging/cite-nexus/.mcp.json")["mcpServers"]["cite-nexus"]
+    server = config["mcpServers"]["pancite"]
+    assert server == read("packaging/pancite/.mcp.json")["mcpServers"]["pancite"]
     async with Client(
         StdioServerParameters(command=server["command"], args=server["args"]),
         read_timeout_seconds=5,
@@ -54,13 +54,13 @@ async def test_portable_plugin_schema_and_actual_connection():
 async def test_pancode_pack_pins_release_and_declares_every_tool_read():
     plugin = read("pancode/plugin.json")
     config = read("pancode/mcp.json")
-    server = config["mcpServers"]["cite-nexus"]
+    server = config["mcpServers"]["pancite"]
     assert plugin["version"] == __version__
     assert server["command"] == "uvx"
     assert server["args"] == [
         "--from",
         f"pancite=={__version__}",
-        "cite-nexus-mcp",
+        "pancite",
         "--no-env-file",
     ]
     assert plugin["license"] == read("release/product.json")["license"]

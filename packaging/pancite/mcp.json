@@ -1,9 +1,9 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
-    "cite-nexus": {
+    "pancite": {
       "type": "stdio",
-      "command": "cite-nexus-mcp",
+      "command": "pancite",
       "args": [
         "--no-env-file"
       ]

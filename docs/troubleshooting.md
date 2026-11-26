@@ -2,22 +2,22 @@
 
 ## The command waits without printing a search result
 
-`cite-nexus-mcp` is an MCP stdio server. Your client sends protocol messages to it;
+`pancite` is an MCP stdio server. Your client sends protocol messages to it;
 it is not a search shell. Use `--list-providers` for a local configuration check or
-`cite-nexus-wtfp --check` to test a complete MCP client/server handshake without API calls.
+`pancite-panwrite --check` to test a complete MCP client/server handshake without API calls.
 
 ## The client starts an old release
 
-The prepared code is 0.2.6. Run `uv run cite-nexus-mcp --version` inside this checkout.
+The prepared code is 0.3.0. Run `uv run pancite --version` inside this checkout.
 Use the README's absolute `uv --directory ... run --locked` configuration until release.
-Avoid unpinned `uvx cite-nexus-mcp` when trying unreleased features. Restart the client's
+Avoid unpinned `uvx pancite` when trying unreleased features. Restart the client's
 server connection after changing its command or upgrading the installed package.
 
 ## A client cannot find uv or the companion executable
 
 Desktop clients may have a different PATH from your terminal. Give the client an
-absolute executable path. For WTF-P, `WTFP_CITE_NEXUS_COMMAND` must be an absolute path
-or the default installed `cite-nexus-wtfp` command; it cannot contain shell arguments.
+absolute executable path. For PanWrite, `PANWRITE_PANCITE_COMMAND` must be an absolute path
+or the default installed `pancite-panwrite` command; it cannot contain shell arguments.
 Keep paths as separate JSON arguments, including paths containing spaces.
 
 ## A configured key appears unavailable
@@ -29,7 +29,7 @@ configuration only; an available adapter can still lack quota or institutional a
 
 ## Search returns some results and errors
 
-Inspect `issues` in native CiteNexus or `metadata.errors` in WTF-P. Partial failures
+Inspect `issues` in native PanCite or `metadata.errors` in PanWrite. Partial failures
 are expected when one source throttles or is unavailable. Anonymous Semantic Scholar
 may return HTTP 429; select another suitable public source or use your own key.
 An outage is not evidence that a reference does not exist. Retry after the indicated
@@ -40,7 +40,7 @@ cooldown, with fewer sources or a narrower query when appropriate.
 Native limits are per provider and filters apply to the fetched page. Year and OA
 filters exclude records with unknown values. Deduplication reduces displayed counts.
 Use the returned per-provider offset or Europe PMC cursor with the same query and
-limit. WTF-P caps the displayed total and records truncation; use the native tool
+limit. PanWrite caps the displayed total and records truncation; use the native tool
 for exhaustive page review.
 
 ## A reference is ambiguous, incomplete or mismatched
@@ -51,12 +51,12 @@ an incomplete author list warns and uses `others` in BibTeX where appropriate. R
 the publisher record before adopting corrections. Verification checks metadata identity,
 not whether a paper supports a manuscript claim.
 
-## WTF-P reports that the action is unavailable
+## PanWrite reports that the action is unavailable
 
-Use the prepared WTF-P checkout and a host with its bounded dispatcher binding.
+Use the prepared PanWrite checkout and a host with its bounded dispatcher binding.
 Clio and Claude Code currently have that binding. The companion does not remove
-blockers on other hosts. Native CiteNexus MCP tools may still be configured directly
-in those clients, independently of the WTF-P workflow's availability contract.
+blockers on other hosts. Native PanCite MCP tools may still be configured directly
+in those clients, independently of the PanWrite workflow's availability contract.
 
 ## Preparing an issue
 

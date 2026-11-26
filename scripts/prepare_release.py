@@ -24,16 +24,16 @@ PANCODE_READ_TOOLS = (
 )
 
 PANCODE_README = """\
-# CiteNexus for PanCode
+# PanCite for PanCode
 
-This pack runs the CiteNexus MCP server in PanCode. CiteNexus is licensed under Apache-2.0.
+This pack runs the PanCite MCP server in PanCode. PanCite is licensed under Apache-2.0.
 
 ## Install
 
 From PanHub, once the pack is listed:
 
 ```bash
-pancode hub install plugin:cite-nexus
+pancode hub install plugin:pancite
 ```
 
 From a checkout of this repository:
@@ -49,13 +49,13 @@ surface the server serves. Without `--hash`, the second command prints the surfa
 records nothing; repeat it with `--hash <digest>` to record it.
 
 ```bash
-pancode mcp trust cite-nexus
-pancode mcp trust cite-nexus --surface
+pancode mcp trust pancite
+pancode mcp trust pancite --surface
 ```
 
 ## The launch
 
-`mcp.json` launches `uvx --from pancite=={version} cite-nexus-mcp --no-env-file`. The
+`mcp.json` launches `uvx --from pancite=={version} pancite --no-env-file`. The
 exact version pins uv's input, not the bytes PyPI serves for it. The first launch needs PyPI
 to install the package into uv's cache; later launches reuse that cache. `uvx` must be on
 `PATH`. `--no-env-file` keeps the server from reading a `.env` file in the pack directory.
@@ -65,7 +65,7 @@ to install the package into uv's cache; later launches reuse that cache. `uvx` m
 Every tool is declared `read`, so lookups run without asking. No tool writes a file, takes a
 file path or changes state outside the server's process: the server queries fixed scholarly
 API hosts, formats BibTeX the caller supplies, reports its own provider configuration, and
-caches metadata in process only. A tool a later CiteNexus release adds stays `unknown`, which
+caches metadata in process only. A tool a later PanCite release adds stays `unknown`, which
 asks, until this pack lists it.
 
 ## Keys and provider terms
@@ -79,19 +79,19 @@ its `env`. Choosing such a provider accepts that provider's terms; see
 ## Network
 
 Every lookup needs network. Inside a PanCode fleet worker the server reaches the network only
-after `pancode mcp trust cite-nexus --network`.
+after `pancode mcp trust pancite --network`.
 
 ## The literature pack
 
-PanCode's first-party literature pack declares the same server id, `cite-nexus`. Install one of
-the two; when both declare the server, the second is shadowed.
+PanCode's first-party literature pack declares this server under its former id, `cite-nexus`.
+Install one of the two packs; with both installed, PanCode starts two copies of the server.
 """
 
 
 def outputs() -> dict[str, str]:
     product = json.loads((ROOT / "release/product.json").read_text())
     version = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]["version"]
-    server = {"command": "cite-nexus-mcp", "args": ["--no-env-file"]}
+    server = {"command": "pancite", "args": ["--no-env-file"]}
     interface = {
         "displayName": product["name"],
         "shortDescription": product["short_description"],
@@ -115,7 +115,7 @@ def outputs() -> dict[str, str]:
         "keywords": product["keywords"],
     }
     optional = {
-        "CITE_NEXUS_CONTACT_EMAIL": (False, "Optional Crossref polite-pool contact email"),
+        "PANCITE_CONTACT_EMAIL": (False, "Optional Crossref polite-pool contact email"),
         "SEMANTIC_SCHOLAR_API_KEY": (True, "Optional Semantic Scholar account key"),
         "OPENALEX_API_KEY": (
             True,
@@ -164,24 +164,22 @@ def outputs() -> dict[str, str]:
                 }
             ],
         },
-        "packaging/cite-nexus/plugin.json": {
+        "packaging/pancite/plugin.json": {
             "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
             **common,
             "extensions": {"com.openai": {"interface": interface}},
         },
-        "packaging/cite-nexus/mcp.json": {
+        "packaging/pancite/mcp.json": {
             "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
-            "mcpServers": {"cite-nexus": {"type": "stdio", **server}},
+            "mcpServers": {"pancite": {"type": "stdio", **server}},
         },
-        "packaging/cite-nexus/.codex-plugin/plugin.json": {
+        "packaging/pancite/.codex-plugin/plugin.json": {
             **common,
             "mcpServers": "./.mcp.json",
             "interface": interface,
         },
-        "packaging/cite-nexus/.claude-plugin/plugin.json": common,
-        "packaging/cite-nexus/.mcp.json": {
-            "mcpServers": {"cite-nexus": {"type": "stdio", **server}}
-        },
+        "packaging/pancite/.claude-plugin/plugin.json": common,
+        "packaging/pancite/.mcp.json": {"mcpServers": {"pancite": {"type": "stdio", **server}}},
         "pancode/plugin.json": {
             "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
             **common,
@@ -196,13 +194,13 @@ def outputs() -> dict[str, str]:
         # schema, so this file carries no $schema.
         "pancode/mcp.json": {
             "mcpServers": {
-                "cite-nexus": {
+                "pancite": {
                     "type": "stdio",
                     "command": "uvx",
                     "args": [
                         "--from",
                         f"pancite=={version}",
-                        "cite-nexus-mcp",
+                        "pancite",
                         "--no-env-file",
                     ],
                     "timeoutMs": 120000,
@@ -214,9 +212,9 @@ def outputs() -> dict[str, str]:
     rendered = {
         path: json.dumps(data, indent=2, ensure_ascii=False) + "\n" for path, data in files.items()
     }
-    rendered["packaging/cite-nexus/assets/logo.svg"] = (ROOT / "assets/cite-nexus.svg").read_text()
-    rendered["packaging/cite-nexus/LICENSE"] = (ROOT / "LICENSE").read_text()
-    rendered["packaging/cite-nexus/NOTICE"] = (ROOT / "NOTICE").read_text()
+    rendered["packaging/pancite/assets/logo.svg"] = (ROOT / "assets/pancite.svg").read_text()
+    rendered["packaging/pancite/LICENSE"] = (ROOT / "LICENSE").read_text()
+    rendered["packaging/pancite/NOTICE"] = (ROOT / "NOTICE").read_text()
     rendered["pancode/LICENSE"] = (ROOT / "LICENSE").read_text()
     rendered["pancode/NOTICE"] = (ROOT / "NOTICE").read_text()
     rendered["pancode/README.md"] = PANCODE_README.format(version=version)

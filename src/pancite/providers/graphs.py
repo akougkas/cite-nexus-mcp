@@ -116,7 +116,7 @@ class OpenAlex(Provider):
     id = "openalex"
     name = "OpenAlex"
     access = "free credits / metered"
-    description = "Multidisciplinary research graph; API key required by CiteNexus for predictable metered access."
+    description = "Multidisciplinary research graph; API key required by PanCite for predictable metered access."
     documentation = "https://developers.openalex.org/"
     required_env = ("OPENALEX_API_KEY",)
     credential = "openalex_api_key"

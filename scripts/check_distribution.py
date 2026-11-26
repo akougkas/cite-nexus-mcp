@@ -23,12 +23,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SMOKE = """
 import asyncio, importlib.util, json, sys
 from mcp import Client, StdioServerParameters
-from cite_nexus_mcp import __version__
+from pancite import __version__
 assert __version__ == sys.argv[1], __version__
 assert importlib.util.find_spec('litellm') is None
 async def main():
     async with Client(StdioServerParameters(command=sys.executable,
-        args=['-m', 'cite_nexus_mcp', '--no-env-file']), read_timeout_seconds=10) as client:
+        args=['-m', 'pancite', '--no-env-file']), read_timeout_seconds=10) as client:
         result = await client.list_tools()
         assert len(result.tools) == 11
         result = await client.call_tool('enhance-citation', {'bibtex':'@misc{test, title={Observed title}}'})
@@ -71,9 +71,9 @@ def inspect(directory: Path, version: str) -> Path:
             raise ValueError("PyPI ownership marker is missing from wheel metadata")
         entries = configparser.ConfigParser()
         entries.read_string(archive.read(f"pancite-{version}.dist-info/entry_points.txt").decode())
-        if not {"cite-nexus-mcp", "cite-nexus-wtfp"} <= set(entries["console_scripts"]):
+        if not {"pancite", "pancite-panwrite"} <= set(entries["console_scripts"]):
             raise ValueError("Required installed commands are missing")
-        if "cite_nexus_mcp/wtfp.py" not in archive.namelist():
+        if "pancite/panwrite.py" not in archive.namelist():
             raise ValueError("Companion implementation is missing")
     with tarfile.open(sdist) as archive:
         check_paths(archive.getnames())
@@ -82,7 +82,7 @@ def inspect(directory: Path, version: str) -> Path:
         for required in (
             "pyproject.toml",
             "server.json",
-            "src/cite_nexus_mcp/wtfp.py",
+            "src/pancite/panwrite.py",
             "LICENSE",
             "NOTICE",
         ):
@@ -97,7 +97,7 @@ def installed_check(wheel: Path, version: str) -> None:
     uv = shutil.which("uv")
     if not uv:
         raise ValueError("uv is required for isolated installation")
-    with tempfile.TemporaryDirectory(prefix="citenexus-distribution-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="pancite-distribution-") as temporary:
         root = Path(temporary)
         environment = root / "venv"
         subprocess.run([uv, "venv", str(environment), "--python", sys.executable], check=True)
@@ -107,7 +107,7 @@ def installed_check(wheel: Path, version: str) -> None:
         )
         subprocess.run([str(python), "-I", "-c", SMOKE, version], cwd=root, check=True, timeout=30)
         result = subprocess.run(
-            [str(python), "-I", "-m", "cite_nexus_mcp.wtfp", "--check"],
+            [str(python), "-I", "-m", "pancite.panwrite", "--check"],
             cwd=root,
             check=True,
             capture_output=True,
@@ -116,7 +116,7 @@ def installed_check(wheel: Path, version: str) -> None:
         )
         data = json.loads(result.stdout)
         listed = subprocess.run(
-            [str(python), "-I", "-m", "cite_nexus_mcp", "--no-env-file", "--list-providers"],
+            [str(python), "-I", "-m", "pancite", "--no-env-file", "--list-providers"],
             cwd=root,
             check=True,
             capture_output=True,
@@ -125,7 +125,7 @@ def installed_check(wheel: Path, version: str) -> None:
         )
         expected = sorted(provider["id"] for provider in json.loads(listed.stdout))
         reported = sorted(provider["id"] for provider in data["providers"]["providers"])
-        if data["schema_version"] != "cite-nexus.wtfp/v1" or not expected or reported != expected:
+        if data["schema_version"] != "pancite.panwrite/v1" or not expected or reported != expected:
             raise ValueError("Installed companion diagnostic returned an incompatible response")
         print("Installed wheel and companion checks passed without provider queries")
 

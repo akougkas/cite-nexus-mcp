@@ -1,4 +1,4 @@
-"""Bounded WTF-P companion process using the official MCP client and stdio server.
+"""Bounded PanWrite companion process using the official MCP client and stdio server.
 
 The bridge accepts a single JSON request. No command, URL, credential or file path
 can be supplied in that request. Search records remain unverified candidates.
@@ -23,7 +23,7 @@ from . import __version__
 from .citations import bibtex, warnings
 from .models import Model, ProvidersResult, SearchResult
 
-SCHEMA: Literal["cite-nexus.wtfp/v1"] = "cite-nexus.wtfp/v1"
+SCHEMA: Literal["pancite.panwrite/v1"] = "pancite.panwrite/v1"
 MAX_INPUT = 16384
 MAX_OUTPUT = 2 * 1024 * 1024
 Provider = Literal[
@@ -49,7 +49,7 @@ ENVIRONMENT = (
     "TMPDIR",
     "TEMP",
     "TMP",
-    "CITE_NEXUS_CONTACT_EMAIL",
+    "PANCITE_CONTACT_EMAIL",
     "SEMANTIC_SCHOLAR_API_KEY",
     "OPENALEX_API_KEY",
     "SERPAPI_API_KEY",
@@ -61,7 +61,7 @@ ENVIRONMENT = (
 
 
 class Request(Model):
-    schema_version: Literal["cite-nexus.wtfp/v1"] = SCHEMA
+    schema_version: Literal["pancite.panwrite/v1"] = SCHEMA
     operation: Literal["search", "providers"] = "search"
     query: Annotated[str, Field(min_length=1, max_length=512)] | None = None
     providers: Annotated[list[Provider], Field(min_length=1, max_length=10)] = [
@@ -86,7 +86,7 @@ class Request(Model):
 def server_parameters() -> StdioServerParameters:
     return StdioServerParameters(
         command=sys.executable,
-        args=["-m", "cite_nexus_mcp", "--no-env-file"],
+        args=["-m", "pancite", "--no-env-file"],
         env={key: os.environ[key] for key in ENVIRONMENT if key in os.environ},
     )
 
@@ -130,7 +130,7 @@ async def execute(request: Request, server: Any = None) -> dict[str, Any]:
         raise ValueError("MCP tool did not return a successful structured result")
     data = result.structured_content
     metadata: dict[str, Any] = {
-        "backend": "cite-nexus",
+        "backend": "pancite",
         "version": __version__,
         "transport": "mcp-stdio",
         "request_id": request_id,
@@ -171,7 +171,7 @@ async def execute(request: Request, server: Any = None) -> dict[str, Any]:
                 "venue": paper.venue,
                 "authors": [author.model_dump(exclude_none=True) for author in paper.authors],
                 "abstract": paper.abstract,
-                "source": "cite-nexus",
+                "source": "pancite",
                 "url": paper.url,
                 "externalIds": {"DOI": paper.identifiers["doi"]}
                 if "doi" in paper.identifiers
@@ -180,7 +180,7 @@ async def execute(request: Request, server: Any = None) -> dict[str, Any]:
                 "bibtex": bibtex(paper),
                 "warnings": warnings(paper),
                 # The record's abstract is already top-level; minimal omits defaults and the copy.
-                "citeNexus": paper.model_dump()
+                "pancite": paper.model_dump()
                 if request.detail == "full"
                 else paper.model_dump(
                     exclude_defaults=request.detail == "minimal", exclude={"abstract"}
@@ -206,9 +206,9 @@ async def _supervised(request: Request) -> dict[str, Any]:
 
 def run() -> None:
     parser = argparse.ArgumentParser(
-        description="CiteNexus companion bridge for WTF-P (one JSON request on stdin)"
+        description="PanCite companion bridge for PanWrite (one JSON request on stdin)"
     )
-    parser.add_argument("--version", action="version", version=f"cite-nexus-wtfp {__version__}")
+    parser.add_argument("--version", action="version", version=f"pancite-panwrite {__version__}")
     parser.add_argument(
         "--check",
         action="store_true",
@@ -234,18 +234,18 @@ def run() -> None:
         print(
             json.dumps(
                 {
-                    "error": "Invalid request or incompatible CiteNexus response; check bridge versions and input bounds."
+                    "error": "Invalid request or incompatible PanCite response; check bridge versions and input bounds."
                 }
             ),
             file=sys.stderr,
         )
         raise SystemExit(1) from None
     except (TimeoutError, asyncio.CancelledError, KeyboardInterrupt):
-        print(json.dumps({"error": "CiteNexus request timed out."}), file=sys.stderr)
+        print(json.dumps({"error": "PanCite request timed out."}), file=sys.stderr)
         raise SystemExit(124) from None
     except Exception:
         print(
-            json.dumps({"error": "CiteNexus MCP connection failed; run cite-nexus-wtfp --check."}),
+            json.dumps({"error": "PanCite MCP connection failed; run pancite-panwrite --check."}),
             file=sys.stderr,
         )
         raise SystemExit(1) from None

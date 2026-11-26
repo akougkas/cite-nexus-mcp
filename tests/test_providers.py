@@ -2,10 +2,10 @@ import httpx2 as httpx
 import pytest
 from pydantic import SecretStr
 
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.http import HTTP
-from cite_nexus_mcp.identifiers import Identifier
-from cite_nexus_mcp.providers import registry
+from pancite.config import Settings
+from pancite.http import HTTP
+from pancite.identifiers import Identifier
+from pancite.providers import registry
 
 
 def settings():
@@ -212,6 +212,6 @@ async def test_semantic_graph_preserves_direction(direction, records):
     ],
 )
 def test_arxiv_plain_queries_require_every_term(query, expected):
-    from cite_nexus_mcp.providers.academic import arxiv_query
+    from pancite.providers.academic import arxiv_query
 
     assert arxiv_query(query) == expected

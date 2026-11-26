@@ -1,5 +1,5 @@
 {
-  "schema_version": "cite-nexus.marketplaces/v1",
+  "schema_version": "pancite.marketplaces/v1",
   "researched_at": "2026-09-16",
   "release_authorized": true,
   "scope": "Broad discovery inventory; not an exhaustive or permanent list of every MCP marketplace. Entries distinguish verified routes, related distribution surfaces, redirects and unresolved leads. HTTP 200 alone is not submission eligibility.",
@@ -204,7 +204,7 @@
       "priority": "P1",
       "discovery_url": "https://raw.githubusercontent.com/docker/mcp-registry/main/CONTRIBUTING.md",
       "submission_url": "https://github.com/docker/mcp-registry/blob/main/CONTRIBUTING.md",
-      "route": "Generate a servers/cite-nexus/server.yaml entry and submit a reviewed PR",
+      "route": "Generate a servers/pancite/server.yaml entry and submit a reviewed PR",
       "next_step": "Dockerfile exists; build and toolkit integration test, exact source commit and generated catalog metadata remain pending. Docker daemon was unavailable.",
       "status": "not_submitted",
       "evidence_urls": [
@@ -529,7 +529,7 @@
       "discovery_url": "https://geminicli.com/docs/extensions/releasing/",
       "submission_url": "https://geminicli.com/docs/extensions/releasing/",
       "route": "Public GitHub repository with gemini-cli-extension topic is automatically discovered under documented eligibility rules",
-      "next_step": "CiteNexus has no standalone Gemini extension artifact yet; WTF-P's separate Gemini projection does not certify CiteNexus native integration.",
+      "next_step": "PanCite has no standalone Gemini extension artifact yet; PanWrite's separate Gemini projection does not certify PanCite native integration.",
       "status": "not_submitted",
       "evidence_urls": [
         "https://geminicli.com/docs/extensions/releasing/"

@@ -1,7 +1,7 @@
-"""Exercise the generated WTF-P dispatcher -> companion -> MCP stdio -> fixture API.
+"""Exercise the generated PanWrite dispatcher -> companion -> MCP stdio -> fixture API.
 
 No provider network calls, package installation, or client profile changes.
-Run with: uv run python scripts/check_wtfp.py --wtfp-root ../wtf-p
+Run with: uv run python scripts/check_panwrite.py --panwrite-root ../panwrite
 """
 
 import argparse
@@ -17,23 +17,23 @@ from pathlib import Path
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--wtfp-root", type=Path, required=True)
+    parser.add_argument("--panwrite-root", type=Path, required=True)
     args = parser.parse_args()
     node = shutil.which("node")
     if not node:
         parser.error("Node.js 20+ is required")
     root = Path(__file__).resolve().parents[1]
     fixture = root / "tests/fixtures/records.json"
-    with tempfile.TemporaryDirectory(prefix="cite-nexus-wtfp-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="pancite-panwrite-") as temporary:
         directory = Path(temporary)
         server = directory / "fixture_server.py"
         pid_file = directory / "server.pid"
         server.write_text(
             "import json,os,time\nimport httpx2 as httpx\n"
-            "from cite_nexus_mcp.config import Settings\n"
-            "from cite_nexus_mcp.http import HTTP\n"
-            "from cite_nexus_mcp.service import ResearchService\n"
-            "from cite_nexus_mcp.server import create_server\n"
+            "from pancite.config import Settings\n"
+            "from pancite.http import HTTP\n"
+            "from pancite.service import ResearchService\n"
+            "from pancite.server import create_server\n"
             f"record=json.loads(open({str(fixture)!r}).read())['crossref']\n"
             f"open({str(pid_file)!r},'w').write(str(os.getpid()))\n"
             "settings=Settings(retries=0)\n"
@@ -47,20 +47,20 @@ def main() -> None:
         bridge.write_text(
             f"#!{sys.executable}\n"
             "from mcp import StdioServerParameters\n"
-            "from cite_nexus_mcp import wtfp\n"
-            f"wtfp.server_parameters=lambda: StdioServerParameters(command={sys.executable!r},args=[{str(server)!r}])\n"
-            "wtfp.run()\n"
+            "from pancite import panwrite\n"
+            f"panwrite.server_parameters=lambda: StdioServerParameters(command={sys.executable!r},args=[{str(server)!r}])\n"
+            "panwrite.run()\n"
         )
         bridge.chmod(0o700)
-        env = {"PATH": os.environ.get("PATH", ""), "WTFP_CITE_NEXUS_COMMAND": str(bridge)}
+        env = {"PATH": os.environ.get("PATH", ""), "PANWRITE_PANCITE_COMMAND": str(bridge)}
         # Exercise both hosts with an established tool.execute binding.
         for target in ("plugin", "claude"):
-            dispatcher = args.wtfp_root.resolve() / "vendors" / target / "tools/wtfp-tool.js"
+            dispatcher = args.panwrite_root.resolve() / "vendors" / target / "tools/wtfp-tool.js"
             command = [
                 node,
                 str(dispatcher),
                 "citation-search",
-                "--backend=cite-nexus",
+                "--backend=pancite",
                 "--query=reliable research",
                 "--providers=crossref",
                 "--limit=1",
@@ -78,7 +78,7 @@ def main() -> None:
             data = json.loads(result.stdout)
             paper = data["results"][0]
             assert paper["verification"] == "candidate"
-            assert paper["citeNexus"]["sources"][0]["provider"] == "crossref"
+            assert paper["pancite"]["sources"][0]["provider"] == "crossref"
             assert "citationCount" not in paper and "wtfp_status" not in paper["bibtex"]
             assert data["metadata"]["errors"] == []
             offline = subprocess.run(
@@ -95,7 +95,7 @@ def main() -> None:
             )
         if sys.platform != "win32":
             # A stuck provider must not orphan the SDK's separate process group
-            # when WTF-P's hard deadline terminates the companion.
+            # when PanWrite's hard deadline terminates the companion.
             server.write_text(
                 server.read_text().replace(
                     "    return httpx.Response", "    time.sleep(60)\n    return httpx.Response"

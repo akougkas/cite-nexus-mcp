@@ -36,7 +36,7 @@ class HTTP:
                 verify=tls,
                 timeout=settings.timeout,
                 follow_redirects=False,
-                headers={"User-Agent": "CiteNexus/0.2 (+https://github.com/PanStudio/pancite)"},
+                headers={"User-Agent": "PanCite/0.2 (+https://github.com/PanStudio/pancite)"},
                 limits=httpx.Limits(
                     max_connections=settings.concurrency, max_keepalive_connections=10
                 ),

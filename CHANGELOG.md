@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.0 — 2026-11-26
+
+CiteNexus is now PanCite, published by PanStudio. This release renames every identifier and
+adds no aliases for the old names. Tool names, tool behavior and provider IDs are unchanged.
+
+- The PyPI project is `pancite`; `cite-nexus-mcp` receives no further releases. Install with
+  `uv tool install pancite==0.3.0` or launch with `uvx --from pancite==0.3.0 pancite`.
+- The repository moved to https://github.com/PanStudio/pancite and the official MCP Registry
+  name is `io.github.PanStudio/pancite`.
+- The `cite-nexus-mcp` and `cite-nexus-wtfp` commands are now `pancite` and `pancite-panwrite`.
+- The Python import package `cite_nexus_mcp` is now `pancite`.
+- Environment variables use the `PANCITE_` prefix: `PANCITE_CONTACT_EMAIL`,
+  `PANCITE_DEFAULT_PROVIDERS`, `PANCITE_TIMEOUT`, `PANCITE_OPERATION_TIMEOUT`,
+  `PANCITE_RETRIES`, `PANCITE_CONCURRENCY`, `PANCITE_CACHE_TTL` and `PANCITE_CACHE_SIZE`.
+  `CITE_NEXUS_*` variables are no longer read.
+- The MCP server name and the server id in the plugin and PanCode pack manifests are `pancite`;
+  the plugin bundle moved to `packaging/pancite/`.
+- WTF-P is now PanWrite. The companion module is `pancite.panwrite` and its protocol is
+  `pancite.panwrite/v1`; each result carries its source record in `pancite` instead of
+  `citeNexus`. PanWrite selects it with `--backend=pancite` and finds it through
+  `PANWRITE_PANCITE_COMMAND`. WTF-P releases that expect `cite-nexus.wtfp/v1` do not work with
+  this release. `scripts/check_wtfp.py --wtfp-root` is now `scripts/check_panwrite.py --panwrite-root`.
+- The license changes from MIT to Apache-2.0, with a NOTICE file. Copyright is held by PanStudio.
+
 ## 0.2.6 — 2026-11-25
 
 Adds a PanCode pack. The server is unchanged from 0.2.5.

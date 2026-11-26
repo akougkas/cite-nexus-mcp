@@ -4,9 +4,9 @@ import asyncio
 import json
 from functools import partial
 
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.models import ProviderIssue
-from cite_nexus_mcp.service import ResearchService
+from pancite.config import Settings
+from pancite.models import ProviderIssue
+from pancite.service import ResearchService
 
 
 async def main() -> None:

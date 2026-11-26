@@ -3,8 +3,8 @@ import asyncio
 import httpx2 as httpx
 import pytest
 
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.http import HTTP, ProviderError
+from pancite.config import Settings
+from pancite.http import HTTP, ProviderError
 
 
 async def test_cache_is_bounded_and_partitions_credentials():

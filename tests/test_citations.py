@@ -3,10 +3,10 @@ import json
 import bibtexparser
 import pytest
 
-from cite_nexus_mcp.citations import enhance, format_citation
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.models import Author, Paper
-from cite_nexus_mcp.providers import registry
+from pancite.citations import enhance, format_citation
+from pancite.config import Settings
+from pancite.models import Author, Paper
+from pancite.providers import registry
 
 
 def test_bibtex_escapes_metadata_and_preserves_authors(records):

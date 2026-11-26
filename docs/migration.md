@@ -1,3 +1,21 @@
+# Migrating from CiteNexus 0.2 to PanCite 0.3
+
+PanCite 0.3.0 renames CiteNexus. Tools, arguments and provider IDs are unchanged; only names
+move, and the old names are not accepted.
+
+| CiteNexus 0.2 | PanCite 0.3 |
+|---|---|
+| PyPI `cite-nexus-mcp` | PyPI `pancite` |
+| Commands `cite-nexus-mcp`, `cite-nexus-wtfp` | `pancite`, `pancite-panwrite` |
+| Python package `cite_nexus_mcp` | `pancite` |
+| `CITE_NEXUS_*` environment variables | `PANCITE_*` |
+| MCP server id `cite-nexus` | `pancite` |
+| Registry name `io.github.akougkas/cite-nexus-mcp` | `io.github.PanStudio/pancite` |
+| Companion schema `cite-nexus.wtfp/v1`, result field `citeNexus` | `pancite.panwrite/v1`, `pancite` |
+
+Rename the variables in your `.env` file and client configuration, replace the server entry
+in each MCP client, and uninstall `cite-nexus-mcp`. PanCite is licensed under Apache-2.0.
+
 # Migrating from 0.1 to 0.2
 
 Version 0.2 changes the data model and MCP implementation. The four old tool names remain, but
@@ -44,22 +62,22 @@ and cache hints. SDK 2.2 handles those wire requirements and compatibility with 
 revisions. The tests exercise both the current revision and the SDK's legacy handshake path over
 real stdio and HTTP transports.
 
-CiteNexus declares read-only tools, input and output schemas, stable tool ordering, private
+PanCite declares read-only tools, input and output schemas, stable tool ordering, private
 resource-content cache hints, two prompts, and three resources. Tool exceptions become proper
 MCP tool errors. Batch work reports progress and propagates cancellation.
 
 Sampling, Roots and Logging are deprecated in the new specification; new citation workflows do
 not depend on them. Logs go to stderr. The protocol's Tasks facility moved to the
 [official Tasks extension](https://github.com/modelcontextprotocol/ext-tasks), which SDK 2.2
-[does not yet implement](https://py.sdk.modelcontextprotocol.io/whats-new/). CiteNexus therefore
+[does not yet implement](https://py.sdk.modelcontextprotocol.io/whats-new/). PanCite therefore
 does not advertise Tasks, Apps, background jobs or durable session state.
 
 ## Python API
 
 ```python
 import asyncio
-from cite_nexus_mcp.config import Settings
-from cite_nexus_mcp.service import ResearchService
+from pancite.config import Settings
+from pancite.service import ResearchService
 
 async def main():
     service = ResearchService(Settings())

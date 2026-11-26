@@ -1,10 +1,10 @@
-# CiteNexus MCP
+# PanCite MCP
 
-<img src="https://raw.githubusercontent.com/PanStudio/pancite/v0.2.6/assets/cite-nexus.svg" alt="CiteNexus" width="88" height="88" align="right">
+<img src="https://raw.githubusercontent.com/PanStudio/pancite/v0.3.0/assets/pancite.svg" alt="PanCite" width="88" height="88" align="right">
 
 **Scholarly discovery and citations with evidence you can trace.**
 
-CiteNexus connects research assistants to open scholarly metadata, specialist academic indexes,
+PanCite connects research assistants to open scholarly metadata, specialist academic indexes,
 and optional commercial databases through the Model Context Protocol. Search without an API key,
 resolve stable identifiers, check references against their sources, and export citations without
 asking a language model to invent the missing fields.
@@ -12,13 +12,13 @@ asking a language model to invent the missing fields.
 This is a citation and metadata service for the assistant you already use. It works alongside
 reference managers such as Zotero and writing environments that support MCP.
 
-**CiteNexus 0.2.6** includes the MCP service and the `cite-nexus-wtfp` companion.
-The WTF-P integration targets its separate 0.7.0 release. Marketplace listings and native
+**PanCite 0.3.0** includes the MCP service and the `pancite-panwrite` companion.
+The PanWrite integration needs a PanWrite release that speaks `pancite.panwrite/v1`. Marketplace listings and native
 client plugin qualification are tracked independently.
 
-[Quick start](#quick-start) · [WTF-P integration](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/wtf-p.md) ·
-[Provider guide](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/providers.md) · [Troubleshooting](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/troubleshooting.md) ·
-[Release information](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/release/README.md)
+[Quick start](#quick-start) · [PanWrite integration](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/panwrite.md) ·
+[Provider guide](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/providers.md) · [Troubleshooting](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/troubleshooting.md) ·
+[Release information](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/release/README.md)
 
 - **Useful without credentials:** Crossref, DataCite and Europe PMC are the default search sources.
   arXiv and Semantic Scholar are also available without mandatory keys.
@@ -36,8 +36,8 @@ client plugin qualification are tracked independently.
 Python 3.11+ and [uv](https://docs.astral.sh/uv/) are required.
 
 ```bash
-uvx --from cite-nexus-mcp==0.2.6 cite-nexus-mcp --version
-uvx --from cite-nexus-mcp==0.2.6 cite-nexus-mcp --no-env-file --list-providers
+uvx --from pancite==0.3.0 pancite --version
+uvx --from pancite==0.3.0 pancite --no-env-file --list-providers
 ```
 
 For an MCP client with a `mcpServers` configuration:
@@ -45,9 +45,9 @@ For an MCP client with a `mcpServers` configuration:
 ```json
 {
   "mcpServers": {
-    "cite-nexus": {
+    "pancite": {
       "command": "uvx",
-      "args": ["--from", "cite-nexus-mcp==0.2.6", "cite-nexus-mcp", "--no-env-file"]
+      "args": ["--from", "pancite==0.3.0", "pancite", "--no-env-file"]
     }
   }
 }
@@ -58,20 +58,20 @@ command directly waits for a client; it is not an interactive search shell. If y
 cannot find `uvx`, use its absolute executable path. The first run downloads the package and
 its dependencies.
 
-For a persistent installation, including the WTF-P companion:
+For a persistent installation, including the PanWrite companion:
 
 ```bash
-uv tool install cite-nexus-mcp==0.2.6
-cite-nexus-wtfp --check
+uv tool install pancite==0.3.0
+pancite-panwrite --check
 ```
 
 The diagnostic starts the actual MCP service and lists providers without querying vendor APIs.
-See the [WTF-P setup](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/wtf-p.md) for the separate integration and executable-path setting.
+See the [PanWrite setup](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/panwrite.md) for the separate integration and executable-path setting.
 
 For local HTTP clients:
 
 ```bash
-uvx --from cite-nexus-mcp==0.2.6 cite-nexus-mcp --no-env-file --transport streamable-http --port 8000
+uvx --from pancite==0.3.0 pancite --no-env-file --transport streamable-http --port 8000
 ```
 
 Connect to `http://127.0.0.1:8000/mcp`. The CLI binds only to loopback and serves a single trust
@@ -84,8 +84,8 @@ The `pancode/` directory is a PanCode pack that launches this release with `uvx`
 
 ```bash
 pancode hub install <checkout>/pancode --user
-pancode mcp trust cite-nexus
-pancode mcp trust cite-nexus --surface   # prints the digest; repeat with --hash <digest>
+pancode mcp trust pancite
+pancode mcp trust pancite --surface   # prints the digest; repeat with --hash <digest>
 ```
 
 PanCode passes the server no key from your shell. Keyed providers need your own user-scope
@@ -96,7 +96,7 @@ declaration with the keys in its `env`. See the
 
 | Provider ID | Coverage | Access | Setup |
 |---|---|---|---|
-| `crossref` | Publisher-deposited DOI metadata and citation counts | Free; default | Optional `CITE_NEXUS_CONTACT_EMAIL` for the polite pool |
+| `crossref` | Publisher-deposited DOI metadata and citation counts | Free; default | Optional `PANCITE_CONTACT_EMAIL` for the polite pool |
 | `datacite` | Datasets, software and other DOI-registered research outputs | Free; default | None |
 | `europe_pmc` | Biomedical literature, PubMed/PMC records, references and citations | Free; default | None |
 | `arxiv` | Preprints in physics, mathematics, computing and related fields | Free | Select explicitly; paced to one request per three seconds |
@@ -112,7 +112,7 @@ declaration with the keys in its `env`. See the
 it does not download PDFs or bypass access restrictions.
 
 Free access is subject to provider rate limits and terms. Anonymous Semantic Scholar can be
-heavily throttled. OpenAlex access policies have changed over time; CiteNexus requires a key for
+heavily throttled. OpenAlex access policies have changed over time; PanCite requires a key for
 that adapter even when an anonymous request happens to succeed. Institution keys do not by
 themselves guarantee subscription access or access outside an institution's network.
 
@@ -123,9 +123,9 @@ documentation links without testing access or revealing key values.
 
 ## Research workflows
 
-Use CiteNexus to build a literature shortlist, repair an uncertain reference, check the source
+Use PanCite to build a literature shortlist, repair an uncertain reference, check the source
 behind a citation count, or prepare a bibliography for your writing tool. For a full writing
-workflow, the [WTF-P companion](https://github.com/PanStudio/pancite/blob/v0.2.2/docs/wtf-p.md) connects discovery to evidence tables, outlines
+workflow, the [PanWrite companion](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/panwrite.md) connects discovery to evidence tables, outlines
 and manuscript work while keeping candidate references visible for review.
 
 Ask your assistant to use the tools directly, or start with the `literature-review` and
@@ -195,8 +195,8 @@ retrieved. An explicit `providers` list instead checks each compatible selected 
 retains evidence and disagreements. Native identifiers route to their corresponding source.
 A title search always returns candidates; it never silently declares the first result a match.
 
-Read the MCP resources `cite-nexus://methodology`, `cite-nexus://providers` and
-`cite-nexus://workflows` for machine-accessible guidance.
+Read the MCP resources `pancite://methodology`, `pancite://providers` and
+`pancite://workflows` for machine-accessible guidance.
 
 ## What “verified” means
 
@@ -223,26 +223,26 @@ it does not infer keywords, awards, impact factors or missing authors.
 Copy `.env.example` to `.env` only if you need optional settings. Existing process environment
 variables take precedence. The CLI loads `./.env`, or an explicit `--env-file`; it never searches
 parent directories. Importing the Python package does not read `.env` or call external services.
-Pass `--no-env-file` for clients that manage credentials themselves. The WTF-P companion and
+Pass `--no-env-file` for clients that manage credentials themselves. The PanWrite companion and
 plugin manifests always use this mode.
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `CITE_NEXUS_DEFAULT_PROVIDERS` | `crossref,datacite,europe_pmc` | Explicit search source IDs, comma separated |
-| `CITE_NEXUS_TIMEOUT` | `12` | Timeout in seconds for each HTTP request |
-| `CITE_NEXUS_OPERATION_TIMEOUT` | `40` | Time budget for a provider operation or identifier resolution |
-| `CITE_NEXUS_RETRIES` | `1` | Retries for transport failures, HTTP 429 and 5xx responses |
-| `CITE_NEXUS_CONCURRENCY` | `6` | Maximum simultaneous outbound requests |
-| `CITE_NEXUS_CACHE_TTL` | `300` | In-process response-cache lifetime in seconds; `0` disables it |
-| `CITE_NEXUS_CACHE_SIZE` | `256` | Maximum cached responses; `0` disables caching |
+| `PANCITE_DEFAULT_PROVIDERS` | `crossref,datacite,europe_pmc` | Explicit search source IDs, comma separated |
+| `PANCITE_TIMEOUT` | `12` | Timeout in seconds for each HTTP request |
+| `PANCITE_OPERATION_TIMEOUT` | `40` | Time budget for a provider operation or identifier resolution |
+| `PANCITE_RETRIES` | `1` | Retries for transport failures, HTTP 429 and 5xx responses |
+| `PANCITE_CONCURRENCY` | `6` | Maximum simultaneous outbound requests |
+| `PANCITE_CACHE_TTL` | `300` | In-process response-cache lifetime in seconds; `0` disables it |
+| `PANCITE_CACHE_SIZE` | `256` | Maximum cached responses; `0` disables caching |
 
 Cached records retain their original retrieval and citation-observation timestamps. The cache is
 bounded and partitions responses by credentials. Responses larger than 8 MB are rejected. Long
 `Retry-After` cooldowns return a provider issue instead of holding the call open. Keys and upstream
 error bodies are excluded from tool errors. Local stderr logging keeps stdout clean for MCP.
 
-See [provider details](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/providers.md), [migration notes](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/migration.md), and
-[product direction](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/product-direction.md) for access nuances and boundaries.
+See [provider details](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/providers.md), [migration notes](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/migration.md), and
+[product direction](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/product-direction.md) for access nuances and boundaries.
 
 ## Development and verification
 
@@ -250,11 +250,11 @@ To work from source:
 
 ```bash
 git clone https://github.com/PanStudio/pancite.git
-cd cite-nexus-mcp
+cd pancite
 uv sync --locked
 uv run ruff check src tests scripts
 uv run ruff format --check src tests scripts
-uv run mypy src/cite_nexus_mcp
+uv run mypy src/pancite
 uv run python scripts/prepare_release.py --check
 uv run python scripts/marketplaces.py --check
 uv run pytest -q
@@ -277,17 +277,17 @@ anonymous Semantic Scholar. Rate limits and network failures are reported as out
 
 The official MCP Tasks extension is not advertised. SDK 2.2 does not implement it yet.
 `batch-citations` is a bounded synchronous workflow with progress and cancellation, not a durable
-job queue. [The roadmap](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/product-direction.md) describes the criteria for adding persistent
+job queue. [The roadmap](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/product-direction.md) describes the criteria for adding persistent
 tasks, local libraries and further licensed providers.
 
-The [launch kit](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/release/launch-kit.md) includes positioning, listing copy, a demo script,
-and promotional drafts. The [marketplace inventory](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/release/marketplaces.md) tracks 41
+The [launch kit](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/release/launch-kit.md) includes positioning, listing copy, a demo script,
+and promotional drafts. The [marketplace inventory](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/release/marketplaces.md) tracks 41
 channels and leads, including verified routes, duplicate channels and inactive or unresolved
 sites. Source metadata, portable plugin manifests and image assets are prepared for review.
-See [data handling](https://github.com/PanStudio/pancite/blob/v0.2.6/docs/data-handling.md) before configuring optional providers or hosting.
+See [data handling](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/data-handling.md) before configuring optional providers or hosting.
 
 ## License
 
-[Apache-2.0](https://github.com/PanStudio/pancite/blob/master/LICENSE). Copyright 2026 PanStudio; see [NOTICE](https://github.com/PanStudio/pancite/blob/master/NOTICE). Provider content, API access and redistribution remain subject to each source's terms.
+[Apache-2.0](https://github.com/PanStudio/pancite/blob/v0.3.0/LICENSE). Copyright 2026 PanStudio; see [NOTICE](https://github.com/PanStudio/pancite/blob/v0.3.0/NOTICE). Provider content, API access and redistribution remain subject to each source's terms.
 
 <!-- mcp-name: io.github.PanStudio/pancite -->

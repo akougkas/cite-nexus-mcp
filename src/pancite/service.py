@@ -200,7 +200,7 @@ class ResearchService:
         unknown = set(self.settings.default_providers) - self.providers.keys()
         if unknown or not self.settings.default_providers:
             raise ValueError(
-                "CITE_NEXUS_DEFAULT_PROVIDERS must contain known provider IDs: "
+                "PANCITE_DEFAULT_PROVIDERS must contain known provider IDs: "
                 + ", ".join(self.providers)
             )
 
@@ -210,7 +210,7 @@ class ResearchService:
     def list_providers(self) -> ProvidersResult:
         return ProvidersResult(
             providers=[p.info() for p in self.providers.values()],
-            policy="Defaults use public APIs without keys. Commercial and metered APIs run only when selected explicitly or named in CITE_NEXUS_DEFAULT_PROVIDERS. 'available' means credentials are configured, not that live access was tested. Defaults favor publisher and biomedical metadata; for computer-science queries select arxiv and semantic_scholar, adding crossref for published versions.",
+            policy="Defaults use public APIs without keys. Commercial and metered APIs run only when selected explicitly or named in PANCITE_DEFAULT_PROVIDERS. 'available' means credentials are configured, not that live access was tested. Defaults favor publisher and biomedical metadata; for computer-science queries select arxiv and semantic_scholar, adding crossref for published versions.",
         )
 
     def select(self, names: list[str] | None) -> list[Provider]:

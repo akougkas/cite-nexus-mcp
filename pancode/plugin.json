@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "cite-nexus",
-  "version": "0.2.6",
-  "description": "CiteNexus connects research assistants to free scholarly metadata and optional academic APIs. Discover papers, resolve identifiers, check references, and export BibTeX, RIS or CSL-JSON with source provenance. No model or API key is required for default searches.",
+  "name": "pancite",
+  "version": "0.3.0",
+  "description": "PanCite connects research assistants to free scholarly metadata and optional academic APIs. Discover papers, resolve identifiers, check references, and export BibTeX, RIS or CSL-JSON with source provenance. No model or API key is required for default searches.",
   "author": {
     "name": "Anthony Kougkas",
     "url": "https://github.com/akougkas"
@@ -18,7 +18,7 @@
     "academic",
     "bibtex",
     "crossref",
-    "wtf-p"
+    "panwrite"
   ],
   "extensions": {
     "dev.pancode": {

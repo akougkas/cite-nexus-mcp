@@ -94,7 +94,7 @@ def probe(entry: dict) -> dict:
     result = {"id": entry["id"], "url": url}
     try:
         request = urllib.request.Request(
-            url, headers={"User-Agent": "CiteNexus-release-research/0.2"}
+            url, headers={"User-Agent": "PanCite-release-research/0.2"}
         )
         with urllib.request.urlopen(request, timeout=12) as response:
             result.update(status=response.status, final_url=response.url)

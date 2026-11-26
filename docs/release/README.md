@@ -1,4 +1,4 @@
-# CiteNexus 0.2.0 release and distribution
+# PanCite release and distribution
 
 **CiteNexus 0.2.0 was published on 2026-09-17 to PyPI, GitHub Releases and the official MCP
 Registry.** See the [publication record](publication-0.2.0.md) for URLs, source identity,
@@ -19,11 +19,11 @@ the exact scope of the remaining qualifications.
 
 ## Position and initial audience
 
-CiteNexus is the source-backed research service for an assistant that already knows how to
-write. Its immediate audience is researchers using MCP-enabled assistants and WTF-P, plus
+PanCite is the source-backed research service for an assistant that already knows how to
+write. Its immediate audience is researchers using MCP-enabled assistants and PanWrite, plus
 teams that need the same evidence record across public and institutionally licensed sources.
 
-Lead with a concrete workflow: **discover → resolve → verify → export → write with WTF-P**.
+Lead with a concrete workflow: **discover → resolve → verify → export → write with PanWrite**.
 The first search should work without an account. Optional vendor keys extend coverage; they
 are not the entrance requirement. Keep pricing statements at the correct boundary: the
 software is licensed under Apache-2.0, default APIs need no key, and upstream quotas or licenses still apply.
@@ -39,12 +39,12 @@ under `release/` retain evidence URLs, observed redirects and unresolved eligibi
 | `release/product.json` | Canonical product name, descriptions, keywords, namespace and release authorization |
 | `server.json` | Official MCP Registry metadata for the PyPI 0.2.0 artifact |
 | README `mcp-name` marker | PyPI package ownership evidence for `io.github.PanStudio/pancite` |
-| `packaging/cite-nexus/` | Portable Agent Plugins 1.0 plus Codex/Claude compatibility manifests; local testing only |
-| `assets/cite-nexus.svg` and `cite-nexus-400.png` | Vector source and 400×400 listing icon |
+| `packaging/pancite/` | Portable Agent Plugins 1.0 plus Codex/Claude compatibility manifests; local testing only |
+| `assets/pancite.svg` and `pancite-400.png` | Vector source and 400×400 listing icon |
 | `assets/social-card.svg` and `social-card.png` | Editable source and 1200×630 promotional image |
 | `llms-install.md` | Pinned package installation steps for agents and Cline review |
-| `docs/wtf-p.md` | Companion setup, workflow boundaries and removal instructions |
-| `scripts/check_wtfp.py` | Generated WTF-P → companion → actual MCP stdio → fixture provider verification |
+| `docs/panwrite.md` | Companion setup, workflow boundaries and removal instructions |
+| `scripts/check_panwrite.py` | Generated PanWrite → companion → actual MCP stdio → fixture provider verification |
 | `release/schemas/` | Pinned upstream schemas for offline validation, with attribution |
 
 The registry schema version is **2025-12-11** as used by the current registry quickstart.
@@ -57,16 +57,16 @@ the other. All generated versions derive from `pyproject.toml`.
 uv sync --locked
 uv run ruff check src tests scripts
 uv run ruff format --check src tests scripts
-uv run mypy src/cite_nexus_mcp
+uv run mypy src/pancite
 uv run python scripts/prepare_release.py --check
 uv run python scripts/marketplaces.py --check
 uv run pytest -q
 uv build
-uv run cite-nexus-wtfp --check
-uv run python scripts/check_wtfp.py --wtfp-root ../wtf-p
+uv run pancite-panwrite --check
+uv run python scripts/check_panwrite.py --panwrite-root ../panwrite
 ```
 
-In WTF-P, regenerate from canonical sources, use its documented local commit/reseal workflow,
+In PanWrite, regenerate from canonical sources, use its documented local commit/reseal workflow,
 and run `npm run test:all`. Never hand-edit generated bundles or bypass the provenance checks.
 The paired integration remains unreleased even if local source commits exist.
 
@@ -112,7 +112,7 @@ offline suite. Paid provider entitlement checks require configured accounts and 
    Glama's claim/import route. Follow Docker and Smithery only after their packaging gates pass.
 3. Verify each public listing and test the installation instructions it renders. Record URLs,
    submission dates and moderation outcomes in the tracker. Do not duplicate syndicated routes.
-4. Announce the reproducible free-source demo and the paired WTF-P workflow. Use observed
+4. Announce the reproducible free-source demo and the paired PanWrite workflow. Use observed
    evidence and disclosed limits, not invented benchmarks, adoption numbers or guarantees.
 5. Expand client packaging and hosted/institutional offerings in response to tested demand.
 

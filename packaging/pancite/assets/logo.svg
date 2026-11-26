@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img" aria-label="CiteNexus: citations connected to their sources">
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" role="img" aria-label="PanCite: citations connected to their sources">
   <rect width="400" height="400" rx="80" fill="#F4F1E9"/>
   <path d="M132 102H98v196h34M268 102h34v196h-34" fill="none" stroke="#145C53" stroke-width="18" stroke-linecap="square"/>
   <path d="M160 140l82 60-82 60M160 140v120" fill="none" stroke="#145C53" stroke-width="8"/>

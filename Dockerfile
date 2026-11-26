@@ -5,6 +5,6 @@ COPY pyproject.toml uv.lock README.md LICENSE ./
 COPY src ./src
 RUN uv sync --locked --no-dev
 ENV PATH="/app/.venv/bin:$PATH"
-RUN useradd --create-home --uid 10001 citenexus
-USER citenexus
-ENTRYPOINT ["cite-nexus-mcp"]
+RUN useradd --create-home --uid 10001 pancite
+USER pancite
+ENTRYPOINT ["pancite"]
