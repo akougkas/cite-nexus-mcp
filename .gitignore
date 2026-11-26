@@ -57,3 +57,4 @@ CLAUDE.md
 htmlcov/
 .env.*
 !.env.example
+.gemini/settings.json
