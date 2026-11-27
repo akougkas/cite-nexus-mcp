@@ -4,14 +4,17 @@ import os
 import socket
 import subprocess
 import sys
+from typing import cast
 
 import httpx2 as httpx
 import jsonschema
 import pytest
 from mcp import Client, StdioServerParameters
+from mcp.types import PromptReference
 
 from pancite.config import Settings
 from pancite.http import HTTP
+from pancite.providers import registry
 from pancite.server import create_server
 from pancite.service import ResearchService
 
@@ -60,6 +63,51 @@ async def test_protocol_schemas_resources_prompts_and_errors(mode, records):
                 "literature-review", {"topic": "Reproducible research"}
             )
             assert "Reproducible research" in prompt.messages[0].content.text
+
+
+@pytest.mark.parametrize("mode", ["auto", "legacy"])
+async def test_tools_resources_and_prompts_describe_themselves(mode):
+    async with Client(create_server(Settings()), mode=mode, read_timeout_seconds=5) as client:
+        capabilities = client.server_capabilities
+        assert not capabilities.tools.list_changed
+        assert not capabilities.prompts.list_changed
+        assert not capabilities.resources.list_changed
+        assert not capabilities.resources.subscribe
+        assert [i.mime_type for i in client.server_info.icons] == ["image/svg+xml", "image/png"]
+        provider_ids = list(registry(cast(HTTP, None), Settings()))
+        for tool in (await client.list_tools()).tools:
+            assert tool.title and tool.annotations.title == tool.title, tool.name
+            assert all(icon.src.startswith("data:image/") for icon in tool.icons)
+            properties = tool.input_schema.get("properties", {})
+            for name, schema in properties.items():
+                assert schema.get("description"), f"{tool.name}.{name}"
+            if "providers" in properties:
+                array = properties["providers"]["anyOf"][0]
+                assert array["items"]["enum"] == provider_ids
+                assert (array["minItems"], array["maxItems"]) == (1, len(provider_ids))
+            for one, other in [("identifier", "scholar_id"), ("citation", "identifier")]:
+                if one in properties and other in properties:
+                    for name in (one, other):
+                        assert "exactly one of" in properties[name]["description"]
+                    assert "oneOf" not in tool.input_schema
+        graph = next(t for t in (await client.list_tools()).tools if t.name == "related-papers")
+        assert graph.input_schema["properties"]["provider"]["enum"] == [
+            "semantic_scholar",
+            "europe_pmc",
+            "openalex",
+            "serpapi",
+            "searchapi",
+        ]
+        for resource in (await client.list_resources()).resources:
+            assert resource.title and resource.description, resource.uri
+        for prompt in (await client.list_prompts()).prompts:
+            assert prompt.title
+            assert all(argument.description for argument in prompt.arguments)
+        completed = await client.complete(
+            PromptReference(type="ref/prompt", name="literature-review"),
+            {"name": "scope", "value": "sc"},
+        )
+        assert completed.completion.values == ["scoping"]
 
 
 @pytest.mark.parametrize("mode", ["2026-07-28", "legacy"])
@@ -192,7 +240,11 @@ async def test_unknown_identifier_and_invalid_input_are_readable_tool_errors():
                 assert "search-papers" in text, text
             for name, arguments, expected in [
                 ("resolve-paper", {"identifier": "not an id"}, "Use a DOI"),
-                ("search-papers", {"query": "q", "providers": ["typo"]}, "Unknown provider"),
+                (
+                    "search-papers",
+                    {"query": "q", "providers": ["typo"]},
+                    "Input should be 'crossref'",
+                ),
                 ("enhance-citation", {"bibtex": "invalid"}, "BibTeX"),
             ]:
                 failed = await client.call_tool(name, arguments)

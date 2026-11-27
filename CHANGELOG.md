@@ -6,6 +6,16 @@
   whatever project the MCP client started in, and could silently supply or override provider
   keys. Name a file with `--env-file PATH`, or pass variables through the client's `env` block.
   `--no-env-file` is now the default and stays accepted.
+- Every tool has a title, also set in `annotations.title`, and every parameter a description.
+  `providers` is an enum of the provider IDs with 1–10 items and `related-papers` `provider` an
+  enum of the graph providers, so an unknown ID is rejected before any request. The
+  exactly-one-of arguments say so in both property descriptions.
+- Resources and prompts carry titles; prompt arguments carry descriptions, and
+  `completion/complete` suggests values for the `literature-review` `scope` argument.
+- The server and its tools carry `data:` SVG and PNG icons; `server.json` lists the release's
+  icon files.
+- 2026-07-28 clients no longer see `listChanged` or `resources.subscribe`: PanCite's lists never
+  change and it publishes nothing, so the unused `subscriptions/listen` handler is gone.
 
 ## 0.3.0 — 2026-11-26
 

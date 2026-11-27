@@ -9,6 +9,22 @@
     "source": "github"
   },
   "websiteUrl": "https://github.com/PanStudio/pancite",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/PanStudio/pancite/v0.3.0/assets/pancite.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": [
+        "any"
+      ]
+    },
+    {
+      "src": "https://raw.githubusercontent.com/PanStudio/pancite/v0.3.0/assets/pancite-400.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "400x400"
+      ]
+    }
+  ],
   "packages": [
     {
       "registryType": "pypi",

@@ -135,6 +135,11 @@ def outputs() -> dict[str, str]:
         "WOS_API_KEY": (True, "Key for explicitly selected Web of Science Starter queries"),
         "UNPAYWALL_EMAIL": (False, "Optional email for Unpaywall open-access enrichment"),
     }
+    # Registry icons must be HTTPS URLs; the release tag pins them to this version's assets.
+    raw = (
+        product["repository"].replace("https://github.com/", "https://raw.githubusercontent.com/")
+        + f"/v{version}"
+    )
     files = {
         "server.json": {
             "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
@@ -144,6 +149,18 @@ def outputs() -> dict[str, str]:
             "version": version,
             "repository": {"url": product["repository"], "source": "github"},
             "websiteUrl": product["repository"],
+            "icons": [
+                {
+                    "src": f"{raw}/assets/pancite.svg",
+                    "mimeType": "image/svg+xml",
+                    "sizes": ["any"],
+                },
+                {
+                    "src": f"{raw}/assets/pancite-400.png",
+                    "mimeType": "image/png",
+                    "sizes": ["400x400"],
+                },
+            ],
             "packages": [
                 {
                     "registryType": "pypi",
