@@ -16,6 +16,10 @@
   icon files.
 - 2026-07-28 clients no longer see `listChanged` or `resources.subscribe`: PanCite's lists never
   change and it publishes nothing, so the unused `subscriptions/listen` handler is gone.
+- Skills over MCP (`io.modelcontextprotocol/skills`): `skills/list` and `skills/get` serve
+  `evidence-policy`, `research-workflows`, `literature-review` and `bibliography-audit`, with
+  each `SKILL.md` readable at `skill://pancite/<name>/SKILL.md` and listed with its SHA-256
+  digest and byte size. Clients on earlier protocol versions see the files as plain resources.
 
 ## 0.3.0 — 2026-11-26
 

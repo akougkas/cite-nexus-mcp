@@ -1,16 +1,19 @@
 import asyncio
+import hashlib
 import json
 import os
 import socket
 import subprocess
 import sys
-from typing import cast
+from typing import Any, cast
 
 import httpx2 as httpx
 import jsonschema
 import pytest
-from mcp import Client, StdioServerParameters
+from mcp import Client, StdioServerParameters, types
+from mcp.shared.exceptions import MCPError
 from mcp.types import PromptReference
+from pydantic import TypeAdapter
 
 from pancite.config import Settings
 from pancite.http import HTTP
@@ -52,7 +55,7 @@ async def test_protocol_schemas_resources_prompts_and_errors(mode, records):
                 failed = await client.call_tool(name, arguments)
                 assert failed.is_error, name
             resources = await client.list_resources()
-            assert len(resources.resources) == 3
+            assert len(resources.resources) == 7
             methodology = await client.read_resource("pancite://methodology")
             assert "untrusted" in methodology.contents[0].text
             providers = await client.read_resource("pancite://providers")
@@ -219,6 +222,56 @@ def test_cli_reads_only_an_explicitly_named_env_file(tmp_path):
     assert not serpapi_available()
     assert not serpapi_available("--no-env-file")
     assert serpapi_available("--env-file", str(tmp_path / ".env"))
+
+
+def _frontmatter(text: str) -> dict[str, str]:
+    head = text.split("---\n")[1]
+    pairs = (line.split(": ", 1) for line in head.splitlines())
+    return {key: json.loads(value) if value.startswith('"') else value for key, value in pairs}
+
+
+async def _request(client: Client, method: str, params: dict[str, Any]) -> dict[str, Any]:
+    request = types.Request[dict[str, Any], str](method=method, params=params)
+    return await client.session.send_request(request, TypeAdapter(dict[str, Any]))
+
+
+async def test_skills_manifests_match_the_files_resources_read_returns():
+    async with Client(create_server(Settings()), mode="auto", read_timeout_seconds=5) as client:
+        capabilities = client.server_capabilities
+        assert capabilities.extensions["io.modelcontextprotocol/skills"] == {}
+        assert capabilities.resources is not None
+        listing = await _request(client, "skills/list", {})
+        assert (listing["ttlMs"], listing["cacheScope"]) == (3600000, "public")
+        names = []
+        for skill in listing["skills"]:
+            name = skill["frontmatter"]["name"]
+            names.append(name)
+            assert skill["uri"] == f"skill://pancite/{name}/SKILL.md"
+            assert [r["uri"] for r in skill["resources"]] == [skill["uri"]]
+            for entry in skill["resources"]:
+                read = await client.read_resource(entry["uri"])
+                data = read.contents[0].text.encode()
+                assert entry["size"] == len(data)
+                assert entry["digest"] == "sha256:" + hashlib.sha256(data).hexdigest()
+                assert read.contents[0].mime_type == "text/markdown"
+                assert _frontmatter(read.contents[0].text) == skill["frontmatter"]
+            fetched = await _request(client, "skills/get", {"uri": skill["uri"]})
+            assert fetched["skill"] == skill
+        assert names == [
+            "evidence-policy",
+            "research-workflows",
+            "literature-review",
+            "bibliography-audit",
+        ]
+        with pytest.raises(MCPError) as unknown:
+            await _request(client, "skills/get", {"uri": "skill://pancite/missing/SKILL.md"})
+        assert unknown.value.error.code == -32602
+    async with Client(create_server(Settings()), mode="legacy", read_timeout_seconds=5) as client:
+        with pytest.raises(MCPError) as legacy:
+            await _request(client, "skills/list", {})
+        assert legacy.value.error.code == -32601
+        uris = {str(r.uri) for r in (await client.list_resources()).resources}
+        assert "skill://pancite/literature-review/SKILL.md" in uris
 
 
 async def test_unknown_identifier_and_invalid_input_are_readable_tool_errors():

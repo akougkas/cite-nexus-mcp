@@ -28,8 +28,8 @@ client plugin qualification are tracked independently.
   incomplete-author warnings and provider-specific citation counts.
 - **Deterministic export:** BibTeX, RIS and CSL-JSON from retrieved metadata. No model is required.
 - **Current MCP:** Python SDK 2.2, the **2026-07-28** specification, structured tool results,
-  resources, prompts, progress, stdio and Streamable HTTP. Earlier clients remain supported by
-  the SDK's legacy protocol path.
+  resources, prompts, skills, progress, stdio and Streamable HTTP. Earlier clients remain
+  supported by the SDK's legacy protocol path.
 
 ## Quick start
 
@@ -196,7 +196,11 @@ retains evidence and disagreements. Native identifiers route to their correspond
 A title search always returns candidates; it never silently declares the first result a match.
 
 Read the MCP resources `pancite://methodology`, `pancite://providers` and
-`pancite://workflows` for machine-accessible guidance.
+`pancite://workflows` for machine-accessible guidance. Clients that support the
+`io.modelcontextprotocol/skills` extension also get four skills through `skills/list`:
+`evidence-policy`, `research-workflows`, `literature-review` and `bibliography-audit`. Each
+`SKILL.md` is readable as a `skill://pancite/<name>/SKILL.md` resource, and the listing carries
+its SHA-256 digest and size.
 
 ## What “verified” means
 
