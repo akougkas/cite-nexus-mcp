@@ -59,10 +59,10 @@ deliverables. Each has different lifecycle, authentication and support requireme
 2. **Stronger bibliography reconciliation.** Compare complete author lists, venue, DOI version and
    publication dates; report proposed corrections with source-level evidence. Add round-trip fixtures
    from real reference managers and a CSL rendering layer with pinned styles if demand warrants it.
-3. **Durable research batches.** Adopt the official MCP Tasks extension once a supported implementation
-   is available. Require persistent task storage, bounded quotas, ownership checks, TTL cleanup,
-   cooperative cancellation, reconnect tests and explicit behavior for provider charges on retries.
-   A process-local task dictionary is not sufficient for this promise.
+3. **Durable research batches.** PanCite serves the official MCP Tasks extension with tasks held in
+   server memory, bounded in number, expired after an hour and cancelled cooperatively. Durable batches
+   still require persistent task storage, ownership checks, reconnect tests and explicit behavior for
+   provider charges on retries. A process-local task dictionary is not sufficient for that promise.
 4. **Local reference-manager integration.** Start with explicit BibTeX/RIS/CSL import/export and then
    optional Zotero integration. Preserve library provenance and support idempotent updates and
    conflict review before adding automatic synchronization.

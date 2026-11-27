@@ -6,7 +6,7 @@ Use `scripts/smoke_public.py` separately for explicit public API checks.
 
 ## Architecture
 
-- `config.py` reads explicit settings; only the CLI loads `.env`.
+- `config.py` reads explicit settings; only the CLI loads a `.env`, and only one named with `--env-file`.
 - `http.py` owns request limits, retries, pacing, response-size bounds, caching and sanitized failures.
 - `providers/` contains source-specific endpoints and normalization.
 - `models.py` defines public records and structured tool outputs.

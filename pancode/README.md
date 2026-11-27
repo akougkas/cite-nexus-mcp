@@ -32,7 +32,8 @@ pancode mcp trust pancite --surface
 `mcp.json` launches `uvx --from pancite==0.3.0 pancite --no-env-file`. The
 exact version pins uv's input, not the bytes PyPI serves for it. The first launch needs PyPI
 to install the package into uv's cache; later launches reuse that cache. `uvx` must be on
-`PATH`. `--no-env-file` keeps the server from reading a `.env` file in the pack directory.
+`PATH`. The server reads only its process environment and never a `.env` file in the
+pack directory.
 
 ## Action classes
 

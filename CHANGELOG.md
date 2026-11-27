@@ -1,5 +1,41 @@
 # Changelog
 
+## Unreleased
+
+- The CLI no longer reads `./.env` from the directory it is launched in. A `.env` there belongs to
+  whatever project the MCP client started in, and could silently supply or override provider
+  keys. Name a file with `--env-file PATH`, or pass variables through the client's `env` block.
+  `--no-env-file` is now the default and stays accepted.
+- Every tool has a title, also set in `annotations.title`, and every parameter a description.
+  `providers` is an enum of the provider IDs with 1–10 items and `related-papers` `provider` an
+  enum of the graph providers, so an unknown ID is rejected before any request. The
+  exactly-one-of arguments say so in both property descriptions.
+- Resources and prompts carry titles; prompt arguments carry descriptions, and
+  `completion/complete` suggests values for the `literature-review` `scope` argument.
+- The server and its tools carry `data:` SVG and PNG icons; `server.json` lists the release's
+  icon files.
+- 2026-07-28 clients no longer see `listChanged` or `resources.subscribe`: PanCite's lists never
+  change and it publishes nothing, so the unused `subscriptions/listen` handler is gone.
+- Skills over MCP (`io.modelcontextprotocol/skills`): `skills/list` and `skills/get` serve
+  `evidence-policy`, `research-workflows`, `literature-review` and `bibliography-audit`, with
+  each `SKILL.md` readable at `skill://pancite/<name>/SKILL.md` and listed with its SHA-256
+  digest and byte size. Clients on earlier protocol versions see the files as plain resources.
+- Experimental file arguments (`io.modelcontextprotocol/files` draft): `verify-citation` accepts a
+  `file` holding one BibTeX entry, RIS record, CSL-JSON item or identifier, and
+  `enhance-citation` a BibTeX file, sent inline as base64 up to 100,000 bytes. The server
+  advertises `maxInlineBytes` and no upload. Type, size and any SHA-256 digest are checked before
+  the tool runs, and a file without `data` is refused with a message to send it inline. The
+  optional `file` argument is listed in the shared public `tools/list` response alongside the
+  existing string arguments.
+- Tasks (`io.modelcontextprotocol/tasks`): for 2026-07-28 requests that declare the extension,
+  `batch-citations` and `search-papers` across more than one provider return a task.
+  `tasks/get` reports its status and, once completed, the tool result; `tasks/cancel` stops the
+  work; `tasks/update` is acknowledged. Unknown or expired task IDs are invalid params. Task runs
+  have no operation time budget and send no progress notifications. Tasks are kept in memory for
+  an hour, at most 64 at once, and are lost on restart.
+- Ordinary 2026-07-28 results carry the server identity without its icons; `server/discover` and
+  `initialize` still carry them.
+
 ## 0.3.0 — 2026-11-26
 
 CiteNexus is now PanCite, published by PanStudio. This release renames every identifier and
