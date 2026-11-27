@@ -349,6 +349,18 @@ async def test_file_arguments_are_listed_publicly_and_checked_before_use(records
                 "verify-citation",
                 {"citation": "10.1234/example", "file": _file(entry, "refs.bib", "text/plain")},
             )
+            secret = base64.b64encode(b"private-file-bytes").decode()
+            missing_mime = await client.call_tool(
+                "enhance-citation",
+                {"file": {"id": "f1", "size": 18, "data": secret}},
+            )
+            unknown_with_file = await client.call_tool(
+                "enhance-citation",
+                {
+                    "file": _file(b"private-file-bytes", "refs.bib", "text/plain"),
+                    "unexpected": True,
+                },
+            )
     assert [t.model_dump() for t in plain.values()] == [t.model_dump() for t in tools.values()]
     for name in ("verify-citation", "enhance-citation"):
         schema = tools[name].input_schema["properties"]["file"]
@@ -387,6 +399,8 @@ async def test_file_arguments_are_listed_publicly_and_checked_before_use(records
         assert expected in message
     assert len(requests) == before
     assert both.is_error
+    assert missing_mime.is_error and secret not in missing_mime.content[0].text
+    assert unknown_with_file.is_error and secret not in unknown_with_file.content[0].text
 
 
 class _TaskCreated(Result):

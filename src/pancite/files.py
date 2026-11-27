@@ -40,13 +40,13 @@ class FileRejected(ValueError):
 
 
 class FileDigest(BaseModel):
-    model_config = ConfigDict(extra="ignore")
+    model_config = ConfigDict(extra="ignore", hide_input_in_errors=True)
     algorithm: Literal["sha-256"]
     value: str = Field(description="SHA-256 of the file bytes, base64url without padding.")
 
 
 class FileInput(BaseModel):
-    model_config = ConfigDict(extra="ignore", populate_by_name=True)
+    model_config = ConfigDict(extra="ignore", populate_by_name=True, hide_input_in_errors=True)
     id: str = Field(min_length=1, max_length=128)
     name: str | None = None
     mime_type: str = Field(alias="mimeType")

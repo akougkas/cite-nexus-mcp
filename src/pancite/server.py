@@ -334,7 +334,7 @@ def _strict(tool: Tool) -> None:
     accepted = [field.alias or name for name, field in base.model_fields.items()]
 
     class Strict(base):  # type: ignore[misc,valid-type]
-        model_config = ConfigDict(extra="forbid", title=base.__name__)
+        model_config = ConfigDict(extra="forbid", title=base.__name__, hide_input_in_errors=True)
 
         @model_validator(mode="before")
         @classmethod
