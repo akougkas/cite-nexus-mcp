@@ -65,15 +65,18 @@ real stdio and HTTP transports.
 PanCite declares read-only tools, input and output schemas, stable tool ordering, private
 resource-content cache hints, two prompts, and three resources. Tool exceptions become proper
 MCP tool errors. Batch work reports progress and propagates cancellation. Clients that support the
-`io.modelcontextprotocol/skills` extension also receive four skills. Inline file arguments on
+`io.modelcontextprotocol/skills` extension also receive four skills, and clients that declare
+`io.modelcontextprotocol/tasks` receive tasks to poll from batch citation exports and
+multi-provider searches. Inline file arguments on
 `verify-citation` and `enhance-citation` follow the experimental `io.modelcontextprotocol/files`
 draft and are listed only to clients that declare it.
 
 Sampling, Roots and Logging are deprecated in the new specification; new citation workflows do
 not depend on them. Logs go to stderr. The protocol's Tasks facility moved to the
 [official Tasks extension](https://github.com/modelcontextprotocol/ext-tasks), which SDK 2.2
-[does not yet implement](https://py.sdk.modelcontextprotocol.io/whats-new/). PanCite therefore
-does not advertise Tasks, Apps, background jobs or durable session state.
+[does not yet implement](https://py.sdk.modelcontextprotocol.io/whats-new/). PanCite serves it
+itself with tasks held in server memory; it does not offer Apps, durable background jobs or
+durable session state.
 
 ## Python API
 

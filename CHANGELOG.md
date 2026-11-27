@@ -26,6 +26,14 @@
   advertises `maxInlineBytes` and no upload. Type, size and any SHA-256 digest are checked before
   the tool runs, and a file without `data` is refused with a message to send it inline. Clients
   that do not declare the extension are listed the tools without the `file` argument.
+- Tasks (`io.modelcontextprotocol/tasks`): for 2026-07-28 requests that declare the extension,
+  `batch-citations` and `search-papers` across more than one provider return a task.
+  `tasks/get` reports its status and, once completed, the tool result; `tasks/cancel` stops the
+  work; `tasks/update` is acknowledged. Unknown or expired task IDs are invalid params. Task runs
+  have no operation time budget and send no progress notifications. Tasks are kept in memory for
+  an hour, at most 64 at once, and are lost on restart.
+- Ordinary 2026-07-28 results carry the server identity without its icons; `server/discover` and
+  `initialize` still carry them.
 
 ## 0.3.0 — 2026-11-26
 

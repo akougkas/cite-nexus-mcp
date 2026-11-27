@@ -3,6 +3,7 @@
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
+from contextvars import ContextVar
 from difflib import SequenceMatcher
 from functools import partial
 from typing import Any, Literal
@@ -192,6 +193,11 @@ def deduplicate(papers: list[Paper]) -> list[Paper]:
     return merged
 
 
+# Set while a call runs as an MCP task: the work has no caller waiting on it, so the per-operation
+# budget is lifted. Each HTTP request keeps its own timeout, and the task's TTL still bounds it.
+task_run: ContextVar[bool] = ContextVar("pancite_task_run", default=False)
+
+
 class ResearchService:
     def __init__(self, settings: Settings | None = None, http: HTTP | None = None):
         self.settings = settings or Settings.from_env()
@@ -213,6 +219,9 @@ class ResearchService:
             policy="Defaults use public APIs without keys. Commercial and metered APIs run only when selected explicitly or named in PANCITE_DEFAULT_PROVIDERS. 'available' means credentials are configured, not that live access was tested. Defaults favor publisher and biomedical metadata; for computer-science queries select arxiv and semantic_scholar, adding crossref for published versions.",
         )
 
+    def operation_budget(self) -> float | None:
+        return None if task_run.get() else self.settings.operation_timeout
+
     def select(self, names: list[str] | None) -> list[Provider]:
         selected = list(
             dict.fromkeys(names if names is not None else self.settings.default_providers)
@@ -229,7 +238,7 @@ class ResearchService:
     ) -> Any | ProviderIssue:
         try:
             provider.require()
-            async with asyncio.timeout(self.settings.operation_timeout):
+            async with asyncio.timeout(self.operation_budget()):
                 return await operation()
         except ProviderError as exc:
             return exc.issue
@@ -361,7 +370,7 @@ class ResearchService:
 
     async def resolve(self, text: str, providers: list[str] | None = None) -> Resolution:
         try:
-            async with asyncio.timeout(self.settings.operation_timeout):
+            async with asyncio.timeout(self.operation_budget()):
                 return await self._resolve(text, providers)
         except TimeoutError:
             raise ProviderError(
@@ -604,7 +613,7 @@ class ResearchService:
         doi = resolved.paper.identifiers.get("doi")
         if doi and self.settings.unpaywall_email:
             try:
-                async with asyncio.timeout(self.settings.operation_timeout):
+                async with asyncio.timeout(self.operation_budget()):
                     data = await self.http.json(
                         "unpaywall",
                         f"https://api.unpaywall.org/v2/{quote(doi, safe='')}",

@@ -28,7 +28,7 @@ client plugin qualification are tracked independently.
   incomplete-author warnings and provider-specific citation counts.
 - **Deterministic export:** BibTeX, RIS and CSL-JSON from retrieved metadata. No model is required.
 - **Current MCP:** Python SDK 2.2, the **2026-07-28** specification, structured tool results,
-  resources, prompts, skills, experimental file arguments, progress, stdio and Streamable HTTP.
+  resources, prompts, skills, tasks, experimental file arguments, progress, stdio and Streamable HTTP.
   Earlier clients remain supported by the SDK's legacy protocol path.
 
 ## Quick start
@@ -287,9 +287,13 @@ uv run python scripts/smoke_public.py
 It ignores account credentials and only contacts Crossref, DataCite, Europe PMC, arXiv and
 anonymous Semantic Scholar. Rate limits and network failures are reported as outcomes.
 
-The official MCP Tasks extension is not advertised. SDK 2.2 does not implement it yet.
-`batch-citations` is a bounded synchronous workflow with progress and cancellation, not a durable
-job queue. [The roadmap](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/product-direction.md) describes the criteria for adding persistent
+Clients that declare the official MCP Tasks extension (`io.modelcontextprotocol/tasks`) get a task
+from `batch-citations` and from `search-papers` across more than one provider, then poll
+`tasks/get` and may stop the work with `tasks/cancel`. A task run has no
+`PANCITE_OPERATION_TIMEOUT` budget and sends no progress notifications. Tasks are kept in server
+memory: they expire an hour after creation, at most 64 exist at once (further calls run
+directly), and a restart loses them. Any client holding a task ID can read or cancel that task.
+Other clients get the result directly, with progress and cancellation. [The roadmap](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/product-direction.md) describes the criteria for adding durable
 tasks, local libraries and further licensed providers.
 
 The [launch kit](https://github.com/PanStudio/pancite/blob/v0.3.0/docs/release/launch-kit.md) includes positioning, listing copy, a demo script,

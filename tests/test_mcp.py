@@ -6,15 +6,16 @@ import os
 import socket
 import subprocess
 import sys
-from typing import Any, cast
+from typing import Any, Literal, cast
+from unittest.mock import ANY
 
 import httpx2 as httpx
 import jsonschema
 import pytest
 from mcp import Client, StdioServerParameters, types
-from mcp.client.extension import advertise
+from mcp.client.extension import ClientExtension, ResultClaim, advertise
 from mcp.shared.exceptions import MCPError
-from mcp.types import PromptReference
+from mcp.types import PromptReference, Result
 from pydantic import TypeAdapter
 
 from pancite.config import Settings
@@ -79,6 +80,9 @@ async def test_tools_resources_and_prompts_describe_themselves(mode):
         assert not capabilities.resources.list_changed
         assert not capabilities.resources.subscribe
         assert [i.mime_type for i in client.server_info.icons] == ["image/svg+xml", "image/png"]
+        if mode == "auto":
+            stamp = (await client.call_tool("list-providers", {})).meta[types.SERVER_INFO_META_KEY]
+            assert stamp["name"] == "pancite" and "icons" not in stamp
         provider_ids = list(registry(cast(HTTP, None), Settings()))
         for tool in (await client.list_tools()).tools:
             assert tool.title and tool.annotations.title == tool.title, tool.name
@@ -383,6 +387,125 @@ async def test_file_arguments_are_listed_to_declaring_clients_and_checked_before
         assert expected in message
     assert len(requests) == before
     assert both.is_error
+
+
+class _TaskCreated(Result):
+    result_type: Literal["task"] = "task"
+    task_id: str
+    status: str
+    ttl_ms: int
+    poll_interval_ms: int
+
+
+class _Tasks(ClientExtension):
+    identifier = "io.modelcontextprotocol/tasks"
+
+    def __init__(self) -> None:
+        self.created: list[_TaskCreated] = []
+        self.final: list[dict[str, Any]] = []
+
+    def claims(self) -> list[ResultClaim[Any]]:
+        return [ResultClaim(result_type="task", model=_TaskCreated, resolve=self._resolve)]
+
+    async def _resolve(self, created: _TaskCreated, ctx: Any) -> types.CallToolResult:
+        self.created.append(created)
+        while True:
+            request = types.Request[dict[str, Any], str](
+                method="tasks/get", params={"taskId": created.task_id}
+            )
+            task = await ctx.session.send_request(request, TypeAdapter(dict[str, Any]))
+            if task["status"] != "working":
+                self.final.append(task)
+                if task["status"] == "completed":
+                    return types.CallToolResult.model_validate(task["result"])
+                text = types.TextContent(type="text", text=task["status"])
+                return types.CallToolResult(content=[text], is_error=True)
+            await asyncio.sleep(0.02)
+
+
+async def test_batches_run_as_tasks_for_declaring_clients_and_stop_on_cancel(records):
+    delay = {"seconds": 0.0}
+    inflight: list[str] = []
+    started = asyncio.Event()
+
+    async def handler(request):
+        inflight.append(str(request.url))
+        started.set()
+        try:
+            await asyncio.sleep(delay["seconds"])
+        finally:
+            inflight.remove(str(request.url))
+        return httpx.Response(200, json={"message": records["crossref"]})
+
+    batch = {"identifiers": ["10.1234/example"], "format": "bibtex"}
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+        settings = Settings(operation_timeout=1, cache_ttl=0)
+        service = ResearchService(settings, HTTP(settings, http_client))
+        tasks = _Tasks()
+        async with Client(
+            create_server(service=service), read_timeout_seconds=5, extensions=[tasks]
+        ) as client:
+            assert client.server_capabilities.extensions["io.modelcontextprotocol/tasks"] == {}
+            result = await client.call_tool("batch-citations", batch)
+            created = tasks.created[0]
+            assert (created.status, created.ttl_ms, created.poll_interval_ms) == (
+                "working",
+                3600000,
+                1000,
+            )
+            assert tasks.final[0]["status"] == "completed"
+            assert result.structured_content["items"][0]["citation"]["format"] == "bibtex"
+
+            await client.call_tool("get-citation", {"identifier": "10.1234/example"})
+            assert len(tasks.created) == 1
+
+            failed = await client.call_tool(
+                "batch-citations", {"identifiers": ["10.1234/example"] * 21}
+            )
+            assert failed.is_error and tasks.final[-1]["status"] == "completed"
+
+            delay["seconds"] = 1.2
+            slow = await client.call_tool("batch-citations", batch)
+            assert slow.structured_content["items"][0]["citation"], "a task run has no time budget"
+            timed_out = await client.call_tool("resolve-paper", {"identifier": "10.1234/example"})
+            assert timed_out.is_error and "time budget" in timed_out.content[0].text
+
+            delay["seconds"] = 30
+            started.clear()
+            running = asyncio.create_task(client.call_tool("batch-citations", batch))
+            await started.wait()
+            task_id = tasks.created[-1].task_id
+            assert await _request(client, "tasks/update", {"taskId": task_id, "other": 1}) == {
+                "resultType": "complete",
+                "_meta": ANY,
+            }
+            await _request(client, "tasks/cancel", {"taskId": task_id})
+            cancelled = await asyncio.wait_for(running, 2)
+            assert cancelled.is_error and tasks.final[-1]["status"] == "cancelled"
+            assert not inflight
+            for method in ("tasks/get", "tasks/update", "tasks/cancel"):
+                with pytest.raises(MCPError) as unknown:
+                    await _request(client, method, {"taskId": "unknown"})
+                assert unknown.value.error.code == -32602
+
+        delay["seconds"] = 0
+        async with Client(create_server(service=service), read_timeout_seconds=5) as client:
+            assert not (await client.call_tool("batch-citations", batch)).is_error
+            with pytest.raises(MCPError) as undeclared:
+                await _request(client, "tasks/get", {"taskId": task_id})
+            assert undeclared.value.error.code == -32021
+        legacy = _Tasks()
+        async with Client(
+            create_server(service=service),
+            mode="legacy",
+            read_timeout_seconds=5,
+            extensions=[legacy],
+        ) as client:
+            assert not (await client.call_tool("batch-citations", batch)).is_error
+            assert not legacy.created
+            with pytest.raises(MCPError) as missing:
+                await _request(client, "tasks/get", {"taskId": task_id})
+            assert missing.value.error.code == -32601
 
 
 async def test_unknown_identifier_and_invalid_input_are_readable_tool_errors():
