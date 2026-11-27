@@ -386,8 +386,15 @@ def create_server(
     def runs_as_task(name: str, arguments: Mapping[str, Any]) -> bool:
         if name == "batch-citations":
             return True
-        chosen = arguments.get("providers") or configuration.default_providers
-        return name == "search-papers" and isinstance(chosen, list | tuple) and len(set(chosen)) > 1
+        if name != "search-papers":
+            return False
+        raw = arguments.get("providers")
+        chosen = configuration.default_providers if raw is None else raw
+        return (
+            isinstance(chosen, list | tuple)
+            and all(isinstance(p, str) for p in chosen)
+            and len(set(chosen)) > 1
+        )
 
     tasks = TasksExtension(runs_as_task)
 

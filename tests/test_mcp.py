@@ -473,6 +473,15 @@ async def test_batches_run_as_tasks_for_declaring_clients_and_stop_on_cancel(rec
             await client.call_tool("get-citation", {"identifier": "10.1234/example"})
             assert len(tasks.created) == 1
 
+            bad_providers = await client.call_tool(
+                "search-papers", {"query": "q", "providers": [{"bad": 1}]}
+            )
+            empty_providers = await client.call_tool(
+                "search-papers", {"query": "q", "providers": []}
+            )
+            assert bad_providers.is_error and empty_providers.is_error
+            assert len(tasks.created) == 1
+
             failed = await client.call_tool(
                 "batch-citations", {"identifiers": ["10.1234/example"] * 21}
             )
