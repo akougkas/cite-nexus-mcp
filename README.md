@@ -28,8 +28,8 @@ client plugin qualification are tracked independently.
   incomplete-author warnings and provider-specific citation counts.
 - **Deterministic export:** BibTeX, RIS and CSL-JSON from retrieved metadata. No model is required.
 - **Current MCP:** Python SDK 2.2, the **2026-07-28** specification, structured tool results,
-  resources, prompts, skills, progress, stdio and Streamable HTTP. Earlier clients remain
-  supported by the SDK's legacy protocol path.
+  resources, prompts, skills, experimental file arguments, progress, stdio and Streamable HTTP.
+  Earlier clients remain supported by the SDK's legacy protocol path.
 
 ## Quick start
 
@@ -201,6 +201,13 @@ Read the MCP resources `pancite://methodology`, `pancite://providers` and
 `evidence-policy`, `research-workflows`, `literature-review` and `bibliography-audit`. Each
 `SKILL.md` is readable as a `skill://pancite/<name>/SKILL.md` resource, and the listing carries
 its SHA-256 digest and size.
+
+File arguments are experimental and follow the draft `io.modelcontextprotocol/files` extension.
+Clients that declare it see an optional `file` argument on `verify-citation` (one BibTeX entry,
+RIS record or CSL-JSON item, or text holding an identifier) and `enhance-citation` (BibTeX). Files
+are sent inline as base64 `data`, at most 100,000 bytes each; PanCite has no upload storage. Size
+and any SHA-256 digest are checked before the tool runs. Other clients keep using the `citation`
+and `bibtex` strings.
 
 ## What “verified” means
 

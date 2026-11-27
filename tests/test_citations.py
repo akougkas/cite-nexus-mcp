@@ -3,7 +3,7 @@ import json
 import bibtexparser
 import pytest
 
-from pancite.citations import enhance, format_citation
+from pancite.citations import enhance, format_citation, read_reference
 from pancite.config import Settings
 from pancite.models import Author, Paper
 from pancite.providers import registry
@@ -89,3 +89,19 @@ def test_enhance_preserves_bibliographic_fields():
 def test_invalid_or_duplicate_bibtex_is_rejected(text):
     with pytest.raises(ValueError):
         enhance(text)
+
+
+def test_read_reference_takes_one_record_from_ris_or_csl_json():
+    ris = "TY  - JOUR\nT1  - Deep learning\nY1  - 2015/05/28\nDO  - 10.1038/nature14539\nER  -\n"
+    csl = '{"DOI": "10.1038/nature14539", "title": "Deep learning", "issued": {"date-parts": [["2015"]]}}'
+    expected = ("10.1038/nature14539", "Deep learning", 2015)
+    assert read_reference("ris", ris) == expected
+    assert read_reference("csl-json", f"[{csl}]") == expected
+    assert read_reference("csl-json", '{"title": "Only a title"}') == ("Only a title", None, None)
+    assert read_reference("text", "  10.1038/nature14539\n") == ("10.1038/nature14539", None, None)
+    with pytest.raises(ValueError, match="one RIS record per call; the file has 2"):
+        read_reference("ris", ris + ris)
+    with pytest.raises(ValueError, match="one CSL-JSON item per call"):
+        read_reference("csl-json", f"[{csl}, {csl}]")
+    with pytest.raises(ValueError, match="neither a DOI nor a title"):
+        read_reference("csl-json", '{"type": "book"}')

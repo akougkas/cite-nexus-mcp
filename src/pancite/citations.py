@@ -227,6 +227,51 @@ def parse_bibtex(text: str) -> Any:
     return database
 
 
+def read_reference(format: str, text: str) -> tuple[str, str | None, int | None]:
+    """One reference from a file, as (citation, expected title, expected year) for verification.
+
+    BibTeX and plain text pass through unchanged. An RIS or CSL-JSON file must hold one record;
+    its DOI is the citation when present, else its title, which yields candidates only.
+    """
+    if format in {"bibtex", "text"}:
+        if not text.strip():
+            raise ValueError("The file is empty.")
+        return text.strip(), None, None
+    if format == "ris":
+        records = [line for line in text.splitlines() if re.match(r"TY  -", line)]
+        if len(records) != 1:
+            raise ValueError(f"Verify one RIS record per call; the file has {len(records)}.")
+        tags: dict[str, str] = {}
+        for line in text.splitlines():
+            if found := re.match(r"([A-Z][A-Z0-9])  -(?: (.*))?$", line.rstrip()):
+                tags.setdefault(found[1], (found[2] or "").strip())
+        doi, title = tags.get("DO"), tags.get("TI") or tags.get("T1")
+        dated = re.match(r"\d{4}", tags.get("PY") or tags.get("Y1") or tags.get("DA") or "")
+        year = int(dated[0]) if dated else None
+    elif format == "csl-json":
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError("The file is not valid JSON.") from None
+        items = data if isinstance(data, list) else [data]
+        if len(items) != 1 or not isinstance(items[0], dict):
+            raise ValueError(f"Verify one CSL-JSON item per call; the file has {len(items)}.")
+        item = items[0]
+        doi, title = item.get("DOI"), item.get("title")
+        parts = (item.get("issued") or {}).get("date-parts") or [[None]]
+        first = parts[0][0] if parts and parts[0] else None
+        year = int(first) if isinstance(first, int | str) and str(first).isdigit() else None
+        doi = doi if isinstance(doi, str) else None
+        title = title if isinstance(title, str) else None
+    else:
+        raise ValueError(f"Unsupported file format: {format}.")
+    if doi:
+        return doi, title or None, year
+    if title:
+        return title, None, None
+    raise ValueError("The record has neither a DOI nor a title to verify.")
+
+
 def enhance(text: str, template: str = "default") -> EnhancementResult:
     if template not in {"default", "compact"}:
         raise ValueError(

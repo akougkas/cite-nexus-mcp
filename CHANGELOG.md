@@ -20,6 +20,12 @@
   `evidence-policy`, `research-workflows`, `literature-review` and `bibliography-audit`, with
   each `SKILL.md` readable at `skill://pancite/<name>/SKILL.md` and listed with its SHA-256
   digest and byte size. Clients on earlier protocol versions see the files as plain resources.
+- Experimental file arguments (`io.modelcontextprotocol/files` draft): `verify-citation` accepts a
+  `file` holding one BibTeX entry, RIS record, CSL-JSON item or identifier, and
+  `enhance-citation` a BibTeX file, sent inline as base64 up to 100,000 bytes. The server
+  advertises `maxInlineBytes` and no upload. Type, size and any SHA-256 digest are checked before
+  the tool runs, and a file without `data` is refused with a message to send it inline. Clients
+  that do not declare the extension are listed the tools without the `file` argument.
 
 ## 0.3.0 — 2026-11-26
 

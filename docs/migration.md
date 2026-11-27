@@ -64,7 +64,10 @@ real stdio and HTTP transports.
 
 PanCite declares read-only tools, input and output schemas, stable tool ordering, private
 resource-content cache hints, two prompts, and three resources. Tool exceptions become proper
-MCP tool errors. Batch work reports progress and propagates cancellation.
+MCP tool errors. Batch work reports progress and propagates cancellation. Clients that support the
+`io.modelcontextprotocol/skills` extension also receive four skills. Inline file arguments on
+`verify-citation` and `enhance-citation` follow the experimental `io.modelcontextprotocol/files`
+draft and are listed only to clients that declare it.
 
 Sampling, Roots and Logging are deprecated in the new specification; new citation workflows do
 not depend on them. Logs go to stderr. The protocol's Tasks facility moved to the

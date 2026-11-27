@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import hashlib
 import json
 import os
@@ -11,6 +12,7 @@ import httpx2 as httpx
 import jsonschema
 import pytest
 from mcp import Client, StdioServerParameters, types
+from mcp.client.extension import advertise
 from mcp.shared.exceptions import MCPError
 from mcp.types import PromptReference
 from pydantic import TypeAdapter
@@ -272,6 +274,115 @@ async def test_skills_manifests_match_the_files_resources_read_returns():
         assert legacy.value.error.code == -32601
         uris = {str(r.uri) for r in (await client.list_resources()).resources}
         assert "skill://pancite/literature-review/SKILL.md" in uris
+
+
+def _file(body: bytes, name: str, mime: str, **changes: Any) -> dict[str, Any]:
+    digest = base64.urlsafe_b64encode(hashlib.sha256(body).digest()).rstrip(b"=").decode()
+    file = {
+        "id": "f1",
+        "name": name,
+        "mimeType": mime,
+        "size": len(body),
+        "data": base64.b64encode(body).decode(),
+        "digest": {"algorithm": "sha-256", "value": digest},
+    }
+    return {**file, **changes}
+
+
+async def test_file_arguments_are_listed_to_declaring_clients_and_checked_before_use(records):
+    requests: list[str] = []
+
+    def handler(request):
+        requests.append(str(request.url))
+        return httpx.Response(200, json={"message": records["crossref"]})
+
+    files = [advertise("io.modelcontextprotocol/files")]
+    entry = b"@article{k, title={Reliable Research & Data}, year={2024}, doi={10.1234/example}}\n"
+    ris = b"TY  - JOUR\nTI  - Reliable Research & Data\nPY  - 2024\nDO  - 10.1234/example\nER  -\n"
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http_client:
+        service = ResearchService(Settings(), HTTP(Settings(), http_client))
+        async with Client(create_server(service=service), read_timeout_seconds=5) as client:
+            plain = {t.name: t for t in (await client.list_tools()).tools}
+            inline = await client.call_tool(
+                "enhance-citation", {"file": _file(entry, "refs.bib", "text/plain")}
+            )
+        async with Client(
+            create_server(service=service), read_timeout_seconds=5, extensions=files
+        ) as client:
+            assert client.server_capabilities.extensions["io.modelcontextprotocol/files"] == {
+                "maxInlineBytes": 1048576
+            }
+            tools = {t.name: t for t in (await client.list_tools()).tools}
+            bib = await client.call_tool(
+                "verify-citation", {"file": _file(entry, "refs.bib", "application/x-bibtex")}
+            )
+            from_ris = await client.call_tool(
+                "verify-citation", {"file": _file(ris, "one.ris", "text/plain")}
+            )
+            before = len(requests)
+            rejected = [
+                await client.call_tool("verify-citation", {"file": file})
+                for file in (
+                    _file(entry, "refs.bib", "text/plain", size=3),
+                    _file(
+                        entry,
+                        "refs.bib",
+                        "text/plain",
+                        digest={"algorithm": "sha-256", "value": "AA"},
+                    ),
+                    {
+                        k: v
+                        for k, v in _file(entry, "refs.bib", "text/plain").items()
+                        if k != "data"
+                    },
+                    _file(entry, "refs.bib", "text/plain", data=None),
+                    _file(entry, "refs.bib", "text/plain", data="not base64!"),
+                    _file(entry, "paper.pdf", "application/pdf"),
+                    _file(entry, "refs.bib", "text/plain", size=100_001),
+                )
+            ]
+            both = await client.call_tool(
+                "verify-citation",
+                {"citation": "10.1234/example", "file": _file(entry, "refs.bib", "text/plain")},
+            )
+    for name in ("verify-citation", "enhance-citation"):
+        assert "file" not in plain[name].input_schema["properties"]
+        schema = tools[name].input_schema["properties"]["file"]
+        assert schema["type"] == "object" and "default" not in schema
+        assert schema["required"] == ["id", "mimeType", "size"]
+        assert schema["x-mcp-file"]["maxSize"] == 100_000
+    accept = {
+        name: set(tools[name].input_schema["properties"]["file"]["x-mcp-file"]["accept"])
+        for name in tools
+        if "file" in tools[name].input_schema["properties"]
+    }
+    assert set(accept) == {"verify-citation", "enhance-citation"}
+    assert {".bib", ".ris", ".json", "text/plain"} <= accept["verify-citation"]
+    assert {".bib", "text/plain"} <= accept["enhance-citation"]
+    assert ".ris" not in accept["enhance-citation"]
+    assert not inline.is_error, inline.content
+    assert "title = {Reliable Research" in inline.structured_content["bibtex"]
+    assert bib.structured_content["status"] == "verified", bib.content
+    assert bib.structured_content["match"] == "metadata"
+    assert from_ris.structured_content["match"] == "metadata", from_ris.content
+    messages = [result.content[0].text for result in rejected]
+    assert all(result.is_error for result in rejected), messages
+    for message, expected in zip(
+        messages,
+        [
+            "declares size 3",
+            "sha-256 digest",
+            "send the file inline",
+            "null data",
+            "not valid base64",
+            "not an accepted type",
+            "the limit is 100000",
+        ],
+        strict=True,
+    ):
+        assert expected in message
+    assert len(requests) == before
+    assert both.is_error
 
 
 async def test_unknown_identifier_and_invalid_input_are_readable_tool_errors():
