@@ -203,11 +203,11 @@ Read the MCP resources `pancite://methodology`, `pancite://providers` and
 its SHA-256 digest and size.
 
 File arguments are experimental and follow the draft `io.modelcontextprotocol/files` extension.
-Clients that declare it see an optional `file` argument on `verify-citation` (one BibTeX entry,
-RIS record or CSL-JSON item, or text holding an identifier) and `enhance-citation` (BibTeX). Files
-are sent inline as base64 `data`, at most 100,000 bytes each; PanCite has no upload storage. Size
-and any SHA-256 digest are checked before the tool runs. Other clients keep using the `citation`
-and `bibtex` strings.
+`verify-citation` (one BibTeX entry, RIS record or CSL-JSON item, or text holding an identifier)
+and `enhance-citation` (BibTeX) include an optional `file` argument beside the existing `citation`
+and `bibtex` strings. Files are sent inline as base64 `data`, at most 100,000 bytes each; PanCite
+has no upload storage. Size and any SHA-256 digest are checked before the tool runs. Clients
+without the extension keep using the `citation` and `bibtex` strings.
 
 ## What “verified” means
 

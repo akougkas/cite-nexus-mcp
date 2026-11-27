@@ -24,8 +24,9 @@
   `file` holding one BibTeX entry, RIS record, CSL-JSON item or identifier, and
   `enhance-citation` a BibTeX file, sent inline as base64 up to 100,000 bytes. The server
   advertises `maxInlineBytes` and no upload. Type, size and any SHA-256 digest are checked before
-  the tool runs, and a file without `data` is refused with a message to send it inline. Clients
-  that do not declare the extension are listed the tools without the `file` argument.
+  the tool runs, and a file without `data` is refused with a message to send it inline. The
+  optional `file` argument is listed in the shared public `tools/list` response alongside the
+  existing string arguments.
 - Tasks (`io.modelcontextprotocol/tasks`): for 2026-07-28 requests that declare the extension,
   `batch-citations` and `search-papers` across more than one provider return a task.
   `tasks/get` reports its status and, once completed, the tool result; `tasks/cancel` stops the

@@ -293,7 +293,7 @@ def _file(body: bytes, name: str, mime: str, **changes: Any) -> dict[str, Any]:
     return {**file, **changes}
 
 
-async def test_file_arguments_are_listed_to_declaring_clients_and_checked_before_use(records):
+async def test_file_arguments_are_listed_publicly_and_checked_before_use(records):
     requests: list[str] = []
 
     def handler(request):
@@ -349,8 +349,8 @@ async def test_file_arguments_are_listed_to_declaring_clients_and_checked_before
                 "verify-citation",
                 {"citation": "10.1234/example", "file": _file(entry, "refs.bib", "text/plain")},
             )
+    assert [t.model_dump() for t in plain.values()] == [t.model_dump() for t in tools.values()]
     for name in ("verify-citation", "enhance-citation"):
-        assert "file" not in plain[name].input_schema["properties"]
         schema = tools[name].input_schema["properties"]["file"]
         assert schema["type"] == "object" and "default" not in schema
         assert schema["required"] == ["id", "mimeType", "size"]

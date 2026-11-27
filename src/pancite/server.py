@@ -40,7 +40,6 @@ from .files import (
     FileInput,
     FilesExtension,
     file_schema,
-    list_file_arguments_only_when_declared,
 )
 from .files import read as read_file
 from .http import HTTP, ProviderError
@@ -807,7 +806,6 @@ def create_server(
     # MCPServer registers subscriptions/listen, which makes 2026-07-28 clients see listChanged and
     # resources.subscribe; PanCite's lists never change and nothing is published, so drop it.
     app._lowlevel_server._request_handlers.pop("subscriptions/listen", None)
-    list_file_arguments_only_when_declared(app._lowlevel_server)
     _stamp_icons_on_discover_only(app._lowlevel_server)
     return app
 

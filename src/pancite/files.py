@@ -8,14 +8,10 @@ as a tool error, never as a protocol error, and the bytes are never echoed back.
 
 import base64
 import binascii
-import copy
 import hashlib
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
-from mcp.server.context import ServerRequestContext
 from mcp.server.extension import Extension
-from mcp.server.lowlevel.server import Server
-from mcp.types import ListToolsResult, PaginatedRequestParams
 from pydantic import BaseModel, ConfigDict, Field
 
 FILES_EXTENSION = "io.modelcontextprotocol/files"
@@ -131,51 +127,6 @@ def read(file: FileInput, accept: tuple[str, ...]) -> tuple[str, str]:
     except UnicodeDecodeError:
         raise FileRejected(f"File {label} is not UTF-8 text.") from None
     return matched, text
-
-
-def declared(ctx: ServerRequestContext[Any, Any]) -> bool:
-    capabilities = ctx.session.client_capabilities
-    return bool(
-        capabilities and capabilities.extensions and FILES_EXTENSION in capabilities.extensions
-    )
-
-
-def _without_file_arguments(tool: Any) -> Any:
-    schema = tool.input_schema
-    marked = [key for key, value in schema.get("properties", {}).items() if KEYWORD in value]
-    if not marked:
-        return tool
-    schema = copy.deepcopy(schema)
-    for key in marked:
-        del schema["properties"][key]
-    schema["required"] = [key for key in schema.get("required", []) if key not in marked]
-    if not schema["required"]:
-        del schema["required"]
-    return tool.model_copy(update={"input_schema": schema})
-
-
-def list_file_arguments_only_when_declared(server: Server[Any]) -> None:
-    """List tools without their file arguments for requests that did not declare the extension.
-
-    The draft asks servers to hide x-mcp-file schemas from such clients or offer another way to
-    pass the file. Each tool keeps its string argument, so this variant is the same tool. Inline
-    files sent anyway are still accepted.
-    """
-    entry = server.get_request_handler("tools/list")
-    assert entry is not None
-    listed = entry.handler
-
-    async def handler(
-        ctx: ServerRequestContext[Any, Any], params: PaginatedRequestParams
-    ) -> ListToolsResult:
-        result = cast(ListToolsResult, await listed(ctx, params))
-        if declared(ctx):
-            return result
-        return result.model_copy(
-            update={"tools": [_without_file_arguments(t) for t in result.tools]}
-        )
-
-    server.add_request_handler("tools/list", PaginatedRequestParams, handler)
 
 
 class FilesExtension(Extension):

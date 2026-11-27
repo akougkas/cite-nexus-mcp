@@ -69,7 +69,7 @@ MCP tool errors. Batch work reports progress and propagates cancellation. Client
 `io.modelcontextprotocol/tasks` receive tasks to poll from batch citation exports and
 multi-provider searches. Inline file arguments on
 `verify-citation` and `enhance-citation` follow the experimental `io.modelcontextprotocol/files`
-draft and are listed only to clients that declare it.
+draft and are listed alongside the string arguments in the shared public `tools/list` response.
 
 Sampling, Roots and Logging are deprecated in the new specification; new citation workflows do
 not depend on them. Logs go to stderr. The protocol's Tasks facility moved to the
