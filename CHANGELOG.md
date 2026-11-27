@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- The CLI no longer reads `./.env` from the directory it is launched in. A `.env` there belongs to
+  whatever project the MCP client started in, and could silently supply or override provider
+  keys. Name a file with `--env-file PATH`, or pass variables through the client's `env` block.
+  `--no-env-file` is now the default and stays accepted.
+
 ## 0.3.0 — 2026-11-26
 
 CiteNexus is now PanCite, published by PanStudio. This release renames every identifier and

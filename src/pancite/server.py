@@ -416,10 +416,14 @@ def run() -> None:
     parser.add_argument("--port", type=int, default=8000)
     environment = parser.add_mutually_exclusive_group()
     environment.add_argument(
-        "--env-file", type=Path, help="Explicit .env path (defaults to ./.env if present)"
+        "--env-file",
+        type=Path,
+        help="Load this .env file; without it, only the process environment is read",
     )
     environment.add_argument(
-        "--no-env-file", action="store_true", help="Use process environment only; ignore .env files"
+        "--no-env-file",
+        action="store_true",
+        help="Use the process environment only (the default; kept for existing configs)",
     )
     parser.add_argument(
         "--list-providers",
@@ -431,8 +435,10 @@ def run() -> None:
         parser.error("port must be between 1 and 65535")
     if args.env_file and not args.env_file.is_file():
         parser.error("the specified --env-file does not exist")
-    if not args.no_env_file:
-        load_dotenv(args.env_file or Path.cwd() / ".env", override=False)
+    # A .env in the launch directory belongs to whatever project the client started in, so it is
+    # never read implicitly.
+    if args.env_file:
+        load_dotenv(args.env_file, override=False)
     logging.basicConfig(level=logging.WARNING)
     # HTTP request logging can include provider API keys in query strings.
     logging.getLogger("httpx2").setLevel(logging.WARNING)

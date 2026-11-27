@@ -220,11 +220,12 @@ it does not infer keywords, awards, impact factors or missing authors.
 
 ## Configuration
 
-Copy `.env.example` to `.env` only if you need optional settings. Existing process environment
-variables take precedence. The CLI loads `./.env`, or an explicit `--env-file`; it never searches
-parent directories. Importing the Python package does not read `.env` or call external services.
-Pass `--no-env-file` for clients that manage credentials themselves. The PanWrite companion and
-plugin manifests always use this mode.
+PanCite reads its settings from the process environment. Pass the variables through your MCP
+client's `env` block, or copy `.env.example` to a file and name it with `--env-file PATH`. The CLI
+never reads a `.env` file implicitly, so a `.env` in the directory a client launches from is
+ignored. Existing process environment variables take precedence over the named file. Importing the
+Python package does not read `.env` or call external services. `--no-env-file` is the default
+behaviour; it stays accepted so existing launch configurations keep working.
 
 | Variable | Default | Meaning |
 |---|---|---|

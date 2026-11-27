@@ -149,6 +149,30 @@ def test_cli_provider_listing_never_prints_secret(tmp_path):
     assert next(p for p in data if p["id"] == "searchapi")["available"]
 
 
+def test_cli_reads_only_an_explicitly_named_env_file(tmp_path):
+    (tmp_path / ".env").write_text("SERPAPI_API_KEY=from-the-launch-directory\n")
+    env = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in {"SERPAPI_API_KEY", "SERP_API_KEY", "SERPAPI_KEY"}
+    }
+
+    def serpapi_available(*extra: str) -> bool:
+        result = subprocess.run(
+            [sys.executable, "-m", "pancite", *extra, "--list-providers"],
+            cwd=tmp_path,
+            env=env,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return next(p for p in json.loads(result.stdout) if p["id"] == "serpapi")["available"]
+
+    assert not serpapi_available()
+    assert not serpapi_available("--no-env-file")
+    assert serpapi_available("--env-file", str(tmp_path / ".env"))
+
+
 async def test_unknown_identifier_and_invalid_input_are_readable_tool_errors():
     async with httpx.AsyncClient(
         transport=httpx.MockTransport(lambda _: httpx.Response(404))
