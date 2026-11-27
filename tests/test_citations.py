@@ -98,6 +98,17 @@ def test_read_reference_takes_one_record_from_ris_or_csl_json():
     assert read_reference("ris", ris) == expected
     assert read_reference("csl-json", f"[{csl}]") == expected
     assert read_reference("csl-json", '{"title": "Only a title"}') == ("Only a title", None, None)
+    assert read_reference("csl-json", '{"DOI": "10.1038/nature14539", "issued": "2015"}') == (
+        "10.1038/nature14539",
+        None,
+        None,
+    )
+    assert read_reference(
+        "csl-json", '{"DOI": "10.1038/nature14539", "issued": {"date-parts": [2015]}}'
+    ) == ("10.1038/nature14539", None, None)
+    assert read_reference(
+        "csl-json", '{"DOI": "10.1038/nature14539", "issued": {"date-parts": "2015"}}'
+    ) == ("10.1038/nature14539", None, None)
     assert read_reference("text", "  10.1038/nature14539\n") == ("10.1038/nature14539", None, None)
     with pytest.raises(ValueError, match="one RIS record per call; the file has 2"):
         read_reference("ris", ris + ris)

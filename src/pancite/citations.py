@@ -244,7 +244,8 @@ def read_reference(format: str, text: str) -> tuple[str, str | None, int | None]
         tags: dict[str, str] = {}
         for line in text.splitlines():
             if found := re.match(r"([A-Z][A-Z0-9])  -(?: (.*))?$", line.rstrip()):
-                tags.setdefault(found[1], (found[2] or "").strip())
+                if value := (found[2] or "").strip():
+                    tags.setdefault(found[1], value)
         doi, title = tags.get("DO"), tags.get("TI") or tags.get("T1")
         dated = re.match(r"\d{4}", tags.get("PY") or tags.get("Y1") or tags.get("DA") or "")
         year = int(dated[0]) if dated else None
@@ -258,11 +259,22 @@ def read_reference(format: str, text: str) -> tuple[str, str | None, int | None]
             raise ValueError(f"Verify one CSL-JSON item per call; the file has {len(items)}.")
         item = items[0]
         doi, title = item.get("DOI"), item.get("title")
-        parts = (item.get("issued") or {}).get("date-parts") or [[None]]
-        first = parts[0][0] if parts and parts[0] else None
-        year = int(first) if isinstance(first, int | str) and str(first).isdigit() else None
-        doi = doi if isinstance(doi, str) else None
-        title = title if isinstance(title, str) else None
+        issued = item.get("issued")
+        parts = issued.get("date-parts") if isinstance(issued, dict) else None
+        first = (
+            parts[0][0]
+            if isinstance(parts, list) and parts and isinstance(parts[0], list) and parts[0]
+            else None
+        )
+        year = (
+            int(first)
+            if isinstance(first, int | str)
+            and not isinstance(first, bool)
+            and re.fullmatch(r"\d{4}", str(first))
+            else None
+        )
+        doi = doi.strip() if isinstance(doi, str) else None
+        title = title.strip() if isinstance(title, str) else None
     else:
         raise ValueError(f"Unsupported file format: {format}.")
     if doi:
